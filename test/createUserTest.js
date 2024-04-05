@@ -1,5 +1,6 @@
 import UserAccount from '../data/createUser.js';
 
+
 (async () => {
     try {
         const userAccount = new UserAccount();
