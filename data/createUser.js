@@ -1,7 +1,7 @@
 //import {dbConnection, closeConnection} from './mongoConfig/mongoConnection.js';
-import {mongoConfig} from './mongoConfig/settings.js';
-import { userAccounts } from "./mongoConfig/mongoCollections.js";
-import { getStartingCards, getAllInfoByID } from "./data/pokemonAPI.js"
+import {mongoConfig} from '../mongoConfig/settings.js';
+import { userAccounts } from "../mongoConfig/mongoCollections.js";
+import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
 //wait dbConnection();
 
 // PUT CREATE USER IN ./data/pokemonMongo.js NO LONGER NEED THIS FILE
@@ -92,9 +92,10 @@ async acceptFriendRequest(receiverUsername, senderUsername) {
     try {
         const userAccountsCollection = await userAccounts();
         const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+        const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
 
-        if (!receiverUser) {
-            throw "Receiver user not found";
+        if (!receiverUser || !senderUser) {
+            throw "Receiver or sender user not found";
         }
 
         // Remove sender's username from receiver's friendRequests
@@ -103,14 +104,22 @@ async acceptFriendRequest(receiverUsername, senderUsername) {
         // Add sender's username to receiver's friendList
         receiverUser.friendList.push(senderUsername);
 
-        // Save the updated receiver user object
+        // Remove receiver's username from sender's friendRequests
+        senderUser.friendRequests = senderUser.friendRequests.filter(request => request !== receiverUsername);
+
+        // Add receiver's username to sender's friendList
+        senderUser.friendList.push(receiverUsername);
+
+        // Save the updated user objects
         await userAccountsCollection.updateOne({ userName: receiverUsername }, { $set: { friendList: receiverUser.friendList, friendRequests: receiverUser.friendRequests } });
+        await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendList: senderUser.friendList, friendRequests: senderUser.friendRequests } });
 
         console.log(`${receiverUsername} accepted friend request from ${senderUsername}`);
     } catch (e) {
         console.log(e);
     }
 }
+
 
 }
 
