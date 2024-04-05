@@ -2,9 +2,8 @@
 import {mongoConfig} from '../mongoConfig/settings.js';
 import { userAccounts } from "../mongoConfig/mongoCollections.js";
 import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
+import exportedMethods from "./validation.js"
 //wait dbConnection();
-
-// PUT CREATE USER IN ./data/pokemonMongo.js NO LONGER NEED THIS FILE
 /**
  * This is the userAccount class so it defines the schema of the userAccount Collection
  */
@@ -28,6 +27,9 @@ class UserAccount {
     */
    async createUser(username, password) {
     try {
+        // Validate username and password
+        username = exportedMethods.checkString(username, "Username");
+        password = exportedMethods.checkString(password, "Password");
         let currDate = new Date().toISOString().slice(0, 10);
         let cardListObj = await getStartingCards();
         let friendListObj = [];
@@ -53,6 +55,8 @@ class UserAccount {
     //search user from userAccounts collection
 } async searchUsers(usernameQuery) {
     try {
+        usernameQuery = exportedMethods.checkString(usernameQuery, "Username Query");
+
         const userAccountsCollection = await userAccounts();
         const regex = new RegExp(usernameQuery, 'i'); // Case-insensitive search
         const users = await userAccountsCollection.find({ userName: regex }).toArray();
@@ -66,6 +70,9 @@ class UserAccount {
 //send friend request 
 async sendFriendRequest(senderUsername, receiverUsername) {
     try {
+        // Validate sender and receiver usernames
+        senderUsername = exportedMethods.checkString(senderUsername, "Sender Username");
+        receiverUsername = exportedMethods.checkString(receiverUsername, "Receiver Username");
         const userAccountsCollection = await userAccounts();
         const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
         const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
@@ -90,6 +97,8 @@ async sendFriendRequest(senderUsername, receiverUsername) {
 
 async acceptFriendRequest(receiverUsername, senderUsername) {
     try {
+        receiverUsername = exportedMethods.checkString(receiverUsername, "Receiver Username");
+        senderUsername = exportedMethods.checkString(senderUsername, "Sender Username");
         const userAccountsCollection = await userAccounts();
         const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
         const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
