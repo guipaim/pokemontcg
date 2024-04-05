@@ -5,57 +5,7 @@ import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
 import validation from './validation.js'
 import {ObjectId} from 'mongodb';
 
-
-/**
-    * createUser enter the user into the mongo userAccounts collection
-    * It needs to be updated to accept input for the user for username and password
-    * and it also needs to have checking to make sure username and password are correct
-    * inputs and username is unique (very important for other getter methods)
-    * @param {*} username needs to be unique string
-    * @param {*} password must be string 
-    */
-
-
-export const createUser = async(username, password) => {
-    try {
-        let currDate = new Date().toISOString().slice(0, 10);
-        let cardListObj = await getStartingCards();
-        let friendListObj = [];
-        let newUser = {
-            userName: username,
-            password: password,
-            dateCreated: currDate,
-            cardList: cardListObj,
-            friendList: friendListObj
-        }
-                
-        const userAccountsCollection = await userAccounts();
-        const insertUser = await userAccountsCollection.insertOne(newUser)
-        if (!insertUser.acknowledged || !insertUser.insertedId)
-            throw "Could not add user";
-    }
-    catch (e) {
-        console.log(e)
-    }
-}
-
-
-/**
- * 
- * @param {*} username username of the user
- * @returns all info in mongo on that user
- */
-export const getUserByUsername = async (username) => {
-    try {
-        const userAccountsCollection = await userAccounts();
-        const user = await userAccountsCollection.findOne({ userName: username });
-        return user;
-    } catch (error) {
-        console.error('Error getting user by username:', error);
-        throw error;
-    }
-};
-
+//This file gets the cardList,gets user by ID and allows to search for all users
 /**
  * 
  * @param {*} username username of the user
