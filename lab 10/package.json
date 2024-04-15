@@ -1,0 +1,20 @@
+{
+  "name": "dermond_troy_lab10",
+  "version": "1.0.0",
+  "description": "Authentication and Middleware",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Troy Dermond 10399699",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
+    "express-session": "^1.18.0",
+    "mongodb": "^6.5.0"
+  }
+}

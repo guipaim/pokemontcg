@@ -1,0 +1,49 @@
+{{!--
+
+registration handelbars
+
+--}}
+
+<main>
+    <h1>Register</h1>
+     <form id="registration-form" action="/register" method="post">
+        <div>
+            <label for="firstNameInput">First Name:</label>
+            <input type="text" id="firstNameInput" name="firstName" required>
+        </div>
+        <div>
+            <label for="lastNameInput">Last Name:</label>
+            <input type="text" id="lastNameInput" name="lastName" required>
+        </div>
+        <div>
+            <label for="emailAddressInput">Email Address:</label>
+            <input type="email" id="emailAddressInput" name="emailAddress" required>
+        </div>
+        <div>
+            <label for="passwordInput">Password:</label>
+            <input type="password" id="passwordInput" name="password" required>
+        </div>
+        <div>
+            <label for="confirmPasswordInput">Confirm Password:</label>
+            <input type="password" id="confirmPasswordInput" name="confirmPassword" required>
+        </div>
+        <div>
+            <label for="roleInput">Role:</label>
+            <select id="roleInput" name="role" required>
+                <option value="" disabled selected hidden>Select Role</option>
+                <option value="admin">admin</option>
+                <option value="user">user</option>
+            </select>
+        </div>
+        <div>
+            <input type="submit" value="Register" onclick="registerHandler(event)">
+        </div>
+        <div>
+            {{#if errorMessage}}
+                <p id="errorServer" class="error">{{errorMessage}}</p>
+            {{/if}}
+            <p class="error" id="errorMsg"></p>
+        </div>
+    </form>
+    <a class="link" href="/login">Already have an account? Click here to log in</a>
+</main>
