@@ -1,54 +1,9 @@
 import { userAccounts } from "../mongoConfig/mongoCollections.js";
-import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
+// import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
 import validation from './validation.js'
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 
-
-/**
-    * createUser enter the user into the mongo userAccounts collection
-    * It needs to be updated to accept input for the user for username and password
-    * and it also needs to have checking to make sure username and password are correct
-    * inputs and username is unique (very important for other getter methods)
-    * @param {*} username needs to be unique string
-    * @param {*} password must be string 
-    */
-
-
-export const createUser = async (username, password) => {
-    {
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        let currDate = new Date().toISOString().slice(0, 10);
-        let cardListObj = await getStartingCards();
-        let friendListObj = [];
-        let newUser = {
-            userName: username,
-            password: hashedPassword,
-            dateCreated: currDate,
-            cardList: cardListObj,
-            friendList: friendListObj
-        }
-
-        const userAccountsCollection = await userAccounts();
-
-        const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
-
-        let insertUser;
-
-        if (alreadyRegistered) {
-            throw new Error('You are already a registered user');
-        }
-        else {
-            insertUser = await userAccountsCollection.insertOne(newUser);
-            if (!insertUser.acknowledged || !insertUser.insertedId) {
-                throw new Error('Could not add user');
-            }
-        }
-        return { insertedUser: true };
-    }
-}
 
 /**
  * 

@@ -2,7 +2,9 @@ import { Router } from 'express'
 const router = Router()
 import {cardMongoData} from '../data/index.js';
 import validation from '../data/validation.js';
-import { createUser, loginUser } from '../data/pokemonMongo.js';
+import { loginUser } from '../data/pokemonMongo.js';
+import UserAccount from '../data/createUser.js';
+
 
 router
   .route('/')
@@ -55,7 +57,7 @@ router
       let newUser;
       
       try { 
-        newUser = await createUser(userNameInput, passwordInput);
+        newUser = await UserAccount.createUser(userNameInput, passwordInput);
       } catch(err) {
         req.session.error = err.message;
         return res.status(403).redirect('error');
