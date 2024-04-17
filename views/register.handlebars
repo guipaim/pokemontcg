@@ -1,0 +1,21 @@
+<p>Create a new user account.</p>
+        <form id="registration-form" method="POST" action="/register">
+            
+                <div><label for="userNameInput">User Name:</label>
+                <input type="text" id="userNameInput" name="userNameInput"></div>
+
+                <div><label for="passwordInput">Password:</label> 
+                <input type="password" id="passwordInput" name="passwordInput"></div>
+
+                <div><label for="confirmPasswordInput">Confirm Password:</label>
+                <input type="password" id="confirmPasswordInput" name="confirmPasswordInput"></div>
+
+                </select>
+                </div>
+                <div><button type="submit" class="button-pokeball" id="checkButton"><span>Register</span></button></div>
+                <p id="error" class="error" style="display:none;"></p>
+            
+        </form>
+        <a href="/login">Already have an account? Click here to log-in</a>
+        
+<script src="/public/js/client_side_validation.js"></script>
