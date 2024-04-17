@@ -2,3 +2,16 @@
 <p>It is always a good idea to close your browser to protect your privacy.</p>
         <p id="error" class="error" style="display:none;"></p>
         <a href="/">Return</a>
+        <nav>
+            <ul>
+                <nav>
+            {{#unless loggedIn}}
+                <li><a href="/login">Login</a></li>
+            {{/unless}}
+            {{#if loggedIn}}
+                <li><a href="/logout">Logout</a></li>
+                <li><a href="/protected">Protected</a></li>
+            {{/if}}
+            </nav>
+            </ul>
+        </nav>

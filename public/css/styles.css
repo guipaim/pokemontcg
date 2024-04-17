@@ -1,6 +1,9 @@
 /* You will create a CSS stylesheet in /public/css/lab10.css; this file should have at least 5 rulesets.  You will need to utilize all 5 rulesets on each of the pages (not every page has to use all 5 rulesets each but all 5 rulesets must be utilized by the various pages in your application).  So you can have some rulesets for one page, some for another page but there needs to be at least 5 total rulesets that are used between all the pages.  */
 body {
     background: #ffcb05;
+    background-image: url('/public/images/PokemonBackground.png');
+    background-size: stretch;
+    
     font-family: "Flexo-Regular", arial, sans-serif;
     font-size: 16px;
   }
@@ -68,7 +71,6 @@ body {
 
   .lgout {
     flex-shrink: 0;
-    text-align: right;
     margin-top: auto;
   }
 
@@ -107,20 +109,5 @@ body {
     z-index: 2; /* Make sure text appears above the ::before and ::after elements */
   }
 
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-30px);
-    }
-    60% {
-      transform: translateY(-15px);
-    }
-  }
-  
-  .logo-pokemon {
-    animation: bounce 2s infinite;
-  }
   
   

@@ -1,3 +1,17 @@
 <p class="error">{{error}}</p>
-        <a href="/">Back</a>
+        <nav>
+            <ul>
+                <nav>
+            {{#unless loggedIn}}
+                <li><a href="/login">Login</a></li>
+            {{/unless}}
+            {{#if loggedIn}}
+                <li><a href="/logout">Logout</a></li>
+                <li><a href="/protected">Protected</a></li>
+            {{/if}}
+            </nav>
+            </ul>
+        </nav>
+        
+
         
