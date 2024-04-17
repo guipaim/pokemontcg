@@ -2,29 +2,31 @@ import { mongoConfig } from '../mongoConfig/settings.js';
 import { userAccounts } from '../mongoConfig/mongoCollections.js';
 import { getStartingCards } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
+import bcrypt from 'bcrypt';
 
-class UserAccount {
+ export class UserAccount {
     constructor(client) {
         this.client = client;
         this.url = mongoConfig.serverUrl;
         this.dbName = mongoConfig.database;
-        this.createUser = this.createUser.bind(this);
-        this.sendFriendRequest = this.sendFriendRequest.bind(this);
-        this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
+        // this.createUser = this.createUser.bind(this);
+        // this.sendFriendRequest = this.sendFriendRequest.bind(this);
+        // this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
     }
 
-    async createUser(username, password) {
+    static async createUser(username, password) {
         try {
             // Validate username and password
             username = exportedMethods.checkString(username, 'Username');
             password = exportedMethods.checkString(password, 'Password');
+            const hashedPassword = await bcrypt.hash(password, 10);
             const currDate = new Date().toISOString().slice(0, 10);
             const cardListObj = await getStartingCards();
             const friendListObj = [];
             const friendRequestsObj = []; // New field to store pending friend requests
             const newUser = {
                 userName: username,
-                password: password,
+                password: hashedPassword,
                 dateCreated: currDate,
                 cardList: cardListObj,
                 friendList: friendListObj,
@@ -32,29 +34,27 @@ class UserAccount {
             };
 
             const userAccountsCollection = await userAccounts();
-            const insertUser = await userAccountsCollection.insertOne(newUser);
-            if (!insertUser.acknowledged || !insertUser.insertedId) {
-                throw new Error('Could not add user');
+            const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
+
+            let insertUser;
+    
+            if (alreadyRegistered) {
+                throw new Error('You are already a registered user');
             }
-        } catch (e) {
+            else {
+                insertUser = await userAccountsCollection.insertOne(newUser);
+                if (!insertUser.acknowledged || !insertUser.insertedId) {
+                    throw new Error('Could not add user');
+                }
+            }
+            return { insertedUser: true };
+        }
+        catch (e) {
             throw new Error(e.message);
         }
     }
 
-    async searchUsers(usernameQuery) {
-        try {
-            usernameQuery = exportedMethods.checkString(usernameQuery, 'Username Query');
-
-            const userAccountsCollection = await userAccounts();
-            const regex = new RegExp(usernameQuery, 'i'); // Case-insensitive search
-            const users = await userAccountsCollection.find({ userName: regex }).toArray();
-            return users;
-        } catch (e) {
-            throw new Error(e.message);
-        }
-    }
-
-    async sendFriendRequest(senderUsername, receiverUsername) {
+    static async sendFriendRequest(senderUsername, receiverUsername) {
         try {
             // Validate sender and receiver usernames
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
@@ -77,7 +77,7 @@ class UserAccount {
         }
     }
 
-    async acceptFriendRequest(receiverUsername, senderUsername) {
+    static async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
@@ -114,6 +114,38 @@ class UserAccount {
             throw new Error(e.message);
         }
     }
+    static async rejectFriendRequest(receiverUsername, senderUsername) {
+        try {
+            // Validate receiver and sender usernames
+            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
+            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
+    
+            const userAccountsCollection = await userAccounts();
+            const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+    
+            if (!receiverUser) {
+                throw new Error('Receiver user not found');
+            }
+    
+            // Find the index of sender's username in receiver's friendRequests array
+            const index = receiverUser.friendRequests.indexOf(senderUsername);
+    
+            if (index !== -1) {
+                // Remove sender's username from receiver's friendRequests array
+                receiverUser.friendRequests.splice(index, 1);
+    
+                // Update the receiver user object in the database
+                await userAccountsCollection.updateOne(
+                    { userName: receiverUsername },
+                    { $set: { friendRequests: receiverUser.friendRequests } }
+                );
+            } else {
+                console.log('Friend request not found');
+            }
+        } catch (e) {
+            throw new Error(e.message);
+        }
+    }
+    
 }
-
 export default UserAccount;
