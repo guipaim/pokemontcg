@@ -4,6 +4,7 @@ import { getStartingCards, getAllInfoByID } from "./pokemonAPI.js"
 //import {fetchCardsData} from "./data/pokemonAPI.js";
 import validation from './validation.js'
 import {ObjectId} from 'mongodb';
+import bcrypt from 'bcrypt';
 
 
 /**
@@ -17,27 +18,46 @@ import {ObjectId} from 'mongodb';
 
 
 export const createUser = async(username, password) => {
-    try {
+    {
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         let currDate = new Date().toISOString().slice(0, 10);
         let cardListObj = await getStartingCards();
         let friendListObj = [];
         let newUser = {
             userName: username,
-            password: password,
+            password: hashedPassword,
             dateCreated: currDate,
             cardList: cardListObj,
             friendList: friendListObj
         }
-                
+
         const userAccountsCollection = await userAccounts();
-        const insertUser = await userAccountsCollection.insertOne(newUser)
-        if (!insertUser.acknowledged || !insertUser.insertedId)
-            throw "Could not add user";
+
+        const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
+
+        let insertUser;
+
+        if(alreadyRegistered) {
+            throw new Error('You are already a registered user');
+        }
+        else {
+            insertUser = await userAccountsCollection.insertOne(newUser);
+            if (!insertUser.acknowledged || !insertUser.insertedId) {
+                throw new Error('Could not add user');
+            }
+        }
+        return {insertedUser: true};
     }
-    catch (e) {
+    /*catch (e) {
         console.log(e)
+    }*/
+
+    
+
     }
-}
+
 
 
 /**
@@ -55,6 +75,43 @@ export const getUserByUsername = async (username) => {
         throw error;
     }
 };
+
+export const loginUser = async (userName, password) => {
+
+    let username;
+    let userNameCheckResult;
+    let passwordCheckResult;
+    const userAccountsCollection = await userAccounts();
+
+    if (!userName ||!password) {
+      throw new Error('Must supply a User Name and a Password');
+    }
+    else {
+      userNameCheckResult = validation.checkString(userName, username);
+      passwordCheckResult = validation.checkPassword(password);
+    }
+  
+    if (userNameCheckResult) {
+      username = userName.toLowerCase().trim();
+    }
+    else {
+      throw new Error('Invalid User Name.');
+    }
+  
+    if (!passwordCheckResult) {
+      throw new Error('Password is invalid.');
+    }
+    const user = await userAccountsCollection.findOne({ userName: userName });
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      return {
+        userName: user.userName
+      };
+    }
+    else {
+      throw new Error('User Name or Password is invalid');
+    }
+  };
 
 /**
  * 
@@ -76,15 +133,10 @@ export const getCardListByUsername = async (username) => {
 };
 
 export const  getUserById = async(id) =>{
-    //console.log('get user by id in pokemon mongo')
     id = validation.checkId(id);
-    //console.log('id cheched')
     const userCollection = await userAccounts();
-    //console.log('user collection got')
     const user = await userCollection.findOne({_id: new ObjectId(id)});
-    //console.log('user got')
     if (!user) throw 'Error: User not found';
-    //console.log(user)
     return user;
 };
 export const getAllUsers = async() => {
