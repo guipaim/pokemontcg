@@ -127,17 +127,25 @@ import bcrypt from 'bcrypt';
                 throw new Error('Receiver user not found');
             }
     
-            // Remove sender's username from receiver's friendRequests
-            receiverUser.friendRequests = receiverUser.friendRequests.filter(request => request !== senderUsername);
+            // Find the index of sender's username in receiver's friendRequests array
+            const index = receiverUser.friendRequests.indexOf(senderUsername);
     
-            // Update the receiver user object in the database
-            await userAccountsCollection.updateOne(
-                { userName: receiverUsername },
-                { $set: { friendRequests: receiverUser.friendRequests } }
-            );
+            if (index !== -1) {
+                // Remove sender's username from receiver's friendRequests array
+                receiverUser.friendRequests.splice(index, 1);
+    
+                // Update the receiver user object in the database
+                await userAccountsCollection.updateOne(
+                    { userName: receiverUsername },
+                    { $set: { friendRequests: receiverUser.friendRequests } }
+                );
+            } else {
+                console.log('Friend request not found');
+            }
         } catch (e) {
             throw new Error(e.message);
         }
     }
+    
 }
 export default UserAccount;

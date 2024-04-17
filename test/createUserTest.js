@@ -16,7 +16,7 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
             throw new Error('Error creating or searching user Lorre: ' + error);
         }
 
-        // Add another user "Troy" and search user "Troy"
+        // // // Add another user "Troy" and search user "Troy"
         try {
             await UserAccount.createUser("Troy", "pass546");
             await getUserByUsername("Troy");
@@ -24,7 +24,7 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
             throw new Error('Error creating or searching user Troy: ' + error);
         }
 
-        // Send friend request from "Troy" to "Lorre"
+        // // Send friend request from "Troy" to "Lorre"
         try {
             await UserAccount.sendFriendRequest("Troy", "Lorre");
         } catch (error) {
@@ -38,11 +38,15 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
         //     throw new Error('Error accepting friend request: ' + error);
         // }
         //reject friend request from "Lorre" to "Troy"
-        try{
-            await UserAccount.rejectFriendRequest("Lorre","Troy");
-        }
-        catch(error){
-            throw new Error('Error rejecting friend request" ' + error);
+        try {
+            await UserAccount.rejectFriendRequest("Troy","Lorre");
+            console.log("Friend request rejected successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error('Error rejecting friend request: ' + error.message);
+            } else {
+                throw new Error('General error: ' + error);
+            }
         }
     } catch (error) {
         throw new Error('General error: ' + error);
