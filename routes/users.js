@@ -1,6 +1,6 @@
 import { Router } from 'express'
 const router = Router()
-import {cardAPIData, cardMongoData} from '../data/index.js';
+import {cardMongoData} from '../data/index.js';
 import validation from '../data/validation.js';
 import { createUser, loginUser } from '../data/pokemonMongo.js';
 
@@ -17,8 +17,6 @@ router
           return res.redirect('/login');
       }
 
-      /*const userList = await cardMongoData.getAllUsers();
-      return res.json(userList);*/
     } catch (e) {
       // Something went wrong with the server!
       return res.status(500).send(e);
@@ -199,7 +197,6 @@ router
   .route('/:id')
   .get(async (req, res) => {
     if (!req.session.user) {
-      //return res.redirect('/login');
       return res.status(404).render('error', {
         error: '404: Page Not Found',
         loggedIn: req.session.user ? true : false
@@ -208,19 +205,15 @@ router
     try {
       req.params.id = validation.checkId(req.params.id);
     } catch (e) {
-      //return res.status(400).json({error: e});
       return res.status(404).render('error', {
         error: '404: Page Not Found', 
         loggedIn: req.session.user ? true : false
       });
     }
     try {
-      console.log("User.js route")
-      //console.log(req.params.id)
       const user = await cardMongoData.getUserById(req.params.id);
       return res.json(user);
-    } catch (e) {
-      //return res.status(404).json(e);
+    } catch (e) {;
       return res.status(404).render('error', {
         error: '404: Page Not Found',
         loggedIn: req.session.user ? true : false
