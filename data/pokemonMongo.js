@@ -133,10 +133,15 @@ export const getCardListByUsername = async (username) => {
 };
 
 export const  getUserById = async(id) =>{
+    //console.log('get user by id in pokemon mongo')
     id = validation.checkId(id);
+    //console.log('id cheched')
     const userCollection = await userAccounts();
+    //console.log('user collection got')
     const user = await userCollection.findOne({_id: new ObjectId(id)});
+    //console.log('user got')
     if (!user) throw 'Error: User not found';
+    //console.log(user)
     return user;
 };
 export const getAllUsers = async() => {
