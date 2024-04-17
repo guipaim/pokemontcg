@@ -14,5 +14,5 @@ const getCollectionFn = (collection) => {
   };
 };
 
-//TODO: YOU WILL NEED TO CHANGE THE CODE BELOW TO HAVE THE COLLECTION(S) REQUIRED BY THE ASSIGNMENT
+//zcreates user collection userAccounts
 export const userAccounts = getCollectionFn('userAccounts');
