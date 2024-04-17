@@ -1,0 +1,113 @@
+/* You will create a CSS stylesheet in /public/css/lab10.css; this file should have at least 5 rulesets.  You will need to utilize all 5 rulesets on each of the pages (not every page has to use all 5 rulesets each but all 5 rulesets must be utilized by the various pages in your application).  So you can have some rulesets for one page, some for another page but there needs to be at least 5 total rulesets that are used between all the pages.  */
+body {
+    background: #ffcb05;
+    background-image: url('/public/images/PokemonBackground.png');
+    background-size: stretch;
+    
+    font-family: "Flexo-Regular", arial, sans-serif;
+    font-size: 16px;
+  }
+  
+  main {
+    max-width: 75%;
+    margin: auto;
+  }
+  
+  header {
+    border-bottom: 1px solid #afafaf;
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  h1 {
+    
+    font-size: 2rem;
+  }
+  
+  h2 {
+    
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  h4 {
+    font-size: 1.25rem;
+  }
+  
+  h5 {
+    font-size: 1.15rem;
+  }
+  
+  h6 {
+    font-size: 1.05rem;
+  }
+  
+  p {
+    color: #000000;
+    font-size: 1rem;
+    line-height: 2;
+  }
+  
+  .post {
+    width: 75%;
+    border-bottom: 1px dashed #333;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+  }
+
+  .lgout {
+    flex-shrink: 0;
+    margin-top: auto;
+  }
+
+  .button-pokeball {
+    background-image: url('/public/images/Pokéball.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    color: white;
+    padding: 20px; /* Adjust padding to make it more circular if needed */
+    border: 2px solid #fff;
+    position: relative;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase; /* Optional: to make the text uppercase */
+    cursor: pointer; /* Change the cursor to signify it's clickable */
+    width: 100px; /* Set a fixed width */
+    height: 100px; /* Set a fixed height to make it circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 8px 6px -6px black; /* Optional: to give some depth */
+  }
+  
+  .button-pokeball::before,
+  .button-pokeball::after {
+    content: '';
+    position: absolute;
+    /* other styles remain unchanged */
+  }
+  
+  .button-pokeball span { /* New style for text */
+    color: #ffcb05;
+    position: relative;
+    z-index: 2; /* Make sure text appears above the ::before and ::after elements */
+  }
+
+  
+  

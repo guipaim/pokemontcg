@@ -40,7 +40,6 @@ export const getStartingCards = async () => {
     try {
         for (let i = 0; i < 5; i++) {
             let rn = await getRandomNumber()
-            //console.log(data.data[rn].id)
             result.push(data.data[rn].id)
         }
         return result 
@@ -77,9 +76,7 @@ export const getImageUrlByCardId = async (cardId) => {
         let card = {};
         const {data} = await fetchCardsData();
         card = data.find((card) => card.id === cardId);
-        //console.log(card)
         if (card) {
-            //console.log(card.images)
             return card.images.small;
         } else {
             return null; // Card not found
