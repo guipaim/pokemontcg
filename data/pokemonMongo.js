@@ -4,7 +4,7 @@ import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 import { closeConnection } from "../mongoConfig/mongoConnection.js";
-import { getAllInfoByID } from "./pokemonAPI.js";
+import { fetchCardsDataByID } from "./pokemonAPI.js";
 
 /**
  *
@@ -124,11 +124,12 @@ export const getUserCardDetails = async (username) => {
           evolvesTo,
           cardmarket,
           images,
-        } = await getAllInfoByID(pokeID);
+        } = await fetchCardsDataByID(pokeID);
 
         const price = cardmarket.prices.averageSellPrice;
         const image = images.small;
         // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
+        const link = cardmarket.url;
 
         return {
           Name: name,
@@ -140,6 +141,7 @@ export const getUserCardDetails = async (username) => {
           "Evolves To": evolvesTo ? evolvesTo.join(", ") : "No Evolve To",
           "Average Sell Price": price,
           image: image,
+          link: link,
         };
       })
     );

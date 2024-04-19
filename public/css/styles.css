@@ -110,6 +110,7 @@ p {
 
 #trader-main {
   position: relative;
+  text-align: center;
   padding: 20px;
 }
 
@@ -126,8 +127,18 @@ p {
 
 #search-user-cards-form {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: start;
+  padding-top: 50px;
+}
+
+#trade-button {
+  padding: 10px 20px;
+  background-color: #ffcb05;
+  border: 2px solid #000;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 #trader-yours,
@@ -135,6 +146,19 @@ p {
   flex: 1;
   padding: 10px;
   min-width: 0;
+}
+
+#search-user-cards-form > * {
+  margin: 0 10px; /* This adds horizontal spacing around each flex item */
+}
+
+#trade-button button {
+  padding: 10px 20px; /* Control the size of the button */
+  background-color: #ffcb05; /* Set the background color */
+  border: 2px solid #000; /* Set the border */
+  border-radius: 5px; /* Round the corners */
+  font-weight: bold; /* Make text inside the button bold */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
 }
 
 .traderPokeName {

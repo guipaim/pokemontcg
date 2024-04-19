@@ -2,54 +2,63 @@
   <h1 id="trader-main-heading">Hello,
     {{sender}}. You are now trading with
     {{reciever}}</h1>
-  <div>
-    <form action="/trade/:userName" method="POST" id="search-user-cards-form">
 
-      <div id="trader-yours">
+  <form action="/trade/:userName" method="POST" id="search-user-cards-form">
 
-        <h2 class="traders-titles"> Your Cards: </h2>
-        <ul>
-          {{#each senderCardList}}
-            <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
+    <div id="trader-yours">
 
-              <ul class="trader-sublist">
-                <li>Supertype: {{Supertype}}</li>
-                <li>Subtype: {{Subtypes}}</li>
-                <li>HP: {{HP}}</li>
-                <li>Types: {{Types}}</li>
-                <li>Evolves from: {{"Evolves From"}}</li>
-                <li>Evolves To: {{"Evolves To"}}</li>
-                <li>Average Sell Price: {{"Average Sell Price"}}</li>
-              </ul>
+      <h2 class="traders-titles"> Your Cards: </h2>
+      <ul>
+        {{#each senderCardList}}
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
 
-              <img src="{{image}}" class="trade-set-1" />
-            </li>
-          {{/each}}
-        </ul>
+            <ul class="trader-sublist">
+              <li>Supertype: {{Supertype}}</li>
+              <li>Subtype: {{Subtypes}}</li>
+              <li>HP: {{HP}}</li>
+              <li>Types: {{Types}}</li>
+              <li>Evolves from: {{"Evolves From"}}</li>
+              <li>Evolves To: {{"Evolves To"}}</li>
+              <li>Average Sell Price: {{"Average Sell Price"}}</li>
+            </ul>
 
-      </div>
+            <a href={{link}} target="_blank"><img
+                src="{{image}}"
+                class="trade-set-1"
+              /></a>
+          </li>
+        {{/each}}
+      </ul>
 
-      <div id="trader-theirs">
-        <h2 class="traders-titles"> {{reciever}}'s Cards: </h2>
-        <ul>
-          {{#each recieverCardList}}
-            <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
+    </div>
 
-              <ul class="trader-sublist">
-                <li>Supertype: {{Supertype}}</li>
-                <li>Subtype: {{Subtypes}}</li>
-                <li>HP: {{HP}}</li>
-                <li>Types: {{Types}}</li>
-                <li>Evolves from: {{"Evolves From"}}</li>
-                <li>Evolves To: {{"Evolves To"}}</li>
-                <li>Average Sell Price: {{"Average Sell Price"}}</li>
-              </ul>
+    <button type="submit" id="trade-button">Trade</button>
 
-              <img src="{{image}}" class="trade-set-2" />
-            </li>
-          {{/each}}
-        </ul>
-      </div>
-    </form>
-  </div>
+    <div id="trader-theirs">
+      <h2 class="traders-titles"> {{reciever}}'s Cards: </h2>
+      <ul>
+        {{#each recieverCardList}}
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
+
+            <ul class="trader-sublist">
+              <li>Supertype: {{Supertype}}</li>
+              <li>Subtype: {{Subtypes}}</li>
+              <li>HP: {{HP}}</li>
+              <li>Types: {{Types}}</li>
+              <li>Evolves from: {{"Evolves From"}}</li>
+              <li>Evolves To: {{"Evolves To"}}</li>
+              <li>Average Sell Price: {{"Average Sell Price"}}</li>
+            </ul>
+
+            <a href={{link}} target="_blank"><img
+                src="{{image}}"
+                class="trade-set-2"
+              /></a>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+
+  </form>
+
 </main>
