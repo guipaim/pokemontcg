@@ -125,9 +125,9 @@ p {
   z-index: -1;
 }
 
-#search-user-cards-form {
+#trade-user-cards-form {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: start;
   padding-top: 50px;
 }
@@ -152,15 +152,6 @@ p {
   margin: 0 10px; /* This adds horizontal spacing around each flex item */
 }
 
-#trade-button button {
-  padding: 10px 20px; /* Control the size of the button */
-  background-color: #ffcb05; /* Set the background color */
-  border: 2px solid #000; /* Set the border */
-  border-radius: 5px; /* Round the corners */
-  font-weight: bold; /* Make text inside the button bold */
-  cursor: pointer; /* Change the cursor to a pointer on hover */
-}
-
 .traderPokeName {
   font-size: 30px;
   font-weight: bold;
@@ -169,6 +160,8 @@ p {
 .trader-sublist {
   padding-top: 15px;
   padding-bottom: 15px;
+  list-style-type: none; /* Remove default list styling */
+  margin: 0; /* Remove margin to align with traderPokeName */
 }
 
 .trade-set-1 {
@@ -186,8 +179,36 @@ p {
 
 .traders-titles {
   font-size: 35px;
+  text-align: center; /* Align the title to the left */
+  width: 100%; /* Ensure it takes full width */
+  margin-left: 15px; /* Add some left margin if necessary to align with the rest of the content */
 }
 
-#trader-main-heading {
-  font-size: 40px;
+.tradeCards {
+  display: flex; /* Use flexbox to organize the content */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Align children to the start of the flex container (left side) */
+  text-align: center; /* Ensure text within is aligned to the left */
+  margin-bottom: 20px; /* Add some bottom margin to separate cards */
+}
+
+.traderPokeName {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+.trader-sublist {
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove padding to align with traderPokeName */
+  font-size: large;
+}
+
+.trade-set-1,
+.trade-set-2 {
+  padding: 10px; /* Adjust padding as necessary */
+  max-width: 100%; /* Ensure images do not overflow their container */
+  height: auto; /* Keep the image aspect ratio */
+  padding-left: 5px;
 }
