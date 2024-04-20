@@ -132,6 +132,7 @@ export const getUserCardDetails = async (username) => {
         const link = cardmarket.url;
 
         return {
+          id: pokeID,
           Name: name,
           Supertype: supertype,
           Subtypes: subtypes ? subtypes.join(", ") : "No Subtypes",
