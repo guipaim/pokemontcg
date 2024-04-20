@@ -149,7 +149,7 @@ p {
 }
 
 #search-user-cards-form > * {
-  margin: 0 10px; /* This adds horizontal spacing around each flex item */
+  margin: 0 10px;
 }
 
 .traderPokeName {
@@ -160,8 +160,8 @@ p {
 .trader-sublist {
   padding-top: 15px;
   padding-bottom: 15px;
-  list-style-type: none; /* Remove default list styling */
-  margin: 0; /* Remove margin to align with traderPokeName */
+  list-style-type: none;
+  margin: 0;
 }
 
 .trade-set-1 {
@@ -179,17 +179,17 @@ p {
 
 .traders-titles {
   font-size: 35px;
-  text-align: center; /* Align the title to the left */
-  width: 100%; /* Ensure it takes full width */
-  margin-left: 15px; /* Add some left margin if necessary to align with the rest of the content */
+  text-align: center;
+  width: 100%;
+  margin-left: 15px;
 }
 
 .tradeCards {
-  display: flex; /* Use flexbox to organize the content */
-  flex-direction: column; /* Stack children vertically */
-  align-items: center; /* Align children to the start of the flex container (left side) */
-  text-align: center; /* Ensure text within is aligned to the left */
-  margin-bottom: 20px; /* Add some bottom margin to separate cards */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .traderPokeName {
@@ -200,15 +200,46 @@ p {
 }
 
 .trader-sublist {
-  list-style-type: none; /* Remove default list styling */
-  padding: 0; /* Remove padding to align with traderPokeName */
+  list-style-type: none;
+  padding: 0;
   font-size: large;
 }
 
 .trade-set-1,
 .trade-set-2 {
-  padding: 10px; /* Adjust padding as necessary */
-  max-width: 100%; /* Ensure images do not overflow their container */
-  height: auto; /* Keep the image aspect ratio */
+  padding: 10px;
+  max-width: 100%;
+  height: auto;
   padding-left: 5px;
+}
+
+#tradeComplete-main {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+}
+
+#tradeComplete-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+}
+
+#trade-complete-yours li,
+#trade-complete-theirs li {
+  list-style-type: none;
+}
+
+#trade-complete-list {
+  margin-right: 35px;
+}
+
+#trade-complete-yours img,
+#trade-complete-theirs img {
+  padding-top: 15px;
 }

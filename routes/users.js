@@ -7,6 +7,7 @@ import {
   getUserByUsername,
   getCardListByUsername,
   getUserCardDetails,
+  getLimitedCardDetails,
 } from "../data/pokemonMongo.js";
 import UserAccount from "../data/createUser.js";
 
@@ -209,7 +210,6 @@ router
     try {
       const senderCardList = await getUserCardDetails(sender);
       const recieverCardList = await getUserCardDetails(reciever);
-
       return res.render("trader", {
         sender: sender,
         reciever: reciever,
@@ -223,7 +223,34 @@ router
   })
 
   .post(async (req, res) => {
-    return res.render("trader");
+    const sender = req.session.user.userName;
+    const reciever = req.params.userName;
+    const yourSelectedIds = req.body["yourselectedId"];
+    const theirSelectedIds = req.body["theirselectedId"];
+    const yourTrades = { [sender]: yourSelectedIds };
+    const theirTrades = { [reciever]: theirSelectedIds };
+
+    try {
+      let yourDetails = await Promise.all(
+        yourSelectedIds.map(async (id) => {
+          return await getLimitedCardDetails(id);
+        })
+      );
+      let theirDetails = await Promise.all(
+        theirSelectedIds.map(async (id) => {
+          return await getLimitedCardDetails(id);
+        })
+      );
+
+      res.render("tradeComplete", {
+        sender: sender,
+        reciever: reciever,
+        yourDetails: yourDetails,
+        theirDetails: theirDetails,
+      });
+    } catch (error) {
+      return res.status(404).json(`Error: ${error}`);
+    }
   });
 
 //These all need to be updated to our needs

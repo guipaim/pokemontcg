@@ -128,7 +128,6 @@ export const getUserCardDetails = async (username) => {
 
         const price = cardmarket.prices.averageSellPrice;
         const image = images.small;
-        // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
         const link = cardmarket.url;
 
         return {
@@ -148,6 +147,24 @@ export const getUserCardDetails = async (username) => {
     );
 
     return details;
+  } catch (error) {
+    throw `Error: ${error}`;
+  }
+};
+
+export const getLimitedCardDetails = async (pokeID) => {
+  try {
+    const { name, cardmarket, images } = await fetchCardsDataByID(pokeID);
+
+    const image = images.small;
+    const link = cardmarket.url;
+
+    return {
+      id: pokeID,
+      name: name,
+      image: image,
+      link: link,
+    };
   } catch (error) {
     throw `Error: ${error}`;
   }
