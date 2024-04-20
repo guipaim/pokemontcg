@@ -1,8 +1,4 @@
-import { userAccounts } from '../mongoConfig/mongoCollections.js';
 import userRoutes from './users.js';
-import UserAccount from '../data/createUser.js';
-
-const userAccount = new UserAccount(); 
 
 const constructorMethod = (app) => {
     app.use('/', userRoutes);

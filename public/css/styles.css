@@ -1,113 +1,214 @@
 /* You will create a CSS stylesheet in /public/css/lab10.css; this file should have at least 5 rulesets.  You will need to utilize all 5 rulesets on each of the pages (not every page has to use all 5 rulesets each but all 5 rulesets must be utilized by the various pages in your application).  So you can have some rulesets for one page, some for another page but there needs to be at least 5 total rulesets that are used between all the pages.  */
 body {
-    background: #ffcb05;
-    background-image: url('/public/images/PokemonBackground.png');
-    background-size: stretch;
-    
-    font-family: "Flexo-Regular", arial, sans-serif;
-    font-size: 16px;
-  }
-  
-  main {
-    max-width: 75%;
-    margin: auto;
-  }
-  
-  header {
-    border-bottom: 1px solid #afafaf;
-  }
-  
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: #333;
-    margin-bottom: 5px;
-  }
-  
-  h1 {
-    
-    font-size: 2rem;
-  }
-  
-  h2 {
-    
-    font-size: 1.75rem;
-  }
-  
-  h3 {
-    font-size: 1.5rem;
-  }
-  
-  h4 {
-    font-size: 1.25rem;
-  }
-  
-  h5 {
-    font-size: 1.15rem;
-  }
-  
-  h6 {
-    font-size: 1.05rem;
-  }
-  
-  p {
-    color: #000000;
-    font-size: 1rem;
-    line-height: 2;
-  }
-  
-  .post {
-    width: 75%;
-    border-bottom: 1px dashed #333;
-  }
-  
-  .error {
-    color: red;
-    font-weight: bold;
-  }
+  background: #ffcb05;
+  background-image: url("/public/images/PokemonBackground.png");
+  background-size: stretch;
 
-  .lgout {
-    flex-shrink: 0;
-    margin-top: auto;
-  }
+  font-family: "Flexo-Regular", arial, sans-serif;
+  font-size: 16px;
+}
 
-  .button-pokeball {
-    background-image: url('/public/images/Pokéball.png');
-    background-size: cover;
-    background-position: center;
-    border-radius: 50%;
-    color: white;
-    padding: 20px; /* Adjust padding to make it more circular if needed */
-    border: 2px solid #fff;
-    position: relative;
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase; /* Optional: to make the text uppercase */
-    cursor: pointer; /* Change the cursor to signify it's clickable */
-    width: 100px; /* Set a fixed width */
-    height: 100px; /* Set a fixed height to make it circular */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 8px 6px -6px black; /* Optional: to give some depth */
-  }
-  
-  .button-pokeball::before,
-  .button-pokeball::after {
-    content: '';
-    position: absolute;
-    /* other styles remain unchanged */
-  }
-  
-  .button-pokeball span { /* New style for text */
-    color: #ffcb05;
-    position: relative;
-    z-index: 2; /* Make sure text appears above the ::before and ::after elements */
-  }
+main {
+  max-width: 75%;
+  margin: auto;
+}
 
-  
-  
+header {
+  border-bottom: 1px solid #afafaf;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.15rem;
+}
+
+h6 {
+  font-size: 1.05rem;
+}
+
+p {
+  color: #000000;
+  font-size: 1rem;
+  line-height: 2;
+}
+
+.post {
+  width: 75%;
+  border-bottom: 1px dashed #333;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+.lgout {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.button-pokeball {
+  background-image: url("/public/images/Pokéball.png");
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  color: white;
+  padding: 20px; /* Adjust padding to make it more circular if needed */
+  border: 2px solid #fff;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase; /* Optional: to make the text uppercase */
+  cursor: pointer; /* Change the cursor to signify it's clickable */
+  width: 100px; /* Set a fixed width */
+  height: 100px; /* Set a fixed height to make it circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 6px -6px black; /* Optional: to give some depth */
+}
+
+.button-pokeball::before,
+.button-pokeball::after {
+  content: "";
+  position: absolute;
+  /* other styles remain unchanged */
+}
+
+.button-pokeball span {
+  /* New style for text */
+  color: #ffcb05;
+  position: relative;
+  z-index: 2; /* Make sure text appears above the ::before and ::after elements */
+}
+
+#trader-main {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+}
+
+#trader-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+}
+
+#trade-user-cards-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding-top: 50px;
+}
+
+#trade-button {
+  padding: 10px 20px;
+  background-color: #ffcb05;
+  border: 2px solid #000;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#trader-yours,
+#trader-theirs {
+  flex: 1;
+  padding: 10px;
+  min-width: 0;
+}
+
+#search-user-cards-form > * {
+  margin: 0 10px; /* This adds horizontal spacing around each flex item */
+}
+
+.traderPokeName {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.trader-sublist {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  list-style-type: none; /* Remove default list styling */
+  margin: 0; /* Remove margin to align with traderPokeName */
+}
+
+.trade-set-1 {
+  padding: 20px;
+}
+
+.trade-set-2 {
+  padding: 20px;
+}
+
+#trader-yours li,
+#trader-theirs li {
+  list-style-type: none;
+}
+
+.traders-titles {
+  font-size: 35px;
+  text-align: center; /* Align the title to the left */
+  width: 100%; /* Ensure it takes full width */
+  margin-left: 15px; /* Add some left margin if necessary to align with the rest of the content */
+}
+
+.tradeCards {
+  display: flex; /* Use flexbox to organize the content */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Align children to the start of the flex container (left side) */
+  text-align: center; /* Ensure text within is aligned to the left */
+  margin-bottom: 20px; /* Add some bottom margin to separate cards */
+}
+
+.traderPokeName {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+.trader-sublist {
+  list-style-type: none; /* Remove default list styling */
+  padding: 0; /* Remove padding to align with traderPokeName */
+  font-size: large;
+}
+
+.trade-set-1,
+.trade-set-2 {
+  padding: 10px; /* Adjust padding as necessary */
+  max-width: 100%; /* Ensure images do not overflow their container */
+  height: auto; /* Keep the image aspect ratio */
+  padding-left: 5px;
+}

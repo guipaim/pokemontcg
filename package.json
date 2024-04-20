@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node test/createUserTest.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "start-dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/guipaim/pokemontcg/issues"
   },
-  "homepage": "https://github.com/guipaim/pokemontcg#readme"
+  "homepage": "https://github.com/guipaim/pokemontcg#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }

@@ -16,3 +16,4 @@ const getCollectionFn = (collection) => {
 
 //zcreates user collection userAccounts
 export const userAccounts = getCollectionFn('userAccounts');
+export const allCards = getCollectionFn('allCards');
