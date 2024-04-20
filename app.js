@@ -1,4 +1,4 @@
-//import UserAccount from './createUser.js';
+
 import {
   dbConnection,
   closeConnection,
@@ -10,6 +10,7 @@ import session from "express-session";
 import exphbs from "express-handlebars";
 const app = express();
 import configRoutes from "./routes/index.js";
+import { createUserTest } from "./test/createUserTest.js"
 
 app.use(
   session({
@@ -69,3 +70,8 @@ app.use((req, res, next) => {
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+
+pokeMongo.loadAllCards();
+//uncomment this to seed user accounts
+createUserTest();
+

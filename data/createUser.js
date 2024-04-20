@@ -14,7 +14,7 @@ import bcrypt from 'bcrypt';
         // this.acceptFriendRequest = this.acceptFriendRequest.bind(this);
     }
 
-    static async createUser(username, password) {
+    async createUser(username, password) {
         try {
             // Validate username and password
             username = exportedMethods.checkString(username, 'Username');
@@ -54,7 +54,7 @@ import bcrypt from 'bcrypt';
         }
     }
 
-    static async sendFriendRequest(senderUsername, receiverUsername) {
+    async sendFriendRequest(senderUsername, receiverUsername) {
         try {
             // Validate sender and receiver usernames
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
@@ -77,7 +77,7 @@ import bcrypt from 'bcrypt';
         }
     }
 
-    static async acceptFriendRequest(receiverUsername, senderUsername) {
+    async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
@@ -114,7 +114,7 @@ import bcrypt from 'bcrypt';
             throw new Error(e.message);
         }
     }
-    static async rejectFriendRequest(receiverUsername, senderUsername) {
+    async rejectFriendRequest(receiverUsername, senderUsername) {
         try {
             // Validate receiver and sender usernames
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
@@ -149,3 +149,5 @@ import bcrypt from 'bcrypt';
     
 }
 export default UserAccount;
+
+export const userAccount = new UserAccount(null);

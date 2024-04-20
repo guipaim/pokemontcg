@@ -8,7 +8,7 @@ import {
   getCardListByUsername,
   getUserCardDetails,
 } from "../data/pokemonMongo.js";
-import UserAccount from "../data/createUser.js";
+import { userAccount } from "../data/createUser.js";
 
 router.route("/").get(async (req, res) => {
   try {
@@ -51,7 +51,7 @@ router
       let newUser;
 
       try {
-        newUser = await UserAccount.createUser(userNameInput, passwordInput);
+        newUser = await userAccount.createUser(userNameInput, passwordInput);
       } catch (err) {
         req.session.error = err.message;
         return res.status(403).redirect("error");

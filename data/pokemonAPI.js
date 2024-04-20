@@ -1,18 +1,34 @@
-//import { userAccounts } from "./mongoConfig/mongoCollections.js";
-//import {ObjectId} from 'mongodb';
 import axios from "axios";
+import { getAllCards } from "./pokemonMongo.js";
+
 
 /* This file handles all the data pulls from the API */
+
+/**
+ * Set X-Api-Key for faster API pulls
+ * @returns header
+ */
+const getOptions = () => {
+  const options = {
+      headers: {}
+  };
+
+ 
+  options.headers['X-Api-Key'] = 'cfd6a01d-6c77-4dd3-b607-dbb40c31cba8';
+
+  return options;
+}
 
 /**
  * This is just a helper method that randomizes the cards each new user gets
  * @returns a random number within the range of number of cards on the API
  */
-const getRandomNumber = async () => {
-  let min = 0;
-  let max = 250;
+const getRandomNumber = async (minimum, maximum) => {
+  let min = minimum === null ? 0 : minimum;
+  let max = maximum === null ? 17679 : maximum;
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
 /**
  * This method is used by other methods to get specific information
  * often you need to get all the data to query
@@ -20,7 +36,7 @@ const getRandomNumber = async () => {
  */
 export const fetchCardsData = async () => {
   try {
-    const response = await axios.get("https://api.pokemontcg.io/v2/cards");
+    const response = await axios.get("https://api.pokemontcg.io/v2/cards", getOptions());
     return response.data; // Extracting the data property from the response
   } catch (error) {
     console.error("Error fetching cards data:", error);
@@ -37,7 +53,7 @@ export const fetchCardsDataByID = async (id) => {
   if (!id) throw "Must supply id";
 
   try {
-    let response = await axios.get(`https://api.pokemontcg.io/v2/cards/${id}`);
+    let response = await axios.get(`https://api.pokemontcg.io/v2/cards/${id}`, getOptions());
     if (!response.data) {
       throw "Could not get the card by ID";
     }
@@ -55,13 +71,13 @@ export const fetchCardsDataByID = async (id) => {
  */
 export const getStartingCards = async () => {
   let result = [];
-  //let {data} = await axios.get('https://api.pokemontcg.io/v2/cards')
-  let data = await fetchCardsData();
+
+  let data = await getAllCards();
 
   try {
     for (let i = 0; i < 5; i++) {
-      let rn = await getRandomNumber();
-      result.push(data.data[rn].id);
+      let rn = await getRandomNumber(0, data.length);
+      result.push(data[rn]);
     }
     return result;
   } catch (e) {
@@ -105,5 +121,11 @@ export const getImageUrlByCardId = async (cardId) => {
     throw error;
   }
 };
+
+export async function getRandomCard(){
+  let rn = await getRandomNumber(0, 17679);
+
+}
+
 
 //export default exportedMethods;

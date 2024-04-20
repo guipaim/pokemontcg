@@ -1,16 +1,11 @@
-import UserAccount from '../data/createUser.js';
+import {userAccount} from '../data/createUser.js';
 import { getUserByUsername } from '../data/pokemonMongo.js';
 
-
-
-
-(async () => {
+export async function createUserTest(){
     try {
-        // const userAccount = new UserAccount();
-
         // Create account and search user "Lorre"
         try {
-            await UserAccount.createUser("Lorre", "pass123");
+            await userAccount.createUser("Lorre", "pass123");
             await getUserByUsername("Lorre");
         } catch (error) {
             throw new Error('Error creating or searching user Lorre: ' + error);
@@ -18,7 +13,7 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
 
         // // // Add another user "Troy" and search user "Troy"
         try {
-            await UserAccount.createUser("Troy", "pass546");
+            await userAccount.createUser("Troy", "pass546");
             await getUserByUsername("Troy");
         } catch (error) {
             throw new Error('Error creating or searching user Troy: ' + error);
@@ -26,20 +21,20 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
 
         // // Send friend request from "Troy" to "Lorre"
         try {
-            await UserAccount.sendFriendRequest("Troy", "Lorre");
+            await userAccount.sendFriendRequest("Troy", "Lorre");
         } catch (error) {
             throw new Error('Error sending friend request: ' + error);
         }
 
         // Accept friend request from "Lorre" to "Troy"
         // try {
-        //     await UserAccount.acceptFriendRequest("Lorre", "Troy");
+        //     await userAccount.acceptFriendRequest("Lorre", "Troy");
         // } catch (error) {
         //     throw new Error('Error accepting friend request: ' + error);
         // }
         //reject friend request from "Lorre" to "Troy"
         try {
-            await UserAccount.rejectFriendRequest("Troy","Lorre");
+            await userAccount.rejectFriendRequest("Troy","Lorre");
             console.log("Friend request rejected successfully");
         } catch (error) {
             if (error instanceof Error) {
@@ -51,7 +46,7 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
     } catch (error) {
         throw new Error('General error: ' + error);
     }
-})();
+};
 
 
 /*
