@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import { cardMongoData } from "../data/index.js";
+import { userAccount } from "../data/createUser.js";
 import validation from "../data/validation.js";
 import {
   loginUser,
@@ -8,7 +9,6 @@ import {
   getCardListByUsername,
   getUserCardDetails,
 } from "../data/pokemonMongo.js";
-import { userAccount } from "../data/createUser.js";
 
 router.route("/").get(async (req, res) => {
   try {

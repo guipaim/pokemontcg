@@ -73,5 +73,5 @@ app.listen(3000, () => {
 
 pokeMongo.loadAllCards();
 //uncomment this to seed user accounts
-createUserTest();
+//createUserTest();
 
