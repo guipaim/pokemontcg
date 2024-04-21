@@ -1,4 +1,4 @@
-import {userAccount} from '../data/createUser.js';
+import { userAccount } from '../data/createUser.js';
 import { getUserByUsername } from '../data/pokemonMongo.js';
 
 export async function createUserTest(){
