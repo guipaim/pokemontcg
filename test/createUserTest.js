@@ -1,27 +1,27 @@
-import {userAccount} from '../data/createUser.js';
+import { userAccount } from '../data/createUser.js';
 import { getUserByUsername } from '../data/pokemonMongo.js';
 
 export async function createUserTest(){
     try {
         // Create account and search user "Lorre"
         try {
-            await userAccount.createUser("Lorre", "pass123");
-            await getUserByUsername("Lorre");
+            await userAccount.createUser("lorre", "pass123");
+            await getUserByUsername("lorre");
         } catch (error) {
             throw new Error('Error creating or searching user Lorre: ' + error);
         }
 
         // // // Add another user "Troy" and search user "Troy"
         try {
-            await userAccount.createUser("Troy", "pass546");
-            await getUserByUsername("Troy");
+            await userAccount.createUser("troy", "pass546");
+            await getUserByUsername("troy");
         } catch (error) {
             throw new Error('Error creating or searching user Troy: ' + error);
         }
 
         // // Send friend request from "Troy" to "Lorre"
         try {
-            await userAccount.sendFriendRequest("Troy", "Lorre");
+            await userAccount.sendFriendRequest("troy", "lorre");
         } catch (error) {
             throw new Error('Error sending friend request: ' + error);
         }
@@ -34,7 +34,7 @@ export async function createUserTest(){
         // }
         //reject friend request from "Lorre" to "Troy"
         try {
-            await userAccount.rejectFriendRequest("Troy","Lorre");
+            await userAccount.rejectFriendRequest("troy","lorre");
             console.log("Friend request rejected successfully");
         } catch (error) {
             if (error instanceof Error) {

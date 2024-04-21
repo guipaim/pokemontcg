@@ -71,7 +71,11 @@ app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
 
-pokeMongo.loadAllCards();
+await pokeMongo.loadAllCards();
+
+// runs every 5 minutes
+setInterval(() => pokeMongo.growCollection(), 300000);
+
 //uncomment this to seed user accounts
 //createUserTest();
 
