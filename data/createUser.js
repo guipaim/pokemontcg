@@ -31,6 +31,7 @@ import bcrypt from 'bcrypt';
                 cardList: cardListObj,
                 friendList: friendListObj,
                 friendRequests: friendRequestsObj, // Add friendRequests field to the user schema
+                lastCollectionGrowth: Date.now()
             };
 
             const userAccountsCollection = await userAccounts();

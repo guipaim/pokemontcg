@@ -122,9 +122,13 @@ export const getImageUrlByCardId = async (cardId) => {
   }
 };
 
-export async function getRandomCard(){
-  let rn = await getRandomNumber(0, 17679);
-
+export async function getRandomCard(cardList){
+  if(cardList.length === 0){
+    throw new Error("Card List is empty");
+  }
+  let rn = await getRandomNumber(0, cardList.length);
+  let card = cardList[rn];
+  return (card);
 }
 
 
