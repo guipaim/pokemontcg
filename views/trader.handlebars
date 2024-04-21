@@ -3,14 +3,25 @@
     {{sender}}. You are now trading with
     {{reciever}}</h1>
 
-  <form action="/trade/:userName" method="POST" id="trade-user-cards-form">
+  <form action="/trade/{{reciever}}" method="POST" id="trade-user-cards-form">
 
     <div id="trader-yours">
 
       <h2 class="traders-titles"> Your Cards: </h2>
       <ul>
         {{#each senderCardList}}
-          <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}
+              <span class="traderPokeID">({{id}})</span>
+            </span>
+
+            <label for="trader-yours-card"></label>
+            <input
+              type="checkbox"
+              class="card-checkbox"
+              name="yourselectedId[]"
+              value={{id}}
+              id="trade-yours-card"
+            />
 
             <ul class="trader-sublist">
               <li>Supertype: {{Supertype}}</li>
@@ -38,7 +49,19 @@
       <h2 class="traders-titles"> {{reciever}}'s Cards: </h2>
       <ul>
         {{#each recieverCardList}}
-          <li class="tradeCards"><span class="traderPokeName">{{Name}}</span>
+
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}
+              <span class="traderPokeID">({{id}})</span>
+            </span>
+
+            <label for="trader-theirs-card"></label>
+            <input
+              type="checkbox"
+              class="card-checkbox"
+              name="theirselectedId[]"
+              value={{id}}
+              id="trade-theirs-card"
+            />
 
             <ul class="trader-sublist">
               <li>Supertype: {{Supertype}}</li>
@@ -60,5 +83,5 @@
     </div>
 
   </form>
-
+  <script src="/public/js/client_side_trading.js"></script>
 </main>

@@ -2,6 +2,7 @@ import { userAccounts, allCards } from "../mongoConfig/mongoCollections.js";
 import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
+import { closeConnection } from "../mongoConfig/mongoConnection.js";
 import { fetchCardsDataByID } from "./pokemonAPI.js";
 import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
 
@@ -25,7 +26,6 @@ export const getUserByUsername = async (userName) => {
   try {
     const userAccountsCollection = await userAccounts();
     const user = await userAccountsCollection.findOne({ userName: userName });
-    console.log("User: ", user);
     if (!user) {
       throw new Error(`No user found with the username: ${userName}`); //added check to see if user even exists, if not throw error. Need to check if anyone is resolving this error on their own by calling a null
     }
@@ -148,6 +148,24 @@ export const getUserCardDetails = async (username) => {
     );
 
     return details;
+  } catch (error) {
+    throw `Error: ${error}`;
+  }
+};
+
+export const getLimitedCardDetails = async (pokeID) => {
+  try {
+    const { name, cardmarket, images } = await fetchCardsDataByID(pokeID);
+
+    const image = images.small;
+    const link = cardmarket.url;
+
+    return {
+      id: pokeID,
+      name: name,
+      image: image,
+      link: link,
+    };
   } catch (error) {
     throw `Error: ${error}`;
   }
