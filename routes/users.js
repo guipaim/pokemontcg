@@ -9,6 +9,8 @@ import {
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
+  executeTrade,
+  getTradeDetails,
 } from "../data/pokemonMongo.js";
 
 router.route("/").get(async (req, res) => {
@@ -227,20 +229,32 @@ router
     const reciever = req.params.userName;
     const yourSelectedIds = req.body["yourselectedId"];
     const theirSelectedIds = req.body["theirselectedId"];
-    const yourTrades = { [sender]: yourSelectedIds };
-    const theirTrades = { [reciever]: theirSelectedIds };
+    let theirTrades = { [sender]: yourSelectedIds };
+    let yourTrades = { [reciever]: theirSelectedIds };
+
+    let yourDetails = await Promise.all(
+      yourSelectedIds.map(async (id) => {
+        return await getLimitedCardDetails(id);
+      })
+    );
+
+    if (!yourDetails) {
+      throw "Error getting your details";
+    }
+
+    let theirDetails = await Promise.all(
+      theirSelectedIds.map(async (id) => {
+        return await getLimitedCardDetails(id);
+      })
+    );
+
+    if (!yourDetails) {
+      throw "Error getting their detail";
+    }
 
     try {
-      let yourDetails = await Promise.all(
-        yourSelectedIds.map(async (id) => {
-          return await getLimitedCardDetails(id);
-        })
-      );
-      let theirDetails = await Promise.all(
-        theirSelectedIds.map(async (id) => {
-          return await getLimitedCardDetails(id);
-        })
-      );
+      let out = await executeTrade(sender, reciever, yourTrades, theirTrades);
+      console.log("Out completed");
 
       res.render("tradeComplete", {
         sender: sender,
@@ -251,6 +265,54 @@ router
     } catch (error) {
       return res.status(404).json(`Error: ${error}`);
     }
+  });
+
+router
+  .route("/viewtrades")
+  .get(async (req, res) => {
+    const user = req.session.user.userName;
+    let out = await getTradeDetails(user);
+
+    let tradesIn = out.tradesIn;
+    let tradesOut = out.tradesOut;
+    let tradeInOutList = [];
+    let tradeOutOutList = [];
+
+    tradesIn.forEach((trades) => {
+      let tradeInGet = trades[1];
+      let tradeInGetName = Object.keys(tradeInGet)[0];
+      let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
+      let tradeInSend = trades[2];
+      let tradeInSendName = Object.keys(tradeInSend)[0];
+      let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
+      let tradeID = trades[0];
+      tradeInOutList.push({
+        description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
+        tradeID: tradeID,
+      });
+    }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
+
+    tradesOut.forEach((trades) => {
+      let tradeOutSend = trades[1];
+      let tradeOutSendName = Object.keys(tradeOutSend)[0];
+      let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
+      let tradeOutGet = trades[2];
+      let tradeOutGetName = Object.keys(tradeOutGet)[0];
+      let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
+      let tradeID = trades[0];
+      tradeOutOutList.push({
+        description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
+        tradeID: tradeID,
+      });
+    }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
+
+    return res.render("tradeRequest", {
+      tradeInOutList: tradeInOutList,
+      tradeOutOutList: tradeOutOutList,
+    });
+  })
+  .post(async (req, res) => {
+    const tradeInIds = req.body["tradeInSelectedId"]; //only part left
   });
 
 //These all need to be updated to our needs
