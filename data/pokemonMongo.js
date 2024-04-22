@@ -102,6 +102,8 @@ export const getAllUsers = async () => {
   return userList;
 };
 
+// START OF JAYS FUNCTIONS
+
 export const getUserCardDetails = async (username) => {
   let user;
   try {
@@ -237,15 +239,120 @@ export const getTradeDetails = async (username) => {
   return { tradesIn: tradesIn, tradesOut: tradesOut };
 };
 
-export const finalizeTrade = async (tradesIncomingIDs) => {
+export const finalizeTrade = async (id) => {
   const userCollection = await userAccounts();
-  tradesIncomingIDs = new ObjectId(id);
-  const query = await userCollection
-    .find({ "incomingTrades.id:": id })
-    .toArray();
+  id = new ObjectId(id);
 
-  tradesIncomingIDs.forEach((ids) => {});
+  let deleteTrade;
+  let incomingTrade;
+
+  try {
+    incomingTrade = await userCollection
+      .aggregate([
+        { $match: { "incomingTrades.id": id } },
+        {
+          $project: {
+            _id: 0,
+            userName: 1,
+            incomingTrades: {
+              $filter: {
+                input: "$incomingTrades",
+                as: "trade",
+                cond: { $eq: ["$$trade.id", id] },
+              },
+            },
+          },
+        },
+      ])
+      .toArray();
+  } catch (error) {
+    console.log(error);
+  }
+
+  let singleTrade = incomingTrade[0].incomingTrades[0]; //only one trade with id exists
+
+  let tradeIn = singleTrade.incoming;
+  let tradeOut = singleTrade.outgoing;
+
+  let userTradeRequestMaker = Object.keys(tradeIn)[0]; // Gets the first key of the object
+  let userTradeRequestMakerCollection = await getCardListByUsername(
+    userTradeRequestMaker
+  );
+  let cardArrayOne = tradeIn[userTradeRequestMaker];
+
+  let userTradeRequestAcceptor = Object.keys(tradeOut)[0];
+  let userTradeRequestAcceptorCollection = await getCardListByUsername(
+    userTradeRequestAcceptor
+  );
+  let cardArrayTwo = tradeOut[userTradeRequestAcceptor];
+
+  //   console.log(
+  //     `Trade made by: ${userTradeRequestMaker}, the cards are ${cardArrayOne}`
+  //   );
+
+  //   console.log(
+  //     `Trade accepted by: ${userTradeRequestAcceptor}, the cards are ${cardArrayTwo}`
+  //   );
+
+  for (const card of cardArrayOne) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestMaker },
+        { $pull: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //remove cards that trademaker is giving up
+
+  for (const card of cardArrayTwo) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestAcceptor },
+        { $pull: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //remove cards that tradeacceptor is giving up
+
+  for (const card of cardArrayOne) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestAcceptor },
+        { $push: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pushing card from cardList:", error);
+    }
+  } //inserts cards into tradeacceptor that trademaker is giving up
+
+  for (const card of cardArrayTwo) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestMaker },
+        { $push: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //insert cards into traderequestor  that tradeacceptor is giving up
+
+  try {
+    deleteTrade = await userCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $eq: id } },
+          outgoingTrades: { id: { $eq: id } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
 };
+//end of JAYS functions
 
 export async function loadAllCards() {
   try {

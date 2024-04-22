@@ -312,9 +312,7 @@ router
     });
   })
   .post(async (req, res) => {
-    const tradeInIds = req.body["tradeInSelectedId"];
-    for (ids in tradeInIds) {
-    }
+    const tradeInIds = req.body["tradeInSelectedId"]; //only part left
   });
 
 //These all need to be updated to our needs
