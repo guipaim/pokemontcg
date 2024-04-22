@@ -3,7 +3,7 @@ import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 import { fetchCardsDataByID, getRandomCard } from "./pokemonAPI.js";
-import allPokeCards from "../pokemonTCG.allCards.json" assert { type: "json" };
+import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
 
 /**
  *
@@ -49,7 +49,7 @@ export const loginUser = async (userName, password) => {
   }
 
   if (userNameCheckResult) {
-    username = userName.toLowerCase().trim();
+    username = userName.toLowerCase().trim(); // Convert username to lowercase
   } else {
     throw new Error("Invalid User Name.");
   }
@@ -58,7 +58,11 @@ export const loginUser = async (userName, password) => {
     throw new Error("Password is invalid.");
   }
 
-  const user = await userAccountsCollection.findOne({ userName: userName });
+  const user = await userAccountsCollection.findOne({ userName: username });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (passwordMatch) {
     return {
@@ -101,8 +105,6 @@ export const getAllUsers = async () => {
   const userList = await userCollection.find({}).toArray();
   return userList;
 };
-
-// START OF JAYS FUNCTIONS
 
 export const getUserCardDetails = async (username) => {
   let user;
@@ -172,232 +174,52 @@ export const getLimitedCardDetails = async (pokeID) => {
   }
 };
 
-export const executeTrade = async (sender, reciever, outgoing, incoming) => {
-  let tradeOut;
-  let tradeIn;
 
-  const userAccountsCollection = await userAccounts();
-  let oidOne = new ObjectId();
-  tradeOut = await userAccountsCollection.findOneAndUpdate(
-    { userName: sender },
-    {
-      $push: {
-        outgoingTrades: { id: oidOne, outgoing: incoming, incoming: outgoing },
-      },
-    }
-  );
-
-  if (!tradeOut) {
-    throw `Could not complete outgoing trade`;
-  }
-
-  tradeIn = await userAccountsCollection.findOneAndUpdate(
-    { userName: reciever },
-    {
-      $push: {
-        incomingTrades: { id: oidOne, incoming: incoming, outgoing: outgoing },
-      },
-    }
-  );
-
-  if (!tradeIn) {
-    throw `Could not complete incoming trade`;
-  }
-
-  return tradeOut, tradeIn;
-};
-
-export const getTradeDetails = async (username) => {
-  const userAccountsCollection = await userAccounts();
-  const userTrades = await userAccountsCollection.findOne(
-    { userName: username },
-    { projection: { _id: 0, incomingTrades: 1, outgoingTrades: 1 } }
-  );
-
-  const incomingTrades = userTrades.incomingTrades; //ex user is jp
-  // let tradesIn_In = []; //incoming trades what cards you will get [..., {kp: ['poke1']}, ...]
-  // let tradesIn_Out = []; //incoming trades what cards you will give [..., {jp:['poke2']}, ...]
-  let tradesIn = []; // [ [ { kp: [Array] }, { jp: [Array] } ], [another trade] ]
-  incomingTrades.forEach((trades) => {
-    // tradesIn_In.push(trades.incoming);
-    // tradesIn_Out.push(trades.outgoing);
-    trades.id = trades.id.toString();
-    tradesIn.push([trades.id, trades.incoming, trades.outgoing]);
-  });
-
-  const outgoingTrades = userTrades.outgoingTrades;
-  // let tradesOut_In = []; //outgoing trades what cards you will get [..., {kp: ['poke3']}, ...]
-  // let tradesOut_Out = []; //outgoing trades what cards you will give [..., {jp: ['poke3']}, ...]
-  let tradesOut = []; // [ [ { kp: [Array] }, { jp: [Array] } ], [ { kp: [Array] }, { jp: [Array] } ]]
-  outgoingTrades.forEach((trades) => {
-    // tradesOut_In.push(trades.incoming);
-    // tradesOut_Out.push(trades.outgoing);
-    trades.id = trades.id.toString();
-    tradesOut.push([trades.id, trades.incoming, trades.outgoing]);
-  });
-
-  return { tradesIn: tradesIn, tradesOut: tradesOut };
-};
-
-export const finalizeTrade = async (id) => {
-  const userCollection = await userAccounts();
-  id = new ObjectId(id);
-
-  let deleteTrade;
-  let incomingTrade;
-
-  try {
-    incomingTrade = await userCollection
-      .aggregate([
-        { $match: { "incomingTrades.id": id } },
-        {
-          $project: {
-            _id: 0,
-            userName: 1,
-            incomingTrades: {
-              $filter: {
-                input: "$incomingTrades",
-                as: "trade",
-                cond: { $eq: ["$$trade.id", id] },
-              },
-            },
-          },
-        },
-      ])
-      .toArray();
-  } catch (error) {
-    console.log(error);
-  }
-
-  let singleTrade = incomingTrade[0].incomingTrades[0]; //only one trade with id exists
-
-  let tradeIn = singleTrade.incoming;
-  let tradeOut = singleTrade.outgoing;
-
-  let userTradeRequestMaker = Object.keys(tradeIn)[0]; // Gets the first key of the object
-  let userTradeRequestMakerCollection = await getCardListByUsername(
-    userTradeRequestMaker
-  );
-  let cardArrayOne = tradeIn[userTradeRequestMaker];
-
-  let userTradeRequestAcceptor = Object.keys(tradeOut)[0];
-  let userTradeRequestAcceptorCollection = await getCardListByUsername(
-    userTradeRequestAcceptor
-  );
-  let cardArrayTwo = tradeOut[userTradeRequestAcceptor];
-
-  //   console.log(
-  //     `Trade made by: ${userTradeRequestMaker}, the cards are ${cardArrayOne}`
-  //   );
-
-  //   console.log(
-  //     `Trade accepted by: ${userTradeRequestAcceptor}, the cards are ${cardArrayTwo}`
-  //   );
-
-  for (const card of cardArrayOne) {
-    try {
-      await userCollection.updateOne(
-        { userName: userTradeRequestMaker },
-        { $pull: { cardList: card } }
-      );
-    } catch (error) {
-      console.error("Error pulling card from cardList:", error);
-    }
-  } //remove cards that trademaker is giving up
-
-  for (const card of cardArrayTwo) {
-    try {
-      await userCollection.updateOne(
-        { userName: userTradeRequestAcceptor },
-        { $pull: { cardList: card } }
-      );
-    } catch (error) {
-      console.error("Error pulling card from cardList:", error);
-    }
-  } //remove cards that tradeacceptor is giving up
-
-  for (const card of cardArrayOne) {
-    try {
-      await userCollection.updateOne(
-        { userName: userTradeRequestAcceptor },
-        { $push: { cardList: card } }
-      );
-    } catch (error) {
-      console.error("Error pushing card from cardList:", error);
-    }
-  } //inserts cards into tradeacceptor that trademaker is giving up
-
-  for (const card of cardArrayTwo) {
-    try {
-      await userCollection.updateOne(
-        { userName: userTradeRequestMaker },
-        { $push: { cardList: card } }
-      );
-    } catch (error) {
-      console.error("Error pulling card from cardList:", error);
-    }
-  } //insert cards into traderequestor  that tradeacceptor is giving up
-
-  try {
-    deleteTrade = await userCollection.updateMany(
-      {},
-      {
-        $pull: {
-          incomingTrades: { id: { $eq: id } },
-          outgoingTrades: { id: { $eq: id } },
-        },
-      }
-    );
-  } catch (err) {
-    console.error(err);
-  }
-};
-//end of JAYS functions
-
-export async function loadAllCards() {
-  try {
+export async function loadAllCards(){
+  try{
     const allCardsCollection = await allCards();
     await allCardsCollection.drop();
-    await allCardsCollection.insertOne({ cards: allPokeCards.cards });
-  } catch (e) {
+    await allCardsCollection.insertOne({cards: allPokeCards.cards});
+  }catch(e){
     console.log("Unable to create collection of all cards");
   }
+  
 }
 
-export async function getAllCards() {
-  try {
+export async function getAllCards(){
+  try{
     const allCardsCollection = await allCards();
     const cards = await allCardsCollection.find({}).toArray();
-    return cards[0].cards;
-  } catch (e) {
+    return (cards[0].cards);
+  }catch(e){
     console.log("Unable to retrieve card list from DB", e);
   }
 }
 
-export async function growCollection() {
-  try {
+
+export async function growCollection(){
+  try{
     const userAccountsCollection = await userAccounts();
     const usersList = await userAccountsCollection.find({}).toArray();
     const allCardsList = await this.getAllCards();
     //const oneDay = 24 * 60 * 60 * 1000;
     const tenMin = 60000 * 10;
 
-    for (let user in usersList) {
+    for (let user in usersList){
       const date = Date.now();
-      const allowGrowth = date - usersList[user].lastCollectionGrowth > tenMin;
+      const allowGrowth = (date - usersList[user].lastCollectionGrowth) > tenMin;
 
-      if (allowGrowth) {
+      if(allowGrowth){
         let card = await getRandomCard(allCardsList);
         let id = usersList[user]._id;
         let cardList = usersList[user].cardList;
         cardList.push(card);
-        await userAccountsCollection.updateOne(
-          { _id: id },
-          { $set: { cardList: cardList, lastCollectionGrowth: Date.now() } }
-        );
+        await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList, lastCollectionGrowth: Date.now()}});
       }
     }
-  } catch (e) {
+  }catch(e){
     console.log("Failed to grow user collection: ", e);
   }
+  
+
 }
