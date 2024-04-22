@@ -1,13 +1,16 @@
 <p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
 
-<!-- Display friend request notifications -->
-{{#if friendRequests}}
-  <h2>Friend Requests</h2>
+{{#if friendRequests.length}}
+  <h2>Friend Requests:</h2>
   <ul>
     {{#each friendRequests}}
-      <li>{{this.sender}} wants to add you as a friend. <a href="/acceptFriendRequest/{{this.sender}}">Accept</a> | <a href="/rejectFriendRequest/{{this.sender}}">Reject</a></li>
+      <li>{{this}}</li>
     {{/each}}
   </ul>
+{{/if}}
+
+{{#if successMessage}}
+  <p>{{successMessage}}</p>
 {{/if}}
 
 <div class="lgout">
@@ -15,3 +18,4 @@
   <a href="/searchUsers">Search Users</a>
   <a href="/logout">Logout</a>
 </div>
+<script src="/public/js/client_side_addUser.js"></script>

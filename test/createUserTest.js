@@ -4,14 +4,14 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
 export async function createUserTest(){
     try {
         // Create account and search user "Lorre"
-        // try {
-        //     await userAccount.createUser("lorre", "pass123");
-        //     await getUserByUsername("lorre");
-        // } catch (error) {
-        //     throw new Error('Error creating or searching user Lorre: ' + error);
-        // }
+        try {
+            await userAccount.createUser("lorre", "pass123");
+            await getUserByUsername("lorre");
+        } catch (error) {
+            throw new Error('Error creating or searching user Lorre: ' + error);
+        }
 
-        // // // Add another user "Troy" and search user "Troy"
+        // // Add another user "Troy" and search user "Troy"
         try {
             await userAccount.createUser("troy", "pass546");
             await getUserByUsername("troy");
@@ -20,11 +20,11 @@ export async function createUserTest(){
         }
 
         // // Send friend request from "Troy" to "Lorre"
-        try {
-            await userAccount.sendFriendRequest("troy", "lorre");
-        } catch (error) {
-            throw new Error('Error sending friend request: ' + error);
-        }
+        // try {
+        //     await userAccount.sendFriendRequest("troy", "lorre");
+        // } catch (error) {
+        //     throw new Error('Error sending friend request: ' + error);
+        // }
 
         // Accept friend request from "Lorre" to "Troy"
         // try {
@@ -33,16 +33,16 @@ export async function createUserTest(){
         //     throw new Error('Error accepting friend request: ' + error);
         // }
         //reject friend request from "Lorre" to "Troy"
-        try {
-            await userAccount.rejectFriendRequest("troy","lorre");
-            console.log("Friend request rejected successfully");
-        } catch (error) {
-            if (error instanceof Error) {
-                throw new Error('Error rejecting friend request: ' + error.message);
-            } else {
-                throw new Error('General error: ' + error);
-            }
-        }
+        // try {
+        //     await userAccount.rejectFriendRequest("troy","lorre");
+        //     console.log("Friend request rejected successfully");
+        // } catch (error) {
+        //     if (error instanceof Error) {
+        //         throw new Error('Error rejecting friend request: ' + error.message);
+        //     } else {
+        //         throw new Error('General error: ' + error);
+        //     }
+        // }
     } catch (error) {
         throw new Error('General error: ' + error);
     }

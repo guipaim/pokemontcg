@@ -206,11 +206,16 @@ router.route("/searchUsers")
 
 
 // Route for adding a friend
+// Route for adding a friend
 router.post('/addFriend', async (req, res) => {
   try {
-    const { username } = req.body;
-    console.log('Username:', username);
-    await userAccount.sendFriendRequest(username);
+    const senderUsername = req.session.user.userName; // Retrieve sender's username from session user
+    const receiverUsername = req.body.username; // Retrieve receiver's username from form
+
+    console.log('Sender Username:', senderUsername);
+    console.log('Receiver Username:', receiverUsername);
+
+    await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
     res.redirect('/searchUsers');
 

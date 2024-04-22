@@ -63,27 +63,37 @@ export class UserAccount {
             const userAccountsCollection = await userAccounts();
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-
-            console.log('Sender User:', senderUser);
-            console.log('Receiver Username:', receiverUser);
-
-
+    
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
-
-            // Initialize friendRequests array if it's not already defined
-            senderUser.friendRequests = senderUser.friendRequests || [];
-
+    
+            // Check if the sender has already sent a friend request to the receiver
+            if (senderUser.friendRequests.includes(receiverUsername)) {
+                throw new Error('Friend request already sent');
+            }
+    
+            // Check if the receiver has already received a friend request from the sender
+            if (receiverUser.friendRequests.includes(senderUsername)) {
+                throw new Error('Friend request already received');
+            }
+    
             // Add the receiver's username to the sender's friendRequests
             senderUser.friendRequests.push(receiverUsername);
-
-            // Save the updated sender user object
+    
+            // Add the sender's username to the receiver's friendRequests
+            receiverUser.friendRequests.push(senderUsername);
+    
+            // Save the updated user objects
             await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendRequests: senderUser.friendRequests } });
+            await userAccountsCollection.updateOne({ userName: receiverUsername }, { $set: { friendRequests: receiverUser.friendRequests } });
         } catch (e) {
             throw new Error(e.message);
         }
     }
+    
+    
+    
 
 
     async acceptFriendRequest(receiverUsername, senderUsername) {
@@ -93,32 +103,38 @@ export class UserAccount {
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
-
+    
             if (!receiverUser || !senderUser) {
                 throw new Error('Receiver or sender user not found');
             }
-
-            // Remove sender's username from receiver's friendRequests
-            receiverUser.friendRequests = receiverUser.friendRequests.filter(request => request !== senderUsername);
-
-            // Add sender's username to receiver's friendList
-            receiverUser.friendList.push(senderUsername);
-
-            // Remove receiver's username from sender's friendRequests
-            senderUser.friendRequests = senderUser.friendRequests.filter(request => request !== receiverUsername);
-
-            // Add receiver's username to sender's friendList
-            senderUser.friendList.push(receiverUsername);
-
-            // Save the updated user objects
-            await userAccountsCollection.updateOne(
-                { userName: receiverUsername },
-                { $set: { friendList: receiverUser.friendList, friendRequests: receiverUser.friendRequests } }
-            );
-            await userAccountsCollection.updateOne(
-                { userName: senderUsername },
-                { $set: { friendList: senderUser.friendList, friendRequests: senderUser.friendRequests } }
-            );
+    
+            // Check if the sender's username exists in the receiver's friend requests array
+            const senderIndex = receiverUser.friendRequests.indexOf(senderUsername);
+            if (senderIndex !== -1) {
+                // Remove sender's username from receiver's friendRequests
+                receiverUser.friendRequests.splice(senderIndex, 1);
+    
+                // Add sender's username to receiver's friendList
+                receiverUser.friendList.push(senderUsername);
+    
+                // Remove receiver's username from sender's friendRequests
+                senderUser.friendRequests = senderUser.friendRequests.filter(request => request !== receiverUsername);
+    
+                // Add receiver's username to sender's friendList
+                senderUser.friendList.push(receiverUsername);
+    
+                // Save the updated user objects
+                await userAccountsCollection.updateOne(
+                    { userName: receiverUsername },
+                    { $set: { friendList: receiverUser.friendList, friendRequests: receiverUser.friendRequests } }
+                );
+                await userAccountsCollection.updateOne(
+                    { userName: senderUsername },
+                    { $set: { friendList: senderUser.friendList, friendRequests: senderUser.friendRequests } }
+                );
+            } else {
+                throw new Error('Sender username not found in receiver\'s friend requests');
+            }
         } catch (e) {
             throw new Error(e.message);
         }
@@ -128,21 +144,21 @@ export class UserAccount {
             // Validate receiver and sender usernames
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
-
+    
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-
+    
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
             }
-
+    
             // Find the index of sender's username in receiver's friendRequests array
             const index = receiverUser.friendRequests.indexOf(senderUsername);
-
+    
             if (index !== -1) {
                 // Remove sender's username from receiver's friendRequests array
                 receiverUser.friendRequests.splice(index, 1);
-
+    
                 // Update the receiver user object in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
