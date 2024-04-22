@@ -64,9 +64,16 @@ export class UserAccount {
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
 
+            console.log('Sender User:', senderUser);
+            console.log('Receiver Username:', receiverUser);
+
+
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
+
+            // Initialize friendRequests array if it's not already defined
+            senderUser.friendRequests = senderUser.friendRequests || [];
 
             // Add the receiver's username to the sender's friendRequests
             senderUser.friendRequests.push(receiverUsername);
@@ -77,6 +84,7 @@ export class UserAccount {
             throw new Error(e.message);
         }
     }
+
 
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {

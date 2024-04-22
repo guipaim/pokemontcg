@@ -14,7 +14,7 @@
     {{#if user}}
     <p>User found: {{user.username}}</p>
     <form id="addFriendForm" action="/addFriend" method="post">
-        <input type="hidden" name="username" value="{{user.username}}">
+        <input type="hidden" name="username" value="{{user.userName}}">
         <button type="submit">Add as Friend</button>
     </form>
     {{/if}}

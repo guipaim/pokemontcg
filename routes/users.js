@@ -186,34 +186,31 @@ router.route("/logout").get(async (req, res) => {
 // Route for handling search and adding friends
 router.route("/searchUsers")
   .get(async (req, res) => {
-   
-    res.render("searchUsers"); 
+    res.render("searchUsers");
   })
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-
-      // Perform the search for the user with the given username
-      const foundUser = await getUserByUsername(username); // Adjust method name as needed
+      const foundUser = await getUserByUsername(username);
 
       if (!foundUser) {
-        // If user not found, handle accordingly
         return res.render('SearchUsers', { message: 'User not found' });
       }
 
-      // Render the search results with the found user
       res.render('SearchUsers', { user: foundUser });
-
     } catch (error) {
       console.error('Error searching for user:', error);
-      res.render('error', { error: 'An error occurred while searching for user' });
+      res.render('error', { error: error.message }); // Pass the error message to the error page
     }
   });
+
+
 // Route for adding a friend
 router.post('/addFriend', async (req, res) => {
   try {
     const { username } = req.body;
-    await userAccount.sendFriendRequest(username); // Adjust method name as needed
+    console.log('Username:', username);
+    await userAccount.sendFriendRequest(username);
 
     res.redirect('/searchUsers');
 
