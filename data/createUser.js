@@ -4,7 +4,7 @@ import { getStartingCards } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
 import bcrypt from 'bcrypt';
 
- export class UserAccount {
+export class UserAccount {
     constructor(client) {
         this.client = client;
         this.url = mongoConfig.serverUrl;
@@ -17,7 +17,7 @@ import bcrypt from 'bcrypt';
     async createUser(username, password) {
         try {
             // Validate username and password
-            username = exportedMethods.checkString(username, 'Username');
+            username = exportedMethods.checkString(username, 'Username').toLowerCase().trim();
             password = exportedMethods.checkString(password, 'Password');
             const hashedPassword = await bcrypt.hash(password, 10);
             const currDate = new Date().toISOString().slice(0, 10);
@@ -38,7 +38,7 @@ import bcrypt from 'bcrypt';
             const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
 
             let insertUser;
-    
+
             if (alreadyRegistered) {
                 throw new Error('You are already a registered user');
             }
@@ -58,8 +58,8 @@ import bcrypt from 'bcrypt';
     async sendFriendRequest(senderUsername, receiverUsername) {
         try {
             // Validate sender and receiver usernames
-            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
-            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
+            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
+            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             const userAccountsCollection = await userAccounts();
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
@@ -80,8 +80,8 @@ import bcrypt from 'bcrypt';
 
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
-            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
-            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
+            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
+            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
@@ -118,23 +118,23 @@ import bcrypt from 'bcrypt';
     async rejectFriendRequest(receiverUsername, senderUsername) {
         try {
             // Validate receiver and sender usernames
-            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username');
-            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username');
-    
+            receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
+            senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
+
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-    
+
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
             }
-    
+
             // Find the index of sender's username in receiver's friendRequests array
             const index = receiverUser.friendRequests.indexOf(senderUsername);
-    
+
             if (index !== -1) {
                 // Remove sender's username from receiver's friendRequests array
                 receiverUser.friendRequests.splice(index, 1);
-    
+
                 // Update the receiver user object in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
@@ -147,7 +147,7 @@ import bcrypt from 'bcrypt';
             throw new Error(e.message);
         }
     }
-    
+
 }
 export default UserAccount;
 

@@ -49,7 +49,7 @@ export const loginUser = async (userName, password) => {
   }
 
   if (userNameCheckResult) {
-    username = userName.toLowerCase().trim();
+    username = userName.toLowerCase().trim(); // Convert username to lowercase
   } else {
     throw new Error("Invalid User Name.");
   }
@@ -58,7 +58,11 @@ export const loginUser = async (userName, password) => {
     throw new Error("Password is invalid.");
   }
 
-  const user = await userAccountsCollection.findOne({ userName: userName });
+  const user = await userAccountsCollection.findOne({ userName: username });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (passwordMatch) {
     return {
@@ -68,6 +72,7 @@ export const loginUser = async (userName, password) => {
     throw new Error("User Name or Password is invalid");
   }
 };
+
 
 /**
  *
@@ -171,51 +176,51 @@ export const getLimitedCardDetails = async (pokeID) => {
 };
 
 
-export async function loadAllCards(){
-  try{
+export async function loadAllCards() {
+  try {
     const allCardsCollection = await allCards();
     await allCardsCollection.drop();
-    await allCardsCollection.insertOne({cards: allPokeCards.cards});
-  }catch(e){
+    await allCardsCollection.insertOne({ cards: allPokeCards.cards });
+  } catch (e) {
     console.log("Unable to create collection of all cards");
   }
-  
+
 }
 
-export async function getAllCards(){
-  try{
+export async function getAllCards() {
+  try {
     const allCardsCollection = await allCards();
     const cards = await allCardsCollection.find({}).toArray();
     return (cards[0].cards);
-  }catch(e){
+  } catch (e) {
     console.log("Unable to retrieve card list from DB", e);
   }
 }
 
 
-export async function growCollection(){
-  try{
+export async function growCollection() {
+  try {
     const userAccountsCollection = await userAccounts();
     const usersList = await userAccountsCollection.find({}).toArray();
     const allCardsList = await this.getAllCards();
     //const oneDay = 24 * 60 * 60 * 1000;
     const tenMin = 60000 * 10;
 
-    for (let user in usersList){
+    for (let user in usersList) {
       const date = Date.now();
       const allowGrowth = (date - usersList[user].lastCollectionGrowth) > tenMin;
 
-      if(allowGrowth){
+      if (allowGrowth) {
         let card = await getRandomCard(allCardsList);
         let id = usersList[user]._id;
         let cardList = usersList[user].cardList;
         cardList.push(card);
-        await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList, lastCollectionGrowth: Date.now()}});
+        await userAccountsCollection.updateOne({ _id: id }, { $set: { cardList: cardList, lastCollectionGrowth: Date.now() } });
       }
     }
-  }catch(e){
+  } catch (e) {
     console.log("Failed to grow user collection: ", e);
   }
-  
+
 
 }

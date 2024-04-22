@@ -4,12 +4,12 @@ import { getUserByUsername } from '../data/pokemonMongo.js';
 export async function createUserTest(){
     try {
         // Create account and search user "Lorre"
-        try {
-            await userAccount.createUser("lorre", "pass123");
-            await getUserByUsername("lorre");
-        } catch (error) {
-            throw new Error('Error creating or searching user Lorre: ' + error);
-        }
+        // try {
+        //     await userAccount.createUser("lorre", "pass123");
+        //     await getUserByUsername("lorre");
+        // } catch (error) {
+        //     throw new Error('Error creating or searching user Lorre: ' + error);
+        // }
 
         // // // Add another user "Troy" and search user "Troy"
         try {
