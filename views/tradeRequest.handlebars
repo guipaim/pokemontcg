@@ -1,0 +1,37 @@
+<div id="tradeRequest-main">
+  <form action="/viewtrades" method="POST" id="execute-trade-form">
+
+    <div id="trade-request-data">
+
+      <div id="trade-in-div">
+        <h3> You have the following incoming trades: </h3>
+        <ol>
+          {{#each tradeInOutList}}
+            <li>{{this.description}}<span>
+                <label for="trade-in-request"></label>
+                <input
+                  type="checkbox"
+                  class="card-checkbox"
+                  name="tradeInSelectedId[]"
+                  value={{this.tradeID}}
+                  id="trade-in-request"
+                /></span></li>
+          {{/each}}
+        </ol>
+      </div>
+
+      <button type="submit" id="accept-trade">Accept Trade</button>
+
+      <div id="trade-out-div">
+        <h3> You have the following outgoing trades: </h3>
+        <ol>
+          {{#each tradeOutOutList}}
+            <li>{{this.description}}</li>
+
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+  </form>
+
+</div>

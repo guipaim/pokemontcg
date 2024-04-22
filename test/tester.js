@@ -1,12 +1,16 @@
-import { getLimitedCardDetails } from "../data/pokemonMongo.js";
+import { userAccounts } from "../mongoConfig/mongoCollections.js";
+import { getTradeDetails } from "../data/pokemonMongo.js";
+import { ObjectId } from "mongodb";
 
-let yourSelectedIds = ["hgss4-1", "pl1-1"];
-let theirSelectedIds = ["dp3-1", "det1-1"];
+export const finalizeTrade = async (id) => {
+  const userCollection = await userAccounts();
+  id = new ObjectId(id);
+  const query = await userCollection
+    .find({ "incomingTrades.id:": id })
+    .toArray();
 
-let yourDetails = await Promise.all(
-  yourSelectedIds.map(async (id) => {
-    return await getLimitedCardDetails(id);
-  })
-);
+  return query;
+};
 
-console.log(yourDetails);
+let out = await finalizeTrade("6625b10226a0778e9a7b36e0");
+console.log(out);
