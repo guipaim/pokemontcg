@@ -1,6 +1,17 @@
-<p>Welcome {{userName}} , the time is now: {{currentTime}}.</p>
+<p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
+
+<!-- Display friend request notifications -->
+{{#if friendRequests}}
+  <h2>Friend Requests</h2>
+  <ul>
+    {{#each friendRequests}}
+      <li>{{this.sender}} wants to add you as a friend. <a href="/acceptFriendRequest/{{this.sender}}">Accept</a> | <a href="/rejectFriendRequest/{{this.sender}}">Reject</a></li>
+    {{/each}}
+  </ul>
+{{/if}}
 
 <div class="lgout">
-  <a href="/trade"> Trade Now!</a>
+  <a href="/trade">Trade Now!</a>
+  <a href="/searchUsers">Search Users</a>
   <a href="/logout">Logout</a>
 </div>

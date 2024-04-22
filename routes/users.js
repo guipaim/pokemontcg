@@ -183,6 +183,45 @@ router.route("/logout").get(async (req, res) => {
     });
   });
 });
+// Route for handling search and adding friends
+router.route("/searchUsers")
+  .get(async (req, res) => {
+   
+    res.render("searchUsers"); 
+  })
+  .post(async (req, res) => {
+    try {
+      const { username } = req.body;
+
+      // Perform the search for the user with the given username
+      const foundUser = await getUserByUsername(username); // Adjust method name as needed
+
+      if (!foundUser) {
+        // If user not found, handle accordingly
+        return res.render('SearchUsers', { message: 'User not found' });
+      }
+
+      // Render the search results with the found user
+      res.render('SearchUsers', { user: foundUser });
+
+    } catch (error) {
+      console.error('Error searching for user:', error);
+      res.render('error', { error: 'An error occurred while searching for user' });
+    }
+  });
+// Route for adding a friend
+router.post('/addFriend', async (req, res) => {
+  try {
+    const { username } = req.body;
+    await userAccount.sendFriendRequest(username); // Adjust method name as needed
+
+    res.redirect('/searchUsers');
+
+  } catch (error) {
+    console.error('Error adding friend:', error);
+    res.render('error', { error: 'An error occurred while adding friend' });
+  }
+});
 
 router
   .route("/trade")
