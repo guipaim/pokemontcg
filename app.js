@@ -77,5 +77,5 @@ await pokeMongo.loadAllCards();
 setInterval(() => pokeMongo.growCollection(), 300000);
 
 // uncomment this to seed user accounts
-createUserTest();
+// createUserTest();
 

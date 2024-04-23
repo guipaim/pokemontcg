@@ -9,8 +9,8 @@ import {
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
-  executeTrade,
-  getTradeDetails,
+  // executeTrade,
+  // getTradeDetails,
 } from "../data/pokemonMongo.js";
 
 router.route("/").get(async (req, res) => {
@@ -193,18 +193,19 @@ router.route("/searchUsers")
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      const foundUser = await getUserByUsername(username);
+      const foundUsers = await getUserByUsername(username);
 
-      if (!foundUser) {
-        return res.render('SearchUsers', { message: 'User not found' });
+      if (!foundUsers || foundUsers.length === 0) {
+        return res.render('SearchUsers', { message: 'No users found' });
       }
 
-      res.render('SearchUsers', { user: foundUser });
+      res.render('SearchUsers', { users: foundUsers }); // Pass the search results to the template
     } catch (error) {
       console.error('Error searching for user:', error);
       res.render('error', { error: error.message }); // Pass the error message to the error page
     }
   });
+
 
 
 // Route for adding a friend

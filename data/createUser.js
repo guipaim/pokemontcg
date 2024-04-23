@@ -60,10 +60,16 @@ import bcrypt from 'bcrypt';
             // Validate sender and receiver usernames
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
+            
+            // Ensure sender and receiver usernames are different
+            if (senderUsername === receiverUsername) {
+                throw new Error('Sender and receiver usernames cannot be the same');
+            }
+    
             const userAccountsCollection = await userAccounts();
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-
+    
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
@@ -91,7 +97,7 @@ import bcrypt from 'bcrypt';
             throw new Error(e.message);
         }
     }
-
+    
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();

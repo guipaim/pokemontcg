@@ -14,26 +14,22 @@ export const getUserByUsername = async (userName) => {
   if (!userName) {
     throw new Error("Must supply a user name");
   }
-  let userNameCheckResult = validation.checkString(userName, userName);
-
-  if (userNameCheckResult) {
-    userName = userName.toLowerCase().trim();
-  } else {
-    throw new Error("Invalid User Name.");
-  }
 
   try {
+    console.log("Searching for:", userName);
     const userAccountsCollection = await userAccounts();
-    const user = await userAccountsCollection.findOne({ userName: userName });
-    if (!user) {
-      throw new Error(`No user found with the username: ${userName}`); //added check to see if user even exists, if not throw error. Need to check if anyone is resolving this error on their own by calling a null
-    }
-    return user;
+    const regex = new RegExp(`.*${userName}.*`, "i"); // Match usernames that contain the search substring
+    console.log("Regex:", regex);
+    const users = await userAccountsCollection.find({ userName: { $regex: regex } }).toArray();
+    console.log("Users found:", users);
+    return users;
   } catch (error) {
     console.error("Error getting user by username:", error);
     throw error;
   }
 };
+
+
 
 export const loginUser = async (userName, password) => {
   let username;
