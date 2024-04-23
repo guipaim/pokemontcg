@@ -1,21 +1,26 @@
 <p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
 
+
+<!-- Show friend requests that are pending -->
 {{#if friendRequests.length}}
-  <h2>Friend Requests:</h2>
-  <ul>
-    {{#each friendRequests}}
-      <li>{{this}}</li>
-    {{/each}}
-  </ul>
+<h2>Friend Requests:</h2>
+<ul>
+  {{#each friendRequests}}
+  <li>{{this}}</li>
+  {{/each}}
+</ul>
 {{/if}}
 
 {{#if successMessage}}
-  <p>{{successMessage}}</p>
+<p>{{successMessage}}</p>
 {{/if}}
+
+<!-- Links available in protected page for trading, searching users or logging out -->
 
 <div class="lgout">
   <a href="/trade">Trade Now!</a>
   <a href="/searchUsers">Search Users</a>
+  <a href="/friendsList">List of friends</a>
   <a href="/logout">Logout</a>
 </div>
 <script src="/public/js/client_side_addUser.js"></script>

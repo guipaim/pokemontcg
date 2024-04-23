@@ -4,7 +4,7 @@ import { getStartingCards } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
 import bcrypt from 'bcrypt';
 
- export class UserAccount {
+export class UserAccount {
     constructor(client) {
         this.client = client;
         this.url = mongoConfig.serverUrl;
@@ -24,21 +24,21 @@ import bcrypt from 'bcrypt';
             const cardListObj = await getStartingCards();
             const friendListObj = [];
             const friendRequestsObj = []; // New field to store pending friend requests
+
             const newUser = {
                 userName: username,
                 password: hashedPassword,
                 dateCreated: currDate,
                 cardList: cardListObj,
                 friendList: friendListObj,
-                friendRequests: friendRequestsObj, // Add friendRequests field to the user schema
+                friendRequests: friendRequestsObj,
                 lastCollectionGrowth: Date.now()
             };
 
             const userAccountsCollection = await userAccounts();
             const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
-
             let insertUser;
-    
+
             if (alreadyRegistered) {
                 throw new Error('You are already a registered user');
             }
@@ -60,48 +60,42 @@ import bcrypt from 'bcrypt';
             // Validate sender and receiver usernames
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
-            
-            // Ensure sender and receiver usernames are different
+
             if (senderUsername === receiverUsername) {
                 throw new Error('Sender and receiver usernames cannot be the same');
             }
-    
             const userAccountsCollection = await userAccounts();
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-    
+
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
-    
-            // Check if the sender has already sent a friend request to the receiver
+            //Checking so that multiple friend requests are not sent 
             if (senderUser.friendRequests.includes(receiverUsername)) {
                 throw new Error('Friend request already sent');
             }
-    
-            // Check if the receiver has already received a friend request from the sender
             if (receiverUser.friendRequests.includes(senderUsername)) {
                 throw new Error('Friend request already received');
             }
-    
-            // Add the receiver's username to the sender's friendRequests
+            //pushing friend request to both sender and receiver so that we can cross check and there are not duplicates on both sides
+
             senderUser.friendRequests.push(receiverUsername);
-    
-            // Add the sender's username to the receiver's friendRequests
             receiverUser.friendRequests.push(senderUsername);
-    
-            // Save the updated user objects
+
             await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendRequests: senderUser.friendRequests } });
             await userAccountsCollection.updateOne({ userName: receiverUsername }, { $set: { friendRequests: receiverUser.friendRequests } });
+
         } catch (e) {
             throw new Error(e.message);
         }
     }
-    
+
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
+
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
@@ -109,27 +103,19 @@ import bcrypt from 'bcrypt';
             if (!receiverUser || !senderUser) {
                 throw new Error('Receiver or sender user not found');
             }
-    
-            // Check if the sender's username exists in the receiver's friend requests array
             const senderIndex = receiverUser.friendRequests.indexOf(senderUsername);
             if (senderIndex !== -1) {
-                // Remove sender's username from receiver's friendRequests
+
                 receiverUser.friendRequests.splice(senderIndex, 1);
-    
-                // Add sender's username to receiver's friendList
                 receiverUser.friendList.push(senderUsername);
-    
-                // Remove receiver's username from sender's friendRequests
                 senderUser.friendRequests = senderUser.friendRequests.filter(request => request !== receiverUsername);
-    
-                // Add receiver's username to sender's friendList
                 senderUser.friendList.push(receiverUsername);
-    
-                // Save the updated user objects
+
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
                     { $set: { friendList: receiverUser.friendList, friendRequests: receiverUser.friendRequests } }
                 );
+
                 await userAccountsCollection.updateOne(
                     { userName: senderUsername },
                     { $set: { friendList: senderUser.friendList, friendRequests: senderUser.friendRequests } }
@@ -146,35 +132,51 @@ import bcrypt from 'bcrypt';
             // Validate receiver and sender usernames
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
-    
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-    
+
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
             }
-    
-            // Find the index of sender's username in receiver's friendRequests array
+
             const index = receiverUser.friendRequests.indexOf(senderUsername);
-    
             if (index !== -1) {
                 // Remove sender's username from receiver's friendRequests array
                 receiverUser.friendRequests.splice(index, 1);
-    
-                // Update the receiver user object in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
                     { $set: { friendRequests: receiverUser.friendRequests } }
                 );
             } else {
-                console.log('Friend request not found');
+                throw new Error('Friend request not found');
             }
+
         } catch (e) {
             throw new Error(e.message);
         }
     }
-    
-}
-export default UserAccount;
+    async getAllFriends(senderUsername){
+        senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
+        // receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
 
+        const userAccountsCollection = await userAccounts();
+        const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+        // const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+        if(!senderUser ){
+            throw new Error("user not found")
+        }
+
+        const senderFriendList=senderUser.friendList
+     
+       return senderFriendList;
+
+    }
+    catch (e) {
+        throw new Error(e.message);
+    }
+
+    }
+
+export default UserAccount;
 export const userAccount = new UserAccount(null);
+

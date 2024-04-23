@@ -199,7 +199,7 @@ router.route("/searchUsers")
         return res.render('SearchUsers', { message: 'No users found' });
       }
 
-      res.render('SearchUsers', { users: foundUsers }); // Pass the search results to the template
+      res.render('SearchUsers', { users: foundUsers }); // Pass the search results to the SearchUsers 
     } catch (error) {
       console.error('Error searching for user:', error);
       res.render('error', { error: error.message }); // Pass the error message to the error page
@@ -207,16 +207,14 @@ router.route("/searchUsers")
   });
 
 
-
-// Route for adding a friend
-// Route for adding a friend
+// Route for adding a friend. It adds this under both sender/receiver
 router.post('/addFriend', async (req, res) => {
   try {
     const senderUsername = req.session.user.userName; // Retrieve sender's username from session user
     const receiverUsername = req.body.username; // Retrieve receiver's username from form
 
-    console.log('Sender Username:', senderUsername);
-    console.log('Receiver Username:', receiverUsername);
+    // console.log('Sender Username:', senderUsername);
+    // console.log('Receiver Username:', receiverUsername);
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
@@ -227,6 +225,21 @@ router.post('/addFriend', async (req, res) => {
     res.render('error', { error: 'An error occurred while adding friend' });
   }
 });
+//Accept friend request route -TODO
+//all friends route
+
+router.route("/friendsList").get(async (req, res) => {
+  try {
+    const senderUsername = req.session.user.userName;
+    const friends=await userAccount.getAllFriends(senderUsername);
+    res.render('friendsList',{friends});
+  } catch (error) {
+    console.log('An error occurred while finding friends:', error);
+    res.render('error', { error: 'An error occurred while finding friends' });
+}
+
+});
+
 
 router
   .route("/trade")

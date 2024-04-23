@@ -9,24 +9,24 @@
 
 <!-- Display search results -->
 <div id="searchResults">
-    <!-- Results will be displayed here -->
-    {{#if users}}
-        <h2>Search Results:</h2>
-        <ul>
-            {{#each users}}
-                <li>
-                    <p>User found: {{this.userName}}</p>
-                    <form class="sendFriendRequestForm" action="/addFriend" method="post">
-                        <input type="hidden" name="username" value="{{this.userName}}">
-                        <button type="submit" class="addFriendButton">Add as Friend</button>
-                    </form>
-                </li>
-            {{/each}}
-        </ul>
-    {{else}}
-        <p>{{message}}</p>
-    {{/if}}
 
+    {{#if users}}
+    <h2>Search Results:</h2>
+    <ul>
+        {{#each users}}
+        <li>
+            <p>User found: {{this.userName}}</p>
+            <form class="sendFriendRequestForm" action="/addFriend" method="post">
+                <input type="hidden" name="username" value="{{this.userName}}">
+                <button type="submit" class="addFriendButton">Add as Friend</button>
+            </form>
+        </li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <p>{{message}}</p>
+    {{/if}}
+    <!-- Links available so that after search, you can go back to your page or logout-->
     <div>
         <a href="/logout">Logout</a>
         <a href="/protected">Protected</a>

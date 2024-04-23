@@ -4,7 +4,7 @@
 const searchUserForm = document.getElementById('searchUserForm');
 const searchInput = document.getElementById('searchInput');
 
-searchUserForm.addEventListener('submit', function(event) {
+searchUserForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
     const username = searchInput.value.trim();
@@ -20,7 +20,7 @@ searchUserForm.addEventListener('submit', function(event) {
 const sendFriendRequestForm = document.getElementById('sendFriendRequestForm');
 const receiverUsernameInput = document.getElementById('receiverUsername');
 
-sendFriendRequestForm.addEventListener('submit', function(event) {
+sendFriendRequestForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
     const receiverUsername = receiverUsernameInput.value.trim();
@@ -31,3 +31,5 @@ sendFriendRequestForm.addEventListener('submit', function(event) {
 
     sendFriendRequestForm.submit();
 });
+
+
