@@ -127,27 +127,26 @@ export const getUserCardDetails = async (username) => {
           images,
         } = await fetchCardsDataByID(pokeID);
 
-        const price = cardmarket.prices.averageSellPrice;
+        const price = cardmarket?.prices?.averageSellPrice;
         const image = images.small;
         // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
-        const link = cardmarket.url;
+        const link = cardmarket?.url;
 
         return {
-          id: pokeID,
-          Name: name,
-          Supertype: supertype,
+          id: pokeID ? pokeID : "No ID",
+          Name: name ? name : "No name",
+          Supertype: supertype ? supertype : "No supertype",
           Subtypes: subtypes ? subtypes.join(", ") : "No Subtypes",
-          HP: hp,
+          HP: hp ? hp : "No HP",
           Types: types ? types.join(", ") : "No Types",
           "Evolves From": evolvesFrom ? evolvesFrom : "No Evolve From",
           "Evolves To": evolvesTo ? evolvesTo.join(", ") : "No Evolve To",
-          "Average Sell Price": price,
-          image: image,
-          link: link,
+          "Average Sell Price": price ? price : "No price",
+          image: image ? image : "../public/images/No-image-found.jpg",
+          link: link ? link : "javascript:void(0);",
         };
       })
     );
-
     return details;
   } catch (error) {
     throw `Error: ${error}`;

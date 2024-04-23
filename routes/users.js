@@ -11,6 +11,7 @@ import {
   getLimitedCardDetails,
   executeTrade,
   getTradeDetails,
+  finalizeTrade,
 } from "../data/pokemonMongo.js";
 
 router.route("/").get(async (req, res) => {
@@ -312,7 +313,17 @@ router
     });
   })
   .post(async (req, res) => {
-    const tradeInIds = req.body["tradeInSelectedId"]; //only part left
+    const tradeIDs = req.body["tradeInSelectedId"];
+    for (const id of tradeIDs) {
+      try {
+        await finalizeTrade(id);
+      } catch (error) {
+        console.error("Error pulling card from cardList:", error);
+      }
+    }
+    res.render("tradeAccepted", {
+      message: "Your trade has been confirmed! Go check out your new cards",
+    });
   });
 
 //These all need to be updated to our needs
