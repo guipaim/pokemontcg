@@ -5,7 +5,7 @@ export async function createUserTest(){
     try {
         // Create account and search user "Lorre"
         try {
-            await userAccount.createUser("lorre14", "pass123");
+            await userAccount.createUser("lorre14", "@Pass1234");
             await getUserByUsername("lorre14");
         } catch (error) {
             throw new Error('Error creating or searching user Lorre: ' + error);
@@ -13,7 +13,7 @@ export async function createUserTest(){
 
         // // // Add another user "Troy" and search user "Troy"
         try {
-            await userAccount.createUser("troy14", "pass546");
+            await userAccount.createUser("troy14", "@Pass1234");
             await getUserByUsername("troy14");
         } catch (error) {
             throw new Error('Error creating or searching user Troy: ' + error);
@@ -21,7 +21,7 @@ export async function createUserTest(){
 
         // // Send friend request from "Troy" to "Lorre"
         try {
-            await userAccount.sendFriendRequest("troy", "lorre");
+            await userAccount.sendFriendRequest("troy14", "lorre14");
         } catch (error) {
             throw new Error('Error sending friend request: ' + error);
         }
@@ -34,7 +34,7 @@ export async function createUserTest(){
         // }
         //reject friend request from "Lorre" to "Troy"
         try {
-            await userAccount.rejectFriendRequest("troy","lorre");
+            await userAccount.rejectFriendRequest("troy14","lorre14");
             console.log("Friend request rejected successfully");
         } catch (error) {
             if (error instanceof Error) {

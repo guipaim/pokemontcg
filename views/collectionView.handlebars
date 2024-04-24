@@ -1,11 +1,13 @@
-<p>View Collections: {{user}}</p>
+<p class="centerLogin">View Collections: {{user}}</p>
 <form id="collection-view" method="GET" action="/viewCollection/:userName">
-  
+    
+    <div class="centerLogin">
     <select id="dropdown-menu">
         <option>Select a Friend!</option>
     </select>
     <br><br>
     <h2 id="GFG" style="color: green;"></h2>
+    </div>
     <div id="image-container"></div>
 
      
@@ -69,8 +71,10 @@
         }
     </script>
     
-    <p id="error" class="error" style="display:none;"></p>
+    <p id="error" class="error"></p>
 </form>
-<a href="/protected">Return to prior page</a>
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+</div>
 
 <script src="/public/js/client_side_validation.js"></script>

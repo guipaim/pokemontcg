@@ -2,7 +2,7 @@ import { userAccounts, allCards } from "../mongoConfig/mongoCollections.js";
 import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { fetchCardsDataByID, getImageUrlByCardId, getRandomCard } from "./pokemonAPI.js";
+import { fetchCardsDataByID, getImageUrlByCardId, getRandomCard, getHPInfoByID } from "./pokemonAPI.js";
 import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
 
 /**
@@ -404,25 +404,74 @@ export async function growCollection(){
         await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList, lastCollectionGrowth: Date.now()}});
       }
     }
+    await updateDeckPoints();
   }catch(e){
     console.log("Failed to grow user collection: ", e);
   }
 }
+
 export const getAllUserDeckPoints = async () => {
-  const users = await getAllUsers();
-  let rankList = [];
+  try{
+    const users = await getAllUsers();
+    let rankList = [];
+    
+    for (let i in users){
+      rankList.push({userName: users[i].userName, deckPoints: users[i].deckPoints});
+    }
 
-  for (let i in users){
-    rankList.push({userName: users[i].userName, deckPoints: users[i].deckPoints});
+    rankList.sort(function(a, b){return Number(b.deckPoints) - Number(a.deckPoints)});
+
+    for (let i in rankList){
+     rankList[i]['rank'] = Number(i) + 1;
+    }
+
+    return (rankList);
+  } catch(error){
+    console.log("Failed to get rank list: ", error);
   }
+};
 
-  rankList.sort(function(a, b){return Number(b.deckPoints) - Number(a.deckPoints)});
+export const updateDeckPoints = async () => {
+  try{
+    const users = await getAllUsers();
+    let rankList = [];
 
-  for (let i in rankList){
-    rankList[i]['rank'] = Number(i) + 1;
+    for (let i in users){
+      let deckPoints = 0;
+      for(let j in users[i].cardList){ 
+        let cardHP = await getHPInfoByID(users[i].cardList[j]);
+        deckPoints += Number(cardHP);
+      }
+
+      rankList.push({userName: users[i].userName, deckPoints: deckPoints});
+      const userAccountsCollection = await userAccounts();
+      await userAccountsCollection.updateOne({_id: users[i]._id}, {$set: {deckPoints: deckPoints}});
+    }
+  }catch(error){
+    console.log("Failed to update user deck points: ", error);
   }
+  
+};
 
-  return (rankList);
+export const rewardTop3Players = async () => {
+  try{
+    const rankList = await getAllUserDeckPoints();
+    for(let i=0; i<=(rankList.length >= 3 ? 2 : rankList.length - 1); i++){
+      let name = rankList[i].userName;
+      let user = await getUserByUsername(name);
+      const allCardsList = await getAllCards();
+      let card = await getRandomCard(allCardsList);
+      let id = user._id;
+      let cardList = user.cardList;
+      cardList.push(card);
+      const userAccountsCollection = await userAccounts();
+      await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList}});
+    }
+    await updateDeckPoints();
+  }catch(error){
+    console.log("Failed to reward top 3 players: ", error);
+  }
+  
 };
 
 export async function displayCollection(user) {

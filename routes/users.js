@@ -12,7 +12,9 @@ import {
   executeTrade,
   getTradeDetails,
   finalizeTrade,
-  getAllUserDeckPoints
+  getAllUserDeckPoints,
+  getFriendList,
+  displayCollection
 } from "../data/pokemonMongo.js";
 
 router
