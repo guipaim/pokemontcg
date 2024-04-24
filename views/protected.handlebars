@@ -1,21 +1,7 @@
-<p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
-
-{{#if friendRequests.length}}
-  <h2>Friend Requests:</h2>
-  <ul>
-    {{#each friendRequests}}
-      <li>{{this}}</li>
-    {{/each}}
-  </ul>
-{{/if}}
-
-{{#if successMessage}}
-  <p>{{successMessage}}</p>
-{{/if}}
+<p>Welcome {{userName}} , the time is now: {{currentTime}}.</p>
 
 <div class="lgout">
-  <a href="/trade">Trade Now!</a>
-  <a href="/searchUsers">Search Users</a>
+  <a href="/trade"> Trade Now!</a>
   <a href="/logout">Logout</a>
+  <a href="/viewtrades">View Trades</a>
 </div>
-<script src="/public/js/client_side_addUser.js"></script>
