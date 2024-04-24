@@ -5,16 +5,16 @@ export async function createUserTest(){
     try {
         // Create account and search user "Lorre"
         try {
-            await userAccount.createUser("lorre", "pass123");
-            await getUserByUsername("lorre");
+            await userAccount.createUser("lorre14", "pass123");
+            await getUserByUsername("lorre14");
         } catch (error) {
             throw new Error('Error creating or searching user Lorre: ' + error);
         }
 
         // // Add another user "Troy" and search user "Troy"
         try {
-            await userAccount.createUser("troy", "pass546");
-            await getUserByUsername("troy");
+            await userAccount.createUser("troy14", "pass546");
+            await getUserByUsername("troy14");
         } catch (error) {
             throw new Error('Error creating or searching user Troy: ' + error);
         }

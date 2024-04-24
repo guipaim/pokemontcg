@@ -45,6 +45,15 @@ const exportedMethods = {
 
     return true;
 },
+ validateSelection() {
+  var dropdown = document.getElementById("variable-dropdown");
+  var selectedUserName = dropdown.value; // Get the selected user name
+  if (!selectedUserName || selectedUserName === "") {
+      alert("Please choose a user from the dropdown menu.");
+      return false; // Validation failed
+  }
+  return true; // Validation passed
+}
 };
 
 export default exportedMethods;

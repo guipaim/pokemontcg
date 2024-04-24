@@ -9,8 +9,10 @@ import {
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
-  executeTrade,
-  getTradeDetails,
+  //executeTrade,
+  //getTradeDetails,
+  getFriendList,
+  displayCollection
 } from "../data/pokemonMongo.js";
 
 router.route("/").get(async (req, res) => {
@@ -415,5 +417,37 @@ router
     return res.send('PUT request to http://localhost:3000/users');
   });
 */
-
+router
+  .route("/viewCollections/:userName")
+  .get(async (req, res) => {
+    if(!req.session.user) {
+      req.session.error = "403: You do not have permission to access this page";
+      return res.status(403).redirect("error");
+    }
+    try {
+      const user = req.session.user.userName;
+      //console.log("user", user)
+      const friendList = await getFriendList(user);
+      //console.log("route friend list: ", friendList);
+      friendList.push(user);
+      const images = {};
+      //console.log("route iamges: ", images);
+      
+      for(const usr of friendList) {
+        const imageData = await displayCollection(usr)
+        images[usr] = imageData
+      }
+      //console.log(images)
+      const imagesJSON = JSON.stringify(images)
+      //console.log(imagesJSON)
+      return res.render("collectionView", {
+          user,
+          friendList,
+          imagesJSON
+      });
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      return res.status(500).send("Internal Server Error");
+  }
+  })
 export default router;

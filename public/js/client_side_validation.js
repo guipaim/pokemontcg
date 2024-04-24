@@ -100,6 +100,16 @@ function validateRegistrationForm(event) {
 
 };
 
+function validateCollectionSelection() {
+  var dropdown = document.getElementById("collectionViewInput");
+  var selectedIndex = dropdown.value; // Get the selected index
+    if (selectedIndex === "") {
+        alert("Please choose a name from the dropdown menu.");
+        return false; // Validation failed
+    }
+    dropdown.submit(); // Validation passed
+}
+
 function validateLoginForm(event) {
 
   event.preventDefault();

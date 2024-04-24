@@ -108,11 +108,11 @@ export const getAllInfoByID = async (id) => {
  */
 export const getImageUrlByCardId = async (cardId) => {
   try {
-    let card = {};
-    const { data } = await fetchCardsData();
-    card = data.find((card) => card.id === cardId);
-    if (card) {
-      return card.images.small;
+    const data = await fetchCardsDataByID(cardId);
+    //console.log('api data', data)
+    //console.log('api img', data.images.small)
+    if (data) {
+      return data.images.small;
     } else {
       return null; // Card not found
     }
