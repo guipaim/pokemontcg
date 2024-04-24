@@ -111,8 +111,12 @@ export const getUserCardDetails = async (username) => {
   } catch (error) {
     throw `Error: ${error}`;
   }
-  const cardList = user.cardList;
+  let cardList = user.cardList;
   try {
+    cardList = cardList.filter(
+      (item) => typeof item === "string" && item.trim() !== ""
+    );
+
     const details = await Promise.all(
       cardList.map(async (pokeID) => {
         const {
