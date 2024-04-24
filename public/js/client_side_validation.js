@@ -6,18 +6,20 @@
 // being submitted has all valid data, then you will allow it to submit to the server for processing. Don't forget to check that 
 // password and confirm password match on the registration form!
 
-function validateEmailAddress(email) {
+function validateUsername(username) {
 
 
-  if (email.trim() === '') {
-      return "Email address cannot be empty.\n";
+  if (username.trim() === '') {
+      return "Username cannot be empty.\n";
+  }
+
+  if (!/^[A-Za-z0-9'-]+$/.test(username)) {
+    return "User Name contains invalid characters.\n";
   }
 
 
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  
-  if (!emailRegex.test(email)) {
-      return "Please enter a valid email address.\n";
+  if (username.length < 2 || username.length > 25) {
+    return "User Name must be between 2 and 25 characters long.\n";
   }
 
   return "";
@@ -94,22 +96,11 @@ function validateRegistrationForm(event) {
     errorElement.appendChild(errorsList);
 
     errorElement.style.display = 'block';
-    errorsList.style.cssText = "display: grid; justify-content: center; align-items: center; padding: 0; margin: 0; list-style-type: none;"
   } else {
     registrationForm.submit();
   }
 
 };
-
-function validateCollectionSelection() {
-  var dropdown = document.getElementById("collectionViewInput");
-  var selectedIndex = dropdown.value; // Get the selected index
-    if (selectedIndex === "") {
-        alert("Please choose a name from the dropdown menu.");
-        return false; // Validation failed
-    }
-    dropdown.submit(); // Validation passed
-}
 
 function validateLoginForm(event) {
 
@@ -124,12 +115,17 @@ function validateLoginForm(event) {
 
   errorElement.style.display = 'none';
 
-  let user = document.getElementById('userNameInput').value;
+  let username = document.getElementById('userNameInput').value;
   let pwd = document.getElementById('passwordInput').value;
 
-  //const emailError = validateEmailAddress(email);
+  const userNameError = validateUsername(username);
 
-  user = user.toLowerCase().trim();
+  username = username.toLowerCase().trim();
+
+  if (userNameError) {
+    errorMessages.push(userNameError);
+    //return;
+  }
 
   const passwordError = validatePassword(pwd);
 
@@ -147,7 +143,6 @@ function validateLoginForm(event) {
     errorElement.appendChild(errorsList);
     //errorElement.textContent = errorMessages.join('\n ');
     errorElement.style.display = 'block';
-    errorsList.style.cssText = "display: grid; justify-content: center; align-items: center; padding: 0; margin: 0; list-style-type: none;"
   } else {
     // If all validations pass, submit the form or do something else
     loginForm.submit(); // Or AJAX request, etc.
@@ -167,4 +162,3 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', validateLoginForm);
   }
 });
-
