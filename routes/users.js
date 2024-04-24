@@ -15,19 +15,19 @@ import {
   getAllUserDeckPoints
 } from "../data/pokemonMongo.js";
 
-router.route("/").get(async (req, res) => {
-  try {
-    if (req.session.user) {
-      const userId = req.session.user.id;
-      return res.redirect("/" + userId);
-    } else {
-      return res.redirect("/login");
-    }
-  } catch (e) {
-    // Something went wrong with the server!
-    return res.status(500).send(e);
-  }
-});
+// router.route("/").get(async (req, res) => {
+//   try {
+//     if (req.session.user) {
+//       const userId = req.session.user.id;
+//       return res.redirect("/" + userId);
+//     } else {
+//       return res.redirect("/login");
+//     }
+//   } catch (e) {
+//     // Something went wrong with the server!
+//     return res.status(500).send(e);
+//   }
+// });
 
 router
   .route("/register")
@@ -81,11 +81,6 @@ router
 router
   .route("/login")
   .get(async (req, res) => {
-    if (req.session.user) {
-      return req.session.user
-        ? res.redirect("/protected")
-        : res.redirect("/login");
-    }
     res.render("login");
   })
   .post(async (req, res) => {
@@ -148,11 +143,6 @@ router
   });
 
 router.route("/protected").get(async (req, res) => {
-  if (!req.session.user) {
-    req.session.error = "403: You do not have permission to access this page.";
-    return res.status(403).redirect("error");
-  }
-
   res.render("protected", {
     userName: req.session.user.userName,
     currentTime: new Date().toLocaleTimeString(),
@@ -164,15 +154,15 @@ router.route("/ranking").get(async (req, res) => {
   res.render("ranking", {data: data});
 });
 
-router.route("/error").get(async (req, res) => {
-  const error = req.session.error;
-  req.session.error = null;
+// router.route("/error").get(async (req, res) => {
+//   const error = req.session.error;
+//   req.session.error = null;
 
-  return res.render("error", {
-    loggedIn: req.session.user ? true : false,
-    error: error,
-  });
-});
+//   return res.render("error", {
+//     loggedIn: req.session.user ? true : false,
+//     error: error,
+//   });
+// });
 
 router.route("/logout").get(async (req, res) => {
   if (!req.session.user) {
@@ -369,20 +359,14 @@ router
       }
     }
     res.render("tradeAccepted", {
-      message: "Your trade has been confirmed! Go check out your new cards",
+      message: "Your trade has been confirmed! Go check out your new cards 👾",
     });
   });
 
 //These all need to be updated to our needs
 router
-  .route("/:id")
+  .route("protected/:id")
   .get(async (req, res) => {
-    if (!req.session.user) {
-      return res.status(404).render("error", {
-        error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false,
-      });
-    }
     try {
       req.params.id = validation.checkId(req.params.id);
     } catch (e) {
