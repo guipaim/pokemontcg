@@ -118,11 +118,13 @@ router
         req.session.error = err.message;
         return res.status(403).redirect("error");
       }
-
+      console.log('here',newLogin);
       if (newLogin) {
         req.session.user = {
           userName: newLogin.userName,
         };
+        req.session.friendRequests= newLogin.friendRequests;
+        console.log(req.session.friendRequests);
       }
 
       req.session.save((error) => {
@@ -150,10 +152,13 @@ router.route("/protected").get(async (req, res) => {
     req.session.error = "403: You do not have permission to access this page.";
     return res.status(403).redirect("error");
   }
-
+  const user = req.session.user;
+  const friendRequests = req.session.friendRequests;
+  console.log(friendRequests);
   res.render("protected", {
     userName: req.session.user.userName,
     currentTime: new Date().toLocaleTimeString(),
+    friendRequests: friendRequests
   });
 });
 
@@ -226,17 +231,72 @@ router.post('/addFriend', async (req, res) => {
   }
 });
 //Accept friend request route -TODO
-//all friends route
 
+router.route("/acceptFriendRequest").post(async (req, res) => {
+  try {
+    const senderUsername = req.session.user.userName;
+    const receiverUsername = req.body.username;
+
+    await userAccount.acceptFriendRequest(receiverUsername, senderUsername);
+
+    const updatedUser = await getUserByUsername(senderUsername);
+   
+    const friendRequests = updatedUser.friendRequests || [];
+   
+    req.session.friendRequests = friendRequests;
+    console.log(req.session);
+    console.log(friendRequests);
+
+    res.redirect('/protected');
+
+  }
+
+  catch (error) {
+    console.error('Error accepting friend:', error);
+    res.render('error', { error: 'An error occurred while accepting friend' });
+  }
+
+
+});
+
+//reject friend request
+
+router.route("/rejectFriendRequest").post(async (req, res) => {
+  try {
+    const senderUsername = req.session.user.userName;
+    const receiverUsername = req.body.username;
+
+    await userAccount.rejectFriendRequest(receiverUsername, senderUsername);
+
+    const updatedUser = await getUserByUsername(senderUsername);
+    console.log(updatedUser);
+    const friendRequests = updatedUser.friendRequests || [];
+
+    req.session.friendRequests = friendRequests;
+    console.log(friendRequests);
+
+    res.redirect('/protected');
+
+  }
+  catch (error) {
+    console.error('Error rejecting friend:', error);
+    res.render('error', { error: 'An error occurred while rejecting friend' });
+  }
+
+
+});
+
+
+//friend's list
 router.route("/friendsList").get(async (req, res) => {
   try {
     const senderUsername = req.session.user.userName;
-    const friends=await userAccount.getAllFriends(senderUsername);
-    res.render('friendsList',{friends});
+    const friends = await userAccount.getAllFriends(senderUsername);
+    res.render('friendsList', { friends });
   } catch (error) {
     console.log('An error occurred while finding friends:', error);
     res.render('error', { error: 'An error occurred while finding friends' });
-}
+  }
 
 });
 

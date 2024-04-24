@@ -63,6 +63,7 @@ export const loginUser = async (userName, password) => {
   if (passwordMatch) {
     return {
       userName: user.userName,
+      friendRequests: user.friendRequests
     };
   } else {
     throw new Error("User Name or Password is invalid");

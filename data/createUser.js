@@ -71,6 +71,9 @@ export class UserAccount {
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
+            if (senderUser.friendList.includes(receiverUsername) || receiverUser.friendList.includes(senderUsername)) {
+                throw new Error('Users are already friends');
+            }
             //Checking so that multiple friend requests are not sent 
             if (senderUser.friendRequests.includes(receiverUsername)) {
                 throw new Error('Friend request already sent');
@@ -78,10 +81,11 @@ export class UserAccount {
             if (receiverUser.friendRequests.includes(senderUsername)) {
                 throw new Error('Friend request already received');
             }
+            
             //pushing friend request to both sender and receiver so that we can cross check and there are not duplicates on both sides
 
             senderUser.friendRequests.push(receiverUsername);
-            receiverUser.friendRequests.push(senderUsername);
+            // receiverUser.friendRequests.push(senderUsername);
 
             await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendRequests: senderUser.friendRequests } });
             await userAccountsCollection.updateOne({ userName: receiverUsername }, { $set: { friendRequests: receiverUser.friendRequests } });
@@ -115,7 +119,7 @@ export class UserAccount {
                     { userName: receiverUsername },
                     { $set: { friendList: receiverUser.friendList, friendRequests: receiverUser.friendRequests } }
                 );
-
+        
                 await userAccountsCollection.updateOne(
                     { userName: senderUsername },
                     { $set: { friendList: senderUser.friendList, friendRequests: senderUser.friendRequests } }

@@ -33,3 +33,37 @@ sendFriendRequestForm.addEventListener('submit', function (event) {
 });
 
 
+//accept friend request form validation
+// const acceptFriendRequestForm = document.getElementById('acceptFriendRequestForm');
+// const acceptUsernameInput = document.getElementById('acceptUsername');
+
+// acceptFriendRequestForm.addEventListener('submit', function (event) {
+//     event.preventDefault();
+
+//     const acceptUsername = acceptUsernameInput.value.trim();
+//     if (!acceptUsername) {
+//         alert('Accept username cannot be empty');
+//         return;
+//     }
+
+//     acceptFriendRequestForm.submit();
+
+// });
+
+
+// const rejectFriendRequestForm = document.getElementById('rejectFriendRequestForm');
+// const rejectUsernameInput = document.getElementById('rejectUsername');
+
+// rejectFriendRequestForm.addEventListener('submit', function (event) {
+//     event.preventDefault();
+
+//     const rejectUsername = rejectUsernameInput.value.trim();
+//     if (!rejectUsername) {
+//         alert('Reject username cannot be empty');
+//         return;
+//     }
+
+// });
+
+
+
