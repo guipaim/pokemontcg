@@ -84,7 +84,7 @@ export class UserAccount {
             
             //pushing friend request to both sender and receiver so that we can cross check and there are not duplicates on both sides
 
-            senderUser.friendRequests.push(receiverUsername);
+            // senderUser.friendRequests.push(receiverUsername);
             receiverUser.friendRequests.push(senderUsername);
 
             // await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendRequests: senderUser.friendRequests } });

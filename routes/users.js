@@ -215,12 +215,12 @@ router.post('/addFriend', async (req, res) => {
 
 router.route("/acceptFriendRequest").post(async (req, res) => {
   try {
-    const senderUsername = req.session.user.userName;
-    const receiverUsername = req.body.username;
+    const senderUsername = req.body.username;
+    const receiverUsername = req.session.user.userName;
 
-    await userAccount.acceptFriendRequest(receiverUsername, senderUsername);
+    await userAccount.acceptFriendRequest(senderUsername,receiverUsername);
 
-    const updatedUser = await getUserByUsername(senderUsername);
+    const updatedUser = await getUserByUsername(receiverUsername);
    
     const friendRequests = updatedUser.friendRequests || [];
    
@@ -244,12 +244,12 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
 
 router.route("/rejectFriendRequest").post(async (req, res) => {
   try {
-    const senderUsername = req.session.user.userName;
-    const receiverUsername = req.body.username;
+    const senderUsername = req.body.username;
+    const receiverUsername = req.session.user.userName;
 
     await userAccount.rejectFriendRequest(receiverUsername, senderUsername);
 
-    const updatedUser = await getUserByUsername(senderUsername);
+    const updatedUser = await getUserByUsername(receiverUsername);
     console.log(updatedUser);
     const friendRequests = updatedUser.friendRequests || [];
 
