@@ -1,11 +1,29 @@
 /* You will create a CSS stylesheet in /public/css/lab10.css; this file should have at least 5 rulesets.  You will need to utilize all 5 rulesets on each of the pages (not every page has to use all 5 rulesets each but all 5 rulesets must be utilized by the various pages in your application).  So you can have some rulesets for one page, some for another page but there needs to be at least 5 total rulesets that are used between all the pages.  */
 body {
-  background: #ffcb05;
-  background-image: url("/public/images/PokemonBackground.png");
-  background-size: stretch;
-
+  background: #bd9805;
   font-family: "Flexo-Regular", arial, sans-serif;
   font-size: 16px;
+}
+
+select#dropdown-menu {
+  width: 200px; /* Adjust width as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  outline: none; /* Remove default outline */
+  cursor: pointer;
+}
+
+select#dropdown-menu option {
+  background-color: #fff;
+  color: #333;
+}
+
+select#dropdown-menu option:hover {
+  background-color: #f0f0f0;
 }
 
 main {
@@ -74,24 +92,32 @@ p {
 
 .button-pokeball {
   background-image: url("/public/images/Pokéball.png");
+  display: block;
   background-size: cover;
   background-position: center;
   border-radius: 50%;
   color: white;
-  padding: 20px; /* Adjust padding to make it more circular if needed */
+  padding: 20px;
+  /* Adjust padding to make it more circular if needed */
   border: 2px solid #fff;
   position: relative;
   font-weight: bold;
   text-align: center;
-  text-transform: uppercase; /* Optional: to make the text uppercase */
-  cursor: pointer; /* Change the cursor to signify it's clickable */
-  width: 100px; /* Set a fixed width */
-  height: 100px; /* Set a fixed height to make it circular */
+  text-transform: uppercase;
+  /* Optional: to make the text uppercase */
+  cursor: pointer;
+  /* Change the cursor to signify it's clickable */
+  width: 100px;
+  /* Set a fixed width */
+  height: 100px;
+  /* Set a fixed height to make it circular */
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 8px 6px -6px black; /* Optional: to give some depth */
+  box-shadow: 0 8px 6px -6px black;
+  /* Optional: to give some depth */
+  margin: auto;
 }
 
 .button-pokeball::before,
@@ -105,7 +131,8 @@ p {
   /* New style for text */
   color: #ffcb05;
   position: relative;
-  z-index: 2; /* Make sure text appears above the ::before and ::after elements */
+  z-index: 2;
+  /* Make sure text appears above the ::before and ::after elements */
 }
 
 #trader-main {
@@ -148,7 +175,7 @@ p {
   min-width: 0;
 }
 
-#search-user-cards-form > * {
+#search-user-cards-form>* {
   margin: 0 10px;
 }
 
@@ -259,26 +286,40 @@ p {
   height: 45px;
   width: 400px;
   border-radius: 5px;
-  font-size: 25px; /* Sets the size of the text inside the input field */
-  border: 1px solid #ccc; /* Optional: adds a border to the input field */
-  border-radius: 4px; /* Optional: rounds the corners of the input field */
+  font-size: 25px;
+  /* Sets the size of the text inside the input field */
+  border: 1px solid #ccc;
+  /* Optional: adds a border to the input field */
+  border-radius: 4px;
+  /* Optional: rounds the corners of the input field */
 }
 
 #tradeSearchSubmit {
-  background-color: #007bff; /* Blue background */
-  color: white; /* White text color */
-  border: none; /* No border */
-  padding: 12px 24px; /* Top and bottom padding, left and right padding */
-  font-size: 16px; /* Text size */
-  cursor: pointer; /* Cursor indicates clickable item */
-  border-radius: 5px; /* Rounded corners */
-  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  background-color: #007bff;
+  /* Blue background */
+  color: white;
+  /* White text color */
+  border: none;
+  /* No border */
+  padding: 12px 24px;
+  /* Top and bottom padding, left and right padding */
+  font-size: 16px;
+  /* Text size */
+  cursor: pointer;
+  /* Cursor indicates clickable item */
+  border-radius: 5px;
+  /* Rounded corners */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
 }
 
 #teadeSearchSubmit:hover {
-  background-color: #0056b3; /* Darker blue when hovered */
-  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2); /* Increased shadow on hover for a "lifting" effect */
+  background-color: #0056b3;
+  /* Darker blue when hovered */
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+  /* Increased shadow on hover for a "lifting" effect */
 }
 
 #tradeHome-main::before {
@@ -349,4 +390,36 @@ tfoot>tr {
 
 tbody>tr:hover {
   background-color: #2cff07;
+}
+
+.homeButton {
+  min-height: 1.9em;
+  background-color: rgb(255, 255, 255);
+  color: black;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid rgb(68, 116, 118);
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Set a height if needed */
+  height: 50px;
+}
+
+.pContainer {
+  width: 55%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.centerLogin{
+  display: grid; 
+  justify-content: center;
+  align-items: center;
 }

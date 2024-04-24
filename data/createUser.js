@@ -1,10 +1,10 @@
 import { mongoConfig } from '../mongoConfig/settings.js';
 import { userAccounts } from '../mongoConfig/mongoCollections.js';
-import { getStartingCards } from './pokemonAPI.js';
+import { getStartingCards, getHPInfoByID } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
 import bcrypt from 'bcrypt';
 
- export class UserAccount {
+export class UserAccount {
     constructor(client) {
         this.client = client;
         this.url = mongoConfig.serverUrl;
@@ -23,12 +23,12 @@ import bcrypt from 'bcrypt';
             const currDate = new Date().toISOString().slice(0, 10);
             const cardListObj = await getStartingCards();
             let deckPoints = 0;
-            for(let i in cardListObj){ 
+            for (let i in cardListObj) {
                 let cardHP = await getHPInfoByID(cardListObj[i]);
                 deckPoints += Number(cardHP);
             }
-   	    const incomingTrades = [];
-      	    const outGoingTrades = [];	
+            const incomingTrades = [];
+            const outGoingTrades = [];
             const friendListObj = [];
             const friendRequestsObj = []; // New field to store pending friend requests
             const newUser = {
@@ -48,7 +48,7 @@ import bcrypt from 'bcrypt';
             const alreadyRegistered = await userAccountsCollection.findOne({ userName: username });
 
             let insertUser;
-    
+
             if (alreadyRegistered) {
                 throw new Error('You are already a registered user');
             }
@@ -77,23 +77,23 @@ import bcrypt from 'bcrypt';
             if (!senderUser || !receiverUser) {
                 throw new Error('Sender or receiver user not found');
             }
-    
+
             // Check if the sender has already sent a friend request to the receiver
             if (senderUser.friendRequests.includes(receiverUsername)) {
                 throw new Error('Friend request already sent');
             }
-    
+
             // Check if the receiver has already received a friend request from the sender
             if (receiverUser.friendRequests.includes(senderUsername)) {
                 throw new Error('Friend request already received');
             }
-    
+
             // Add the receiver's username to the sender's friendRequests
             senderUser.friendRequests.push(receiverUsername);
-    
+
             // Add the sender's username to the receiver's friendRequests
             receiverUser.friendRequests.push(senderUsername);
-    
+
             // Save the updated user objects
             await userAccountsCollection.updateOne({ userName: senderUsername }, { $set: { friendRequests: senderUser.friendRequests } });
             await userAccountsCollection.updateOne({ userName: receiverUsername }, { $set: { friendRequests: receiverUser.friendRequests } });
@@ -113,22 +113,22 @@ import bcrypt from 'bcrypt';
             if (!receiverUser || !senderUser) {
                 throw new Error('Receiver or sender user not found');
             }
-    
+
             // Check if the sender's username exists in the receiver's friend requests array
             const senderIndex = receiverUser.friendRequests.indexOf(senderUsername);
             if (senderIndex !== -1) {
                 // Remove sender's username from receiver's friendRequests
                 receiverUser.friendRequests.splice(senderIndex, 1);
-    
+
                 // Add sender's username to receiver's friendList
                 receiverUser.friendList.push(senderUsername);
-    
+
                 // Remove receiver's username from sender's friendRequests
                 senderUser.friendRequests = senderUser.friendRequests.filter(request => request !== receiverUsername);
-    
+
                 // Add receiver's username to sender's friendList
                 senderUser.friendList.push(receiverUsername);
-    
+
                 // Save the updated user objects
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
@@ -150,21 +150,21 @@ import bcrypt from 'bcrypt';
             // Validate receiver and sender usernames
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
-    
+
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-    
+
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
             }
-    
+
             // Find the index of sender's username in receiver's friendRequests array
             const index = receiverUser.friendRequests.indexOf(senderUsername);
-    
+
             if (index !== -1) {
                 // Remove sender's username from receiver's friendRequests array
                 receiverUser.friendRequests.splice(index, 1);
-    
+
                 // Update the receiver user object in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
@@ -177,7 +177,7 @@ import bcrypt from 'bcrypt';
             throw new Error(e.message);
         }
     }
-    
+
 }
 export default UserAccount;
 

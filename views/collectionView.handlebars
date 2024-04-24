@@ -1,0 +1,80 @@
+<p class="centerLogin">View Collections: {{user}}</p>
+<form id="collection-view" method="GET" action="/viewCollection/:userName">
+    
+    <div class="centerLogin">
+    <select id="dropdown-menu">
+        <option>Select a Friend!</option>
+    </select>
+    <br><br>
+    <h2 id="GFG" style="color: green;"></h2>
+    </div>
+    <div id="image-container"></div>
+
+     
+    <script id="friendList" type="text/x-handlebars-template">
+        {{#each friendList}}
+            <option value="{{this}}">{{this}}</option>
+        {{/each}}
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Event listener to populate the dropdown menu
+        $(document).ready(function() {
+            // Sample array of names
+            var name = '{{ friendList }}';
+            var usersName = '{{user}}'
+            var nameArr = name.split(',');
+            let names = [];
+            //names.push(usersName);
+            nameArr.forEach(function(n) {
+                names.push(n)
+            })
+
+            // Get the dropdown menu element
+            var dropdownMenu = $("#dropdown-menu");
+
+            // Populate the dropdown menu with options from the array
+            names.forEach(function(name) {
+                var option = $("<option>").text(name).val(name.toLowerCase());
+                dropdownMenu.append(option);
+            });
+
+            // Event listener to handle selection change
+            dropdownMenu.change(function() {
+                var selectedValue = $(this).val();
+                //console.log("Selected value:", selectedValue);
+                // Call a function to display images based on the selected value
+                displayImages(selectedValue);
+            });
+        });
+
+        // Function to display images based on the selected value
+        function displayImages(selectedValue) {
+            // Clear existing images
+            $("#image-container").empty();
+            // Example data: Image URLs for each option
+            var imagesJSON = {{{ imagesJSON }}}
+            //console.log(imagesJSON)
+            const imageUrls = imagesJSON[selectedValue];
+            // Fetch image URLs for the selected value
+            //const urls = imageUrls.split(',');
+            // Append images to the image container
+             if (Array.isArray(imageUrls)) {
+                // Append images to the image container
+                imageUrls.forEach(function(url) {
+                var img = $("<img>").attr("src", url).attr("alt", "Image");
+                $("#image-container").append(img);
+        });
+            }
+        }
+    </script>
+    
+    <p id="error" class="error"></p>
+</form>
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+</div>
+
+<script src="/public/js/client_side_validation.js"></script>

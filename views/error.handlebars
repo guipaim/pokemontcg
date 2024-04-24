@@ -1,17 +1,12 @@
 <p class="error">{{error}}</p>
-        <nav>
-            <ul>
-                <nav>
-            {{#unless loggedIn}}
-                <li><a href="/login">Login</a></li>
-            {{/unless}}
-            {{#if loggedIn}}
-                <li><a href="/logout">Logout</a></li>
-                <li><a href="/protected">Protected</a></li>
-            {{/if}}
-            </nav>
-            </ul>
-        </nav>
-        
+<div class="container">
+    {{#unless loggedIn}}
+    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+    {{/unless}}
+    {{#if loggedIn}}
+    <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+    {{/if}}
+</div>
 
         
