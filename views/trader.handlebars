@@ -1,7 +1,7 @@
 <main id="trader-main">
   <h1 id="trader-main-heading">Hello,
     {{sender}}. You are now trading with
-    {{reciever}}</h1>
+    {{reciever}}.</h1>
 
   <form action="/trade/{{reciever}}" method="POST" id="trade-user-cards-form">
 
@@ -14,7 +14,7 @@
               <span class="traderPokeID">({{id}})</span>
             </span>
 
-            <label for="trader-yours-card"></label>
+            <label for="trade-yours-card"></label>
             <input
               type="checkbox"
               class="card-checkbox"
@@ -84,7 +84,11 @@
 
   </form>
   <div class="container">
-    <button class="homeButton" onclick="location.href='/protected';" type="submit">Cancel Trade and Return to Home Page</button>
+    <button
+      class="homeButton"
+      onclick="location.href='/protected';"
+      type="submit"
+    >Cancel Trade and Return to Home Page</button>
   </div>
   <script src="/public/js/client_side_trading.js"></script>
 </main>

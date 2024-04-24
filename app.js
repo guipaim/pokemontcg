@@ -49,7 +49,6 @@ app.use((req, res, next) => {
     if (isAuthenticated) {
       return res.redirect("/protected");
     } else {
-      console.log("redirecing to login");
       return res.redirect("/login");
     }
   } else {
@@ -71,7 +70,6 @@ app.use("/register", (req, res, next) => {
   if (req.method === "GET") {
     const isAuthenticated = req.session && req.session.user;
     if (isAuthenticated) {
-      console.log("going to redirect to protected");
       return res.redirect("/protected");
     }
   }
@@ -164,7 +162,6 @@ app.listen(3000, () => {
 // runs every 5 minutes
 configRoutes(app);
 await pokeMongo.loadAllCards();
-
 
 // runs every 5 minutes
 setInterval(() => pokeMongo.growCollection(), 300000);

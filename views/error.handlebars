@@ -6,7 +6,13 @@
     {{#if loggedIn}}
     <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
     <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+    <button class="homeButton" onclick="goBack()">Go Back</button>
     {{/if}}
 </div>
 
-        
+
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
