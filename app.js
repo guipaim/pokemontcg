@@ -108,6 +108,16 @@ app.use("/viewtrades", (req, res, next) => {
   next();
 });
 
+app.use("/protected", (req, res, next) => {
+  if (req.method === "GET") {
+    const isAuthenticated = req.session && req.session.user;
+    if (!isAuthenticated) {
+      return res.redirect("/login");
+    }
+  }
+  next();
+});
+
 app.use("/protected/:id", (req, res, next) => {
   if (req.method === "GET") {
     const isAuthenticated = req.session && req.session.user;

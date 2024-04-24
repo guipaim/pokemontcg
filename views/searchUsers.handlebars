@@ -1,22 +1,25 @@
-<h1>User Details</h1>
-<p>Username: {{user.userName}}</p>
-<!-- Add button to send friend request -->
-
 <form id="searchUserForm" action="/searchUsers" method="post">
-    <input type="text" id="searchInput" name="username" placeholder="Enter username">
-    <button type="submit">Search</button>
+    <div class="centerLogin" style="margin-top:10px">
+        <input type="text" id="searchInput" name="username" placeholder="Enter username">
+        <button class="homeButton" type="submit" style="margin-top:10px">Search</button>
+    </div>
 </form>
 
 <!-- Display search results -->
-<div id="searchResults">
+<div id="searchResults" class="centerLogin">
     <!-- Results will be displayed here -->
     <!-- If user found, display username and button to add as friend -->
     {{#if user}}
-    <p>User found: {{user.username}}</p>
+    <p class="centerLogin">User found: {{user.userName}}</p>
     <form id="sendFriendRequestForm" action="/addFriend" method="post">
-        <input type="hidden" id="receiverUsername" name="username" value="{{user.userName}}">
-        <button type="submit" id="addFriendButton">Add as Friend</button>
+        <div class="centerLogin">
+            <input type="hidden" id="receiverUsername" name="username" value="{{user.userName}}">
+            <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
+        </div>
     </form>
     {{/if}}
+</div>
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
 </div>
 <script src="/public/js/client_side_addUser.js"></script>

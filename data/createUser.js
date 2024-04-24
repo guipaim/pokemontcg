@@ -1,6 +1,6 @@
 import { mongoConfig } from '../mongoConfig/settings.js';
 import { userAccounts } from '../mongoConfig/mongoCollections.js';
-import { getStartingCards } from './pokemonAPI.js';
+import { getStartingCards, getHPInfoByID } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
 import bcrypt from 'bcrypt';
 

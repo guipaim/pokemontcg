@@ -94,6 +94,7 @@ function validateRegistrationForm(event) {
     errorElement.appendChild(errorsList);
 
     errorElement.style.display = 'block';
+    errorsList.style.cssText = "display: grid; justify-content: center; align-items: center; padding: 0; margin: 0; list-style-type: none;"
   } else {
     registrationForm.submit();
   }
@@ -113,17 +114,12 @@ function validateLoginForm(event) {
 
   errorElement.style.display = 'none';
 
-  let email = document.getElementById('userNameInput').value;
+  let user = document.getElementById('userNameInput').value;
   let pwd = document.getElementById('passwordInput').value;
 
-  const emailError = validateEmailAddress(email);
+  //const emailError = validateEmailAddress(email);
 
-  email = email.toLowerCase().trim();
-
-  if (emailError) {
-    errorMessages.push(emailError);
-    //return;
-  }
+  user = user.toLowerCase().trim();
 
   const passwordError = validatePassword(pwd);
 
@@ -141,6 +137,7 @@ function validateLoginForm(event) {
     errorElement.appendChild(errorsList);
     //errorElement.textContent = errorMessages.join('\n ');
     errorElement.style.display = 'block';
+    errorsList.style.cssText = "display: grid; justify-content: center; align-items: center; padding: 0; margin: 0; list-style-type: none;"
   } else {
     // If all validations pass, submit the form or do something else
     loginForm.submit(); // Or AJAX request, etc.

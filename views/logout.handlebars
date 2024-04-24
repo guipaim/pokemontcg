@@ -1,17 +1,14 @@
-<p>You have successfully logged out.</p>
-<p>It is always a good idea to close your browser to protect your privacy.</p>
-        <p id="error" class="error" style="display:none;"></p>
-        <a href="/">Return</a>
-        <nav>
-            <ul>
-                <nav>
-            {{#unless loggedIn}}
-                <li><a href="/login">Login</a></li>
-            {{/unless}}
-            {{#if loggedIn}}
-                <li><a href="/logout">Logout</a></li>
-                <li><a href="/protected">Protected</a></li>
-            {{/if}}
-            </nav>
-            </ul>
-        </nav>
+<p class="centerLogin">You have successfully logged out.</p>
+<p class="centerLogin">It is always a good idea to close your browser to protect your privacy.</p>
+<p id="error" class="error"></p>
+
+
+<div class="container">
+    {{#unless loggedIn}}
+    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+    {{/unless}}
+    {{#if loggedIn}}
+    <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+    {{/if}}
+</div>

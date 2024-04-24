@@ -15,20 +15,6 @@ import {
   getAllUserDeckPoints
 } from "../data/pokemonMongo.js";
 
-// router.route("/").get(async (req, res) => {
-//   try {
-//     if (req.session.user) {
-//       const userId = req.session.user.id;
-//       return res.redirect("/" + userId);
-//     } else {
-//       return res.redirect("/login");
-//     }
-//   } catch (e) {
-//     // Something went wrong with the server!
-//     return res.status(500).send(e);
-//   }
-// });
-
 router
   .route("/register")
   .get(async (req, res) => {
@@ -59,7 +45,7 @@ router
         newUser = await userAccount.createUser(userNameInput, passwordInput);
       } catch (err) {
         req.session.error = err.message;
-        return res.status(403).redirect("error");
+        return res.status(403).redirect(err);
       }
 
       if (newUser.insertedUser === true) {
@@ -154,16 +140,6 @@ router.route("/ranking").get(async (req, res) => {
   res.render("ranking", {data: data});
 });
 
-// router.route("/error").get(async (req, res) => {
-//   const error = req.session.error;
-//   req.session.error = null;
-
-//   return res.render("error", {
-//     loggedIn: req.session.user ? true : false,
-//     error: error,
-//   });
-// });
-
 router.route("/logout").get(async (req, res) => {
   if (!req.session.user) {
     req.session.error =
@@ -182,6 +158,7 @@ router.route("/logout").get(async (req, res) => {
     });
   });
 });
+
 // Route for handling search and adding friends
 router.route("/searchUsers")
   .get(async (req, res) => {
@@ -204,7 +181,6 @@ router.route("/searchUsers")
   });
 
 
-// Route for adding a friend
 // Route for adding a friend
 router.post('/addFriend', async (req, res) => {
   try {
@@ -402,19 +378,5 @@ router
       `DELETE request to http://localhost:3000/users/${req.params.id}`
     );
   });
-
-/*
-  .post(async (req, res) => {
-    // Not implemented
-    return res.send('POST request to http://localhost:3000/users');
-  })
-  .delete(async (req, res) => {
-    // Not implemented
-    return res.send('DELETE request to http://localhost:3000/users');
-  })
-  .put(async (req, res) => {
-    return res.send('PUT request to http://localhost:3000/users');
-  });
-*/
 
 export default router;
