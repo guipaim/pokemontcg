@@ -1,17 +1,26 @@
 <p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
+<!-- In your protected page template -->
 
+<!-- Show friend requests that are pending -->
 {{#if friendRequests.length}}
-  <h2>Friend Requests:</h2>
-  <ul>
-    {{#each friendRequests}}
-      <li>{{this}}</li>
-    {{/each}}
-  </ul>
+<h2>Friend Requests:</h2>
+<ul>
+  {{#each friendRequests}}
+    <li>{{this}}</li>
+    <form class="acceptFriendRequestForm" action="/acceptFriendRequest" method="POST">
+      {{!-- <input type="hidden" name="username" value="{{this}}"> --}}
+      <button type="submit" class="acceptrequest">Accept</button>
+    </form>
+    <form class="rejectFriendRequestForm"action="/rejectFriendRequest" method="POST">
+      {{!-- <input type="hidden" name="username" value="{{this}}"> --}}
+      <button type="submit" class="rejectrequest">Reject</button>
+    </form>
+  {{/each}}
+</ul>
+{{else}}
+<p>No pending friend requests.</p>
 {{/if}}
 
-{{#if successMessage}}
-  <p>{{successMessage}}</p>
-{{/if}}
 
 <div class="lgout">
   <a href="/trade">Trade Now!</a>
