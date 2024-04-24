@@ -6,18 +6,20 @@
 // being submitted has all valid data, then you will allow it to submit to the server for processing. Don't forget to check that 
 // password and confirm password match on the registration form!
 
-function validateEmailAddress(email) {
+function validateUsername(username) {
 
 
-  if (email.trim() === '') {
-      return "Email address cannot be empty.\n";
+  if (username.trim() === '') {
+      return "Username cannot be empty.\n";
+  }
+
+  if (!/^[A-Za-z0-9'-]+$/.test(username)) {
+    return "User Name contains invalid characters.\n";
   }
 
 
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  
-  if (!emailRegex.test(email)) {
-      return "Please enter a valid email address.\n";
+  if (username.length < 2 || username.length > 25) {
+    return "User Name must be between 2 and 25 characters long.\n";
   }
 
   return "";
@@ -113,15 +115,15 @@ function validateLoginForm(event) {
 
   errorElement.style.display = 'none';
 
-  let email = document.getElementById('emailAddressInput').value;
+  let username = document.getElementById('userNameInput').value;
   let pwd = document.getElementById('passwordInput').value;
 
-  const emailError = validateEmailAddress(email);
+  const userNameError = validateUsername(username);
 
-  email = email.toLowerCase().trim();
+  username = username.toLowerCase().trim();
 
-  if (emailError) {
-    errorMessages.push(emailError);
+  if (userNameError) {
+    errorMessages.push(userNameError);
     //return;
   }
 
@@ -160,4 +162,3 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', validateLoginForm);
   }
 });
-

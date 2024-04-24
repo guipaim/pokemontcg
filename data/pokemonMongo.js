@@ -2,7 +2,7 @@ import { userAccounts, allCards } from "../mongoConfig/mongoCollections.js";
 import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { fetchCardsDataByID, getRandomCard } from "./pokemonAPI.js";
+import { fetchCardsDataByID, getImageUrlByCardId, getRandomCard, getHPInfoByID } from "./pokemonAPI.js";
 import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
 
 /**
@@ -103,6 +103,8 @@ export const getAllUsers = async () => {
   return userList;
 };
 
+// START OF JAYS FUNCTIONS
+
 export const getUserCardDetails = async (username) => {
   let user;
   try {
@@ -110,8 +112,12 @@ export const getUserCardDetails = async (username) => {
   } catch (error) {
     throw `Error: ${error}`;
   }
-  const cardList = user.cardList;
+  let cardList = user.cardList;
   try {
+    cardList = cardList.filter(
+      (item) => typeof item === "string" && item.trim() !== ""
+    );
+
     const details = await Promise.all(
       cardList.map(async (pokeID) => {
         const {
@@ -126,23 +132,23 @@ export const getUserCardDetails = async (username) => {
           images,
         } = await fetchCardsDataByID(pokeID);
 
-        const price = cardmarket.prices.averageSellPrice;
+        const price = cardmarket?.prices?.averageSellPrice;
         const image = images.small;
         // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
-        const link = cardmarket.url;
+        const link = cardmarket?.url;
 
         return {
-          id: pokeID,
-          Name: name,
-          Supertype: supertype,
+          id: pokeID ? pokeID : "No ID",
+          Name: name ? name : "No name",
+          Supertype: supertype ? supertype : "No supertype",
           Subtypes: subtypes ? subtypes.join(", ") : "No Subtypes",
-          HP: hp,
+          HP: hp ? hp : "No HP",
           Types: types ? types.join(", ") : "No Types",
           "Evolves From": evolvesFrom ? evolvesFrom : "No Evolve From",
           "Evolves To": evolvesTo ? evolvesTo.join(", ") : "No Evolve To",
-          "Average Sell Price": price,
-          image: image,
-          link: link,
+          "Average Sell Price": price ? price : "No price",
+          image: image ? image : "../public/images/No-image-found.jpg",
+          link: link ? link : "javascript:void(0);",
         };
       })
     );
@@ -171,6 +177,187 @@ export const getLimitedCardDetails = async (pokeID) => {
   }
 };
 
+export const executeTrade = async (sender, reciever, outgoing, incoming) => {
+  let tradeOut;
+  let tradeIn;
+
+  const userAccountsCollection = await userAccounts();
+  let oidOne = new ObjectId();
+  tradeOut = await userAccountsCollection.findOneAndUpdate(
+    { userName: sender },
+    {
+      $push: {
+        outgoingTrades: { id: oidOne, outgoing: incoming, incoming: outgoing },
+      },
+    }
+  );
+
+  if (!tradeOut) {
+    throw `Could not complete outgoing trade`;
+  }
+
+  tradeIn = await userAccountsCollection.findOneAndUpdate(
+    { userName: reciever },
+    {
+      $push: {
+        incomingTrades: { id: oidOne, incoming: incoming, outgoing: outgoing },
+      },
+    }
+  );
+
+  if (!tradeIn) {
+    throw `Could not complete incoming trade`;
+  }
+
+  return tradeOut, tradeIn;
+};
+
+export const getTradeDetails = async (username) => {
+  const userAccountsCollection = await userAccounts();
+  const userTrades = await userAccountsCollection.findOne(
+    { userName: username },
+    { projection: { _id: 0, incomingTrades: 1, outgoingTrades: 1 } }
+  );
+
+  const incomingTrades = userTrades.incomingTrades; //ex user is jp
+  // let tradesIn_In = []; //incoming trades what cards you will get [..., {kp: ['poke1']}, ...]
+  // let tradesIn_Out = []; //incoming trades what cards you will give [..., {jp:['poke2']}, ...]
+  let tradesIn = []; // [ [ { kp: [Array] }, { jp: [Array] } ], [another trade] ]
+  incomingTrades.forEach((trades) => {
+    // tradesIn_In.push(trades.incoming);
+    // tradesIn_Out.push(trades.outgoing);
+    trades.id = trades.id.toString();
+    tradesIn.push([trades.id, trades.incoming, trades.outgoing]);
+  });
+
+  const outgoingTrades = userTrades.outgoingTrades;
+  // let tradesOut_In = []; //outgoing trades what cards you will get [..., {kp: ['poke3']}, ...]
+  // let tradesOut_Out = []; //outgoing trades what cards you will give [..., {jp: ['poke3']}, ...]
+  let tradesOut = []; // [ [ { kp: [Array] }, { jp: [Array] } ], [ { kp: [Array] }, { jp: [Array] } ]]
+  outgoingTrades.forEach((trades) => {
+    // tradesOut_In.push(trades.incoming);
+    // tradesOut_Out.push(trades.outgoing);
+    trades.id = trades.id.toString();
+    tradesOut.push([trades.id, trades.incoming, trades.outgoing]);
+  });
+
+  return { tradesIn: tradesIn, tradesOut: tradesOut };
+};
+
+export const finalizeTrade = async (id) => {
+  const userCollection = await userAccounts();
+  id = new ObjectId(id);
+
+  let deleteTrade;
+  let incomingTrade;
+
+  try {
+    incomingTrade = await userCollection
+      .aggregate([
+        { $match: { "incomingTrades.id": id } },
+        {
+          $project: {
+            _id: 0,
+            userName: 1,
+            incomingTrades: {
+              $filter: {
+                input: "$incomingTrades",
+                as: "trade",
+                cond: { $eq: ["$$trade.id", id] },
+              },
+            },
+          },
+        },
+      ])
+      .toArray();
+  } catch (error) {
+    console.log(error);
+  }
+
+  let singleTrade = incomingTrade[0].incomingTrades[0]; //only one trade with id exists
+
+  let tradeIn = singleTrade.incoming;
+  let tradeOut = singleTrade.outgoing;
+
+  let userTradeRequestMaker = Object.keys(tradeIn)[0]; // Gets the first key of the object
+  let userTradeRequestMakerCollection = await getCardListByUsername(
+    userTradeRequestMaker
+  );
+  let cardArrayOne = tradeIn[userTradeRequestMaker];
+
+  let userTradeRequestAcceptor = Object.keys(tradeOut)[0];
+  let userTradeRequestAcceptorCollection = await getCardListByUsername(
+    userTradeRequestAcceptor
+  );
+  let cardArrayTwo = tradeOut[userTradeRequestAcceptor];
+
+  //   console.log(
+  //     `Trade made by: ${userTradeRequestMaker}, the cards are ${cardArrayOne}`
+  //   );
+
+  //   console.log(
+  //     `Trade accepted by: ${userTradeRequestAcceptor}, the cards are ${cardArrayTwo}`
+  //   );
+
+  for (const card of cardArrayOne) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestMaker },
+        { $pull: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //remove cards that trademaker is giving up
+
+  for (const card of cardArrayTwo) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestAcceptor },
+        { $pull: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //remove cards that tradeacceptor is giving up
+
+  for (const card of cardArrayOne) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestAcceptor },
+        { $push: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pushing card from cardList:", error);
+    }
+  } //inserts cards into tradeacceptor that trademaker is giving up
+
+  for (const card of cardArrayTwo) {
+    try {
+      await userCollection.updateOne(
+        { userName: userTradeRequestMaker },
+        { $push: { cardList: card } }
+      );
+    } catch (error) {
+      console.error("Error pulling card from cardList:", error);
+    }
+  } //insert cards into traderequestor  that tradeacceptor is giving up
+
+  try {
+    deleteTrade = await userCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $eq: id } },
+          outgoingTrades: { id: { $eq: id } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+//end of JAYS functions
 
 export async function loadAllCards(){
   try{
@@ -214,9 +401,126 @@ export async function growCollection(){
         await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList, lastCollectionGrowth: Date.now()}});
       }
     }
+    await updateDeckPoints();
   }catch(e){
     console.log("Failed to grow user collection: ", e);
   }
-  
+}
 
+export const getAllUserDeckPoints = async () => {
+  try{
+    const users = await getAllUsers();
+    let rankList = [];
+    
+    for (let i in users){
+      rankList.push({userName: users[i].userName, deckPoints: users[i].deckPoints});
+    }
+
+    rankList.sort(function(a, b){return Number(b.deckPoints) - Number(a.deckPoints)});
+
+    for (let i in rankList){
+     rankList[i]['rank'] = Number(i) + 1;
+    }
+
+    return (rankList);
+  } catch(error){
+    console.log("Failed to get rank list: ", error);
+  }
+};
+
+export const updateDeckPoints = async () => {
+  try{
+    const users = await getAllUsers();
+    let rankList = [];
+
+    for (let i in users){
+      let deckPoints = 0;
+      for(let j in users[i].cardList){ 
+        let cardHP = await getHPInfoByID(users[i].cardList[j]);
+        deckPoints += Number(cardHP);
+      }
+
+      rankList.push({userName: users[i].userName, deckPoints: deckPoints});
+      const userAccountsCollection = await userAccounts();
+      await userAccountsCollection.updateOne({_id: users[i]._id}, {$set: {deckPoints: deckPoints}});
+    }
+  }catch(error){
+    console.log("Failed to update user deck points: ", error);
+  }
+  
+};
+
+export const rewardTop3Players = async () => {
+  try{
+    const rankList = await getAllUserDeckPoints();
+    for(let i=0; i<=(rankList.length >= 3 ? 2 : rankList.length - 1); i++){
+      let name = rankList[i].userName;
+      let user = await getUserByUsername(name);
+      const allCardsList = await getAllCards();
+      let card = await getRandomCard(allCardsList);
+      let id = user._id;
+      let cardList = user.cardList;
+      cardList.push(card);
+      const userAccountsCollection = await userAccounts();
+      await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList}});
+    }
+    await updateDeckPoints();
+  }catch(error){
+    console.log("Failed to reward top 3 players: ", error);
+  }
+  
+};
+
+export async function displayCollection(user) {
+
+  try {
+    var cards = await getCardListByUsername(user);
+    //console.log("cards", cards)
+    let imageArr = [] 
+    for (let x of cards) {
+      let img = await getImageUrlByCardId(x);
+      imageArr.push(img)
+    }
+    //await displayImages(imageArr);
+    return imageArr;
+  }
+  catch (e) {
+    console.log("Error Displaying Collection: ", e)
+  }
+  
+}
+export async function displayImages(imageUrls) {
+    var container = document.getElementById("image-container");
+    container.innerHTML = ""; 
+    imageUrls.forEach(function(url) {
+        var img = document.createElement("img");
+        img.src = url;
+        img.alt = "Card Image";
+        container.appendChild(img);
+    });
+}
+
+export async function getFriendList(user) {
+    try {
+      const userCollection = await userAccounts();
+      const userInfo = await userCollection.findOne({ userName: user });
+      //console.log("userInfo", userInfo)
+      //console.log("friend list" , userInfo.friendList)
+      if (userInfo) {
+        if(userInfo.friendList.length === 0) {
+          let list = []
+          //list.push(user)
+          return list
+        }
+        else {
+          return userInfo.friendList;
+        }
+    } else {
+        console.log(`User "${user}" not found.`);
+        return [];
+    }
+    }
+    catch (e){
+      console.log('Failed to get friend list: ', e);
+    }
 }

@@ -1,5 +1,4 @@
-<p>Welcome {{userName}}, the time is now: {{currentTime}}.</p>
-<!-- In your protected page template -->
+<p class="centerLogin">Welcome {{userName}}, the time is now: {{currentTime}}.</p>
 
 <!-- Show friend requests that are pending -->
 {{#if friendRequests.length}}
@@ -22,10 +21,13 @@
 {{/if}}
 
 
-<div class="lgout">
-  <a href="/trade">Trade Now!</a>
-  <a href="/searchUsers">Search Users</a>
-  <a href="/friendsList">Friends List</a>
-  <a href="/logout">Logout</a>
+<div class="pContainer">
+  <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+  <button class="homeButton" onclick="location.href='/trade';" type="submit">Trade Now!</button>
+  <button class="homeButton" onclick="location.href='/searchUsers';" type="submit">Search Users</button>
+  <button class="homeButton" onclick="location.href='/ranking';" type="submit">Ranking Chart</button>
+  <button class="homeButton" onclick="location.href='/viewtrades';" type="submit">View Trades</button>
+  <button class="homeButton" onclick="location.href='/viewCollections/{{userName}}';" type="submit">View Collections</button>
+  <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
 </div>
 <script src="/public/js/client_side_addUser.js"></script>

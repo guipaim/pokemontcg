@@ -1,9 +1,9 @@
-<div id="tradeRequest-main">
+<div id="tradeRequest-main" class="centerLogin">
   <form action="/viewtrades" method="POST" id="execute-trade-form">
 
-    <div id="trade-request-data">
+    <div id="trade-request-data" class="centerLogin">
 
-      <div id="trade-in-div">
+      <div id="trade-in-div" class="centerLogin">
         <h3> You have the following incoming trades: </h3>
         <ol>
           {{#each tradeInOutList}}
@@ -20,9 +20,9 @@
         </ol>
       </div>
 
-      <button type="submit" id="accept-trade">Accept Trade</button>
+      <button class="homeButton" type="submit" id="accept-trade">Accept Trade</button>
 
-      <div id="trade-out-div">
+      <div id="trade-out-div" class="centerLogin">
         <h3> You have the following outgoing trades: </h3>
         <ol>
           {{#each tradeOutOutList}}
@@ -33,5 +33,7 @@
       </div>
     </div>
   </form>
-
+</div>
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
 </div>

@@ -9,23 +9,13 @@ import {
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
-  // executeTrade,
-  // getTradeDetails,
+  executeTrade,
+  getTradeDetails,
+  finalizeTrade,
+  getAllUserDeckPoints,
+  getFriendList,
+  displayCollection
 } from "../data/pokemonMongo.js";
-
-router.route("/").get(async (req, res) => {
-  try {
-    if (req.session.user) {
-      const userId = req.session.user.id;
-      return res.redirect("/" + userId);
-    } else {
-      return res.redirect("/login");
-    }
-  } catch (e) {
-    // Something went wrong with the server!
-    return res.status(500).send(e);
-  }
-});
 
 router
   .route("/register")
@@ -55,9 +45,9 @@ router
 
       try {
         newUser = await userAccount.createUser(userNameInput, passwordInput);
-      } catch (err) {
-        req.session.error = err.message;
-        return res.status(403).redirect("error");
+      } catch (error) {
+        req.session.error = error.message;
+        return res.render("error", {error:"An error occured while registering user"});
       }
 
       if (newUser.insertedUser === true) {
@@ -79,11 +69,6 @@ router
 router
   .route("/login")
   .get(async (req, res) => {
-    if (req.session.user) {
-      return req.session.user
-        ? res.redirect("/protected")
-        : res.redirect("/login");
-    }
     res.render("login");
   })
   .post(async (req, res) => {
@@ -162,14 +147,9 @@ router.route("/protected").get(async (req, res) => {
   });
 });
 
-router.route("/error").get(async (req, res) => {
-  const error = req.session.error;
-  req.session.error = null;
-
-  return res.render("error", {
-    loggedIn: req.session.user ? true : false,
-    error: error,
-  });
+router.route("/ranking").get(async (req, res) => {
+  let data = await getAllUserDeckPoints();
+  res.render("ranking", {data: data});
 });
 
 router.route("/logout").get(async (req, res) => {
@@ -190,6 +170,7 @@ router.route("/logout").get(async (req, res) => {
     });
   });
 });
+
 // Route for handling search and adding friends
 router.route("/searchUsers")
   .get(async (req, res) => {
@@ -427,19 +408,23 @@ router
     });
   })
   .post(async (req, res) => {
-    const tradeInIds = req.body["tradeInSelectedId"]; //only part left
+    const tradeIDs = req.body["tradeInSelectedId"];
+    for (const id of tradeIDs) {
+      try {
+        await finalizeTrade(id);
+      } catch (error) {
+        console.error("Error pulling card from cardList:", error);
+      }
+    }
+    res.render("tradeAccepted", {
+      message: "Your trade has been confirmed! Go check out your new cards 👾",
+    });
   });
 
 //These all need to be updated to our needs
 router
-  .route("/:id")
+  .route("protected/:id")
   .get(async (req, res) => {
-    if (!req.session.user) {
-      return res.status(404).render("error", {
-        error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false,
-      });
-    }
     try {
       req.params.id = validation.checkId(req.params.id);
     } catch (e) {
@@ -476,18 +461,38 @@ router
     );
   });
 
-/*
-  .post(async (req, res) => {
-    // Not implemented
-    return res.send('POST request to http://localhost:3000/users');
+router
+  .route("/viewCollections/:userName")
+  .get(async (req, res) => {
+    if(!req.session.user) {
+      req.session.error = "403: You do not have permission to access this page";
+      return res.status(403).redirect("error");
+    }
+    try {
+      const user = req.session.user.userName;
+      //console.log("user", user)
+      const friendList = await getFriendList(user);
+      //console.log("route friend list: ", friendList);
+      friendList.push(user);
+      const images = {};
+      //console.log("route iamges: ", images);
+      
+      for(const usr of friendList) {
+        const imageData = await displayCollection(usr)
+        images[usr] = imageData
+      }
+      //console.log(images)
+      const imagesJSON = JSON.stringify(images)
+      //console.log(imagesJSON)
+      return res.render("collectionView", {
+          user,
+          friendList,
+          imagesJSON
+      });
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      return res.status(500).send("Internal Server Error");
+  }
   })
-  .delete(async (req, res) => {
-    // Not implemented
-    return res.send('DELETE request to http://localhost:3000/users');
-  })
-  .put(async (req, res) => {
-    return res.send('PUT request to http://localhost:3000/users');
-  });
-*/
 
 export default router;

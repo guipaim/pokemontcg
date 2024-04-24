@@ -1,0 +1,20 @@
+<table id="rankTable">
+    <tr>
+        <th>Rank</th>
+        <th>User Name</th>
+        <th>Points</th>
+    </tr>
+
+    {{#each data}}
+        <tr> 
+            <td>{{rank}}</td>
+            <td>{{userName}}</td>
+            <td>{{deckPoints}}</td>
+        </tr>
+    {{/each}}
+</table>
+<p class="centerLogin">Rank is only calculated and updated every 5 minutes.</p>
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+</div>
+
