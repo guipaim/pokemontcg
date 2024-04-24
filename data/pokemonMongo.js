@@ -2,7 +2,7 @@ import { userAccounts, allCards } from "../mongoConfig/mongoCollections.js";
 import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { fetchCardsDataByID, getRandomCard } from "./pokemonAPI.js";
+import { fetchCardsDataByID, getImageUrlByCardId, getRandomCard } from "./pokemonAPI.js";
 import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
 
 /**
@@ -155,6 +155,7 @@ export const getUserCardDetails = async (username) => {
         };
       })
     );
+
     return details;
   } catch (error) {
     throw `Error: ${error}`;
@@ -424,3 +425,56 @@ export const getAllUserDeckPoints = async () => {
   return (rankList);
 };
 
+export async function displayCollection(user) {
+
+  try {
+    var cards = await getCardListByUsername(user);
+    //console.log("cards", cards)
+    let imageArr = [] 
+    for (let x of cards) {
+      let img = await getImageUrlByCardId(x);
+      imageArr.push(img)
+    }
+    //await displayImages(imageArr);
+    return imageArr;
+  }
+  catch (e) {
+    console.log("Error Displaying Collection: ", e)
+  }
+  
+}
+export async function displayImages(imageUrls) {
+    var container = document.getElementById("image-container");
+    container.innerHTML = ""; 
+    imageUrls.forEach(function(url) {
+        var img = document.createElement("img");
+        img.src = url;
+        img.alt = "Card Image";
+        container.appendChild(img);
+    });
+}
+
+export async function getFriendList(user) {
+    try {
+      const userCollection = await userAccounts();
+      const userInfo = await userCollection.findOne({ userName: user });
+      //console.log("userInfo", userInfo)
+      //console.log("friend list" , userInfo.friendList)
+      if (userInfo) {
+        if(userInfo.friendList.length === 0) {
+          let list = []
+          //list.push(user)
+          return list
+        }
+        else {
+          return userInfo.friendList;
+        }
+    } else {
+        console.log(`User "${user}" not found.`);
+        return [];
+    }
+    }
+    catch (e){
+      console.log('Failed to get friend list: ', e);
+    }
+}

@@ -5,6 +5,27 @@ body {
   font-size: 16px;
 }
 
+select#dropdown-menu {
+  width: 200px; /* Adjust width as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  outline: none; /* Remove default outline */
+  cursor: pointer;
+}
+
+select#dropdown-menu option {
+  background-color: #fff;
+  color: #333;
+}
+
+select#dropdown-menu option:hover {
+  background-color: #f0f0f0;
+}
+
 main {
   max-width: 75%;
   margin: auto;
