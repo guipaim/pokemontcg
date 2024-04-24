@@ -1,0 +1,22 @@
+<h1>User Details</h1>
+<p>Username: {{user.userName}}</p>
+<!-- Add button to send friend request -->
+
+<form id="searchUserForm" action="/searchUsers" method="post">
+    <input type="text" id="searchInput" name="username" placeholder="Enter username">
+    <button type="submit">Search</button>
+</form>
+
+<!-- Display search results -->
+<div id="searchResults">
+    <!-- Results will be displayed here -->
+    <!-- If user found, display username and button to add as friend -->
+    {{#if user}}
+    <p>User found: {{user.username}}</p>
+    <form id="sendFriendRequestForm" action="/addFriend" method="post">
+        <input type="hidden" id="receiverUsername" name="username" value="{{user.userName}}">
+        <button type="submit" id="addFriendButton">Add as Friend</button>
+    </form>
+    {{/if}}
+</div>
+<script src="/public/js/client_side_addUser.js"></script>
