@@ -113,7 +113,7 @@ function validateLoginForm(event) {
 
   errorElement.style.display = 'none';
 
-  let email = document.getElementById('emailAddressInput').value;
+  let email = document.getElementById('userNameInput').value;
   let pwd = document.getElementById('passwordInput').value;
 
   const emailError = validateEmailAddress(email);

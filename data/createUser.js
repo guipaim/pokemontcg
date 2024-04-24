@@ -1,6 +1,6 @@
 import { mongoConfig } from '../mongoConfig/settings.js';
 import { userAccounts } from '../mongoConfig/mongoCollections.js';
-import { getStartingCards } from './pokemonAPI.js';
+import { getStartingCards, getHPInfoByID } from './pokemonAPI.js';
 import exportedMethods from './validation.js';
 import bcrypt from 'bcrypt';
 
@@ -22,6 +22,13 @@ import bcrypt from 'bcrypt';
             const hashedPassword = await bcrypt.hash(password, 10);
             const currDate = new Date().toISOString().slice(0, 10);
             const cardListObj = await getStartingCards();
+            console.log("CardList: ", cardListObj);
+            let deckPoints = 0;
+            for(let i in cardListObj){ 
+                let cardHP = await getHPInfoByID(cardListObj[i]);
+                deckPoints += Number(cardHP);
+            }
+   
             const friendListObj = [];
             const friendRequestsObj = []; // New field to store pending friend requests
             const newUser = {
@@ -31,7 +38,8 @@ import bcrypt from 'bcrypt';
                 cardList: cardListObj,
                 friendList: friendListObj,
                 friendRequests: friendRequestsObj, // Add friendRequests field to the user schema
-                lastCollectionGrowth: Date.now()
+                lastCollectionGrowth: Date.now(),
+                deckPoints: deckPoints
             };
 
             const userAccountsCollection = await userAccounts();

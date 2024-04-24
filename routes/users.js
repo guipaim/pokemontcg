@@ -12,6 +12,7 @@ import {
   executeTrade,
   getTradeDetails,
   finalizeTrade,
+  getAllUserDeckPoints
 } from "../data/pokemonMongo.js";
 
 router.route("/").get(async (req, res) => {
@@ -156,6 +157,11 @@ router.route("/protected").get(async (req, res) => {
     userName: req.session.user.userName,
     currentTime: new Date().toLocaleTimeString(),
   });
+});
+
+router.route("/ranking").get(async (req, res) => {
+  let data = await getAllUserDeckPoints();
+  res.render("ranking", {data: data});
 });
 
 router.route("/error").get(async (req, res) => {

@@ -103,6 +103,34 @@ export const getAllInfoByID = async (id) => {
 
 /**
  *
+ * @param {*} id id for the card on the API
+ * @returns returns card HP info for a specific card ID
+ */
+export const getHPInfoByID = async (id) => {
+  if (!id) throw "Must supply id";
+
+  try {
+    let response = await axios.get(`https://api.pokemontcg.io/v2/cards/${id}?select=hp`, getOptions());
+    if (!response.data) {
+      throw "Could not get the card by ID";
+    }
+    const { data } = response.data;
+    if (data !== undefined){
+      return data.hp;
+    } else {
+      return (30);
+    }
+    
+    // Extracting the data property from the response
+  } catch (error) {
+    console.error("Error fetching cards data by ID", error);
+    throw error; // Rethrow the error for the caller to handle
+  }
+};
+
+
+/**
+ *
  * @param {*} cardId param is the card ID, same as just above
  * @returns the imageURL for the card by ID
  */

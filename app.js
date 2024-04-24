@@ -12,6 +12,7 @@ const app = express();
 import configRoutes from "./routes/index.js";
 import { createUserTest } from "./test/createUserTest.js"
 
+
 app.use(
   session({
     name: "AuthState",
@@ -76,6 +77,8 @@ await pokeMongo.loadAllCards();
 // runs every 5 minutes
 setInterval(() => pokeMongo.growCollection(), 300000);
 
+
+
 // uncomment this to seed user accounts
-createUserTest();
+//createUserTest();
 

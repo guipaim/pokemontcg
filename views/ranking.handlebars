@@ -1,0 +1,17 @@
+
+<table id="rankTable">
+    <tr>
+        <th>Rank</th>
+        <th>User Name</th>
+        <th>Points</th>
+    </tr>
+
+    {{#each data}}
+        <tr> 
+            <td>{{rank}}</td>
+            <td>{{userName}}</td>
+            <td>{{deckPoints}}</td>
+        </tr>
+    {{/each}}
+</table>
+<a href="/protected">Go Back</a>

@@ -78,20 +78,26 @@ p {
   background-position: center;
   border-radius: 50%;
   color: white;
-  padding: 20px; /* Adjust padding to make it more circular if needed */
+  padding: 20px;
+  /* Adjust padding to make it more circular if needed */
   border: 2px solid #fff;
   position: relative;
   font-weight: bold;
   text-align: center;
-  text-transform: uppercase; /* Optional: to make the text uppercase */
-  cursor: pointer; /* Change the cursor to signify it's clickable */
-  width: 100px; /* Set a fixed width */
-  height: 100px; /* Set a fixed height to make it circular */
+  text-transform: uppercase;
+  /* Optional: to make the text uppercase */
+  cursor: pointer;
+  /* Change the cursor to signify it's clickable */
+  width: 100px;
+  /* Set a fixed width */
+  height: 100px;
+  /* Set a fixed height to make it circular */
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 8px 6px -6px black; /* Optional: to give some depth */
+  box-shadow: 0 8px 6px -6px black;
+  /* Optional: to give some depth */
 }
 
 .button-pokeball::before,
@@ -105,7 +111,8 @@ p {
   /* New style for text */
   color: #ffcb05;
   position: relative;
-  z-index: 2; /* Make sure text appears above the ::before and ::after elements */
+  z-index: 2;
+  /* Make sure text appears above the ::before and ::after elements */
 }
 
 #trader-main {
@@ -148,7 +155,7 @@ p {
   min-width: 0;
 }
 
-#search-user-cards-form > * {
+#search-user-cards-form>* {
   margin: 0 10px;
 }
 
@@ -263,4 +270,42 @@ p {
 
 #currentTradeData li {
   list-style-type: none;
+}
+
+table {
+  text-align: left;
+  position: center;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f6f6f6;
+}
+
+/* Spacing */
+td,
+th {
+  border: 1px solid #999;
+  padding: 20px;
+}
+
+th {
+  background: brown;
+  color: white;
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  padding: 10px;
+}
+
+.primary {
+  background-color: #000000
+}
+
+tfoot>tr {
+  background: black;
+  color: white;
+}
+
+tbody>tr:hover {
+  background-color: #2cff07;
 }

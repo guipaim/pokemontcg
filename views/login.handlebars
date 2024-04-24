@@ -1,19 +1,15 @@
 <p>Please log into your Pokemon account.</p>
 <form id="login-form" method="POST" action="/login">
   <div><label for="userNameInput">User Name:</label>
-    <input type="text" id="userNameInput" name="userNameInput" /></div>
+    <input type="text" id="userNameInput" name="userNameInput" />
+  </div>
 
   <div><label for="passwordInput">Password:</label>
-    <input
-      type="password"
-      id="passwordInput"
-      name="passwordInput"
-      required
-    /></div>
+    <input type="password" id="passwordInput" name="passwordInput" required />
+  </div>
 
-  <button type="submit" class="button-pokeball" id="checkButton"><span
-    >Login</span></button>
+  <button type="submit" class="button-pokeball" id="checkButton"><span>Login</span></button>
   <p id="error" class="error" style="display:none;"></p>
 </form>
 <a href="/register">Don't have an account? Register here.</a>
-<script src="/js/client_side_validation.js"></script>
+<script src="/public/js/client_side_validation.js"></script>
