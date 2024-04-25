@@ -163,24 +163,24 @@ router.route("/logout").get(async (req, res) => {
 });
 
 // Route for handling search and adding friends
-router
-  .route("/searchUsers")
+router.route("/searchUsers")
   .get(async (req, res) => {
     res.render("searchUsers");
   })
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      const foundUser = await getUserByUsername(username);
+      //const foundUser = await getUserByUsername(username);
+      const foundUsers = await findUsersByUsernameSubstring(username);
 
-      if (!foundUser) {
-        return res.render("SearchUsers", { message: "User not found" });
+      if (!foundUsers || foundUsers.length === 0) {
+        return res.render('SearchUsers', { message: 'User not found' });
       }
 
-      res.render("SearchUsers", { user: foundUser });
+      res.render('SearchUsers', { users: foundUsers });
     } catch (error) {
-      console.error("Error searching for user:", error);
-      res.render("error", { error: error.message }); // Pass the error message to the error page
+      console.error('Error searching for user:', error);
+      res.render('error', { error: error.message });
     }
   });
 
