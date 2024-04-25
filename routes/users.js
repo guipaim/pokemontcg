@@ -6,6 +6,7 @@ import validation from "../data/validation.js";
 import {
   loginUser,
   getUserByUsername,
+  findUsersByUsernameSubstring,
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
@@ -14,8 +15,7 @@ import {
   finalizeTrade,
   getAllUserDeckPoints,
   getFriendList,
-  displayCollection,
-  declineTrade,
+  displayCollection
 } from "../data/pokemonMongo.js";
 
 router
@@ -48,7 +48,7 @@ router
         newUser = await userAccount.createUser(userNameInput, passwordInput);
       } catch (err) {
         req.session.error = err.message;
-        return res.status(403).redirect(err);
+        return res.status(403).redirect('error');
       }
 
       if (newUser.insertedUser === true) {
@@ -140,7 +140,7 @@ router.route("/protected").get(async (req, res) => {
 
 router.route("/ranking").get(async (req, res) => {
   let data = await getAllUserDeckPoints();
-  res.render("ranking", { data: data });
+  res.render("ranking", {data: data});
 });
 
 router.route("/logout").get(async (req, res) => {
@@ -163,42 +163,45 @@ router.route("/logout").get(async (req, res) => {
 });
 
 // Route for handling search and adding friends
-router
-  .route("/searchUsers")
+router.route("/searchUsers")
   .get(async (req, res) => {
     res.render("searchUsers");
   })
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      const foundUser = await getUserByUsername(username);
+      //const foundUser = await getUserByUsername(username);
+      const foundUsers = await findUsersByUsernameSubstring(username);
 
-      if (!foundUser) {
-        return res.render("SearchUsers", { message: "User not found" });
+      if (!foundUsers || foundUsers.length === 0) {
+        return res.render('SearchUsers', { message: 'User not found' });
       }
 
-      res.render("SearchUsers", { user: foundUser });
+      res.render('SearchUsers', { users: foundUsers });
     } catch (error) {
-      console.error("Error searching for user:", error);
-      res.render("error", { error: error.message }); // Pass the error message to the error page
+      console.error('Error searching for user:', error);
+      res.render('error', { error: error.message });
     }
   });
 
+
 // Route for adding a friend
-router.post("/addFriend", async (req, res) => {
+router.post('/addFriend', async (req, res) => {
   try {
     const senderUsername = req.session.user.userName; // Retrieve sender's username from session user
     const receiverUsername = req.body.username; // Retrieve receiver's username from form
 
-    console.log("Sender Username:", senderUsername);
-    console.log("Receiver Username:", receiverUsername);
+    console.log('Sender Username:', senderUsername);
+    console.log('Receiver Username:', receiverUsername);
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
-    res.redirect("/searchUsers");
+    res.redirect('/searchUsers');
+
   } catch (error) {
-    console.error("Error adding friend:", error);
-    res.render("error", { error: "An error occurred while adding friend" });
+    console.error('Error adding friend:', error);
+    //res.render('error', { error: 'An error occurred while adding friend' });
+    res.render('error', { error: error.message});
   }
 });
 
@@ -209,61 +212,22 @@ router
   })
 
   .post(async (req, res) => {
-    let { tradeSearchUser } = req.body;
-    let tradeSender = req.session.user.userName;
-
-    if (!tradeSearchUser || !tradeSender) {
-      throw "There is no trader or tradee";
-    }
-
-    if (
-      typeof tradeSearchUser !== "string" ||
-      typeof tradeSender !== "string"
-    ) {
-      throw "Invalid types for trader or tradee";
-    }
-    tradeSender = tradeSender.trim();
-    tradeSearchUser = tradeSearchUser.trim();
-
-    if (tradeSender === "" || tradeSearchUser === "") {
-      throw "trader and tradee cannot be empty strings ";
-    }
-
+    const { tradeSearchUser } = req.body;
+    // do error checks for this on client side
     try {
       const user = await getUserByUsername(tradeSearchUser); //more client side error checking
       const userName = user.userName;
-      if (userName === tradeSender) {
-        throw "Silly you, you cannot trade with yourself!";
-      }
       return res.redirect(`trade/${userName}`);
     } catch (error) {
-      return res.status(404).render("error", {
-        error: error,
-        loggedIn: req.session.user ? true : false,
-      });
+      return res.status(404).json(`Error: ${error}`);
     }
   });
 
 router
   .route("/trade/:userName")
   .get(async (req, res) => {
-    let sender = req.session.user.userName;
-    let reciever = req.params.userName;
-
-    if (!sender || !reciever) {
-      throw "There is no sender or reciever";
-    }
-
-    if (typeof sender !== "string" || typeof reciever !== "string") {
-      throw "Invalid types for sender or reciever";
-    }
-    sender = sender.trim();
-    reciever = reciever.trim();
-
-    if (sender === "" || reciever === "") {
-      throw "sender and reciever cannot be empty strings ";
-    }
-
+    const sender = req.session.user.userName;
+    const reciever = req.params.userName;
     try {
       const senderCardList = await getUserCardDetails(sender);
       const recieverCardList = await getUserCardDetails(reciever);
@@ -280,47 +244,12 @@ router
   })
 
   .post(async (req, res) => {
-    let sender = req.session.user.userName;
-    let reciever = req.params.userName;
-    let yourSelectedIds = req.body["yourselectedId"];
-    let theirSelectedIds = req.body["theirselectedId"];
+    const sender = req.session.user.userName;
+    const reciever = req.params.userName;
+    const yourSelectedIds = req.body["yourselectedId"];
+    const theirSelectedIds = req.body["theirselectedId"];
     let theirTrades = { [sender]: yourSelectedIds };
     let yourTrades = { [reciever]: theirSelectedIds };
-
-    if (!sender || !reciever) {
-      throw "There is no sender or reciever";
-    }
-
-    if (typeof sender !== "string" || typeof reciever !== "string") {
-      throw "Invalid types for sender or reciever";
-    }
-    sender = sender.trim();
-    reciever = reciever.trim();
-
-    if (sender === "" || reciever === "") {
-      throw "sender and reciever cannot be empty strings ";
-    }
-
-    if (
-      !yourSelectedIds ||
-      !theirSelectedIds ||
-      !Array.isArray(yourSelectedIds) ||
-      !Array.isArray(theirSelectedIds)
-    ) {
-      throw "ID arrays must be provided and of array type";
-    }
-
-    let checkYours = yourSelectedIds.every((item) => typeof item === "string");
-    let checkTheirs = theirSelectedIds.every(
-      (item) => typeof item === "string"
-    );
-
-    if (!checkYours || !checkTheirs) {
-      throw "All ids must be strings";
-    }
-
-    yourSelectedIds = yourSelectedIds.map((id) => id.trim());
-    theirSelectedIds = theirSelectedIds.map((id) => id.trim());
 
     let yourDetails = await Promise.all(
       yourSelectedIds.map(async (id) => {
@@ -344,6 +273,7 @@ router
 
     try {
       let out = await executeTrade(sender, reciever, yourTrades, theirTrades);
+      console.log("Out completed");
 
       res.render("tradeComplete", {
         sender: sender,
@@ -359,32 +289,13 @@ router
 router
   .route("/viewtrades")
   .get(async (req, res) => {
-    let user = req.session.user.userName;
-
-    if (!user) {
-      throw "No user was found";
-    }
-
-    if (typeof user !== "string") {
-      throw "user must be string";
-    }
-
-    user = user.trim();
-
-    if (user === "") {
-      throw "user cannot be empty";
-    }
-
+    const user = req.session.user.userName;
     let out = await getTradeDetails(user);
 
     let tradesIn = out.tradesIn;
     let tradesOut = out.tradesOut;
     let tradeInOutList = [];
     let tradeOutOutList = [];
-
-    if (!tradesIn || !tradesOut) {
-      throw "TradeIn or TradeOut not found";
-    }
 
     tradesIn.forEach((trades) => {
       let tradeInGet = trades[1];
@@ -420,55 +331,17 @@ router
     });
   })
   .post(async (req, res) => {
-    let user = req.session.user.userName;
-
-    if (!user) {
-      throw "No user was found";
-    }
-
-    if (typeof user !== "string") {
-      throw "user must be string";
-    }
-
-    user = user.trim();
-
-    if (user === "") {
-      throw "user cannot be empty";
-    }
-
     const tradeIDs = req.body["tradeInSelectedId"];
-
-    if (!tradeIDs) {
-      throw "TradeIDs are not found";
-    }
-
-    if (req.body.action === "accept-trade") {
-      for (const id of tradeIDs) {
-        try {
-          await finalizeTrade(id);
-        } catch (error) {
-          console.error("Error pulling card from cardList:", error);
-        }
+    for (const id of tradeIDs) {
+      try {
+        await finalizeTrade(id);
+      } catch (error) {
+        console.error("Error pulling card from cardList:", error);
       }
-      res.render("tradeAccepted", {
-        message: `Congratulations, ${user}. Your trade has been accepted!`,
-        user: user,
-      });
     }
-
-    if (req.body.action === "decline-trade") {
-      for (const id of tradeIDs) {
-        try {
-          await declineTrade(id);
-        } catch (error) {
-          console.error("Error pulling card from cardList:", error);
-        }
-      }
-      res.render("tradeAccepted", {
-        message: `Hello, ${user}. Your trade has been declined!`,
-        user: user,
-      });
-    }
+    res.render("tradeAccepted", {
+      message: "Your trade has been confirmed! Go check out your new cards 👾",
+    });
   });
 
 //These all need to be updated to our needs
@@ -511,36 +384,48 @@ router
     );
   });
 
-router.route("/viewCollections/:userName").get(async (req, res) => {
-  if (!req.session.user) {
-    req.session.error = "403: You do not have permission to access this page";
-    return res.status(403).redirect("error");
-  }
-  try {
-    const user = req.session.user.userName;
-    //console.log("user", user)
-    const friendList = await getFriendList(user);
-    //console.log("route friend list: ", friendList);
-    friendList.push(user);
-    const images = {};
-    //console.log("route iamges: ", images);
-
-    for (const usr of friendList) {
-      const imageData = await displayCollection(usr);
-      images[usr] = imageData;
-    }
-    //console.log(images)
-    const imagesJSON = JSON.stringify(images);
-    //console.log(imagesJSON)
-    return res.render("collectionView", {
-      user,
-      friendList,
-      imagesJSON,
+  router.route('/error').get(async (req, res) => {
+  
+    const error = req.session.error; 
+    req.session.error = null;
+  
+    return res.render('error', {
+      error: error
     });
+  });
+
+router
+  .route("/viewCollections/:userName")
+  .get(async (req, res) => {
+    if(!req.session.user) {
+      req.session.error = "403: You do not have permission to access this page";
+      return res.status(403).redirect("error");
+    }
+    try {
+      const user = req.session.user.userName;
+      //console.log("user", user)
+      const friendList = await getFriendList(user);
+      //console.log("route friend list: ", friendList);
+      friendList.push(user);
+      const images = {};
+      //console.log("route iamges: ", images);
+      
+      for(const usr of friendList) {
+        const imageData = await displayCollection(usr)
+        images[usr] = imageData
+      }
+      //console.log(images)
+      const imagesJSON = JSON.stringify(images)
+      //console.log(imagesJSON)
+      return res.render("collectionView", {
+          user,
+          friendList,
+          imagesJSON
+      });
   } catch (error) {
-    console.error("Error fetching data:", error);
-    return res.status(500).send("Internal Server Error");
+      console.error("Error fetching data:", error);
+      return res.status(500).send("Internal Server Error");
   }
-});
+  })
 
 export default router;

@@ -1,7 +1,7 @@
 <form id="searchUserForm" action="/searchUsers" method="post">
     <div class="centerLogin" style="margin-top:10px">
         <input type="text" id="searchInput" name="username" placeholder="Enter username">
-        <button class="homeButton" type="submit" style="margin-top:10px">Search</button>
+        <button class="homeButton" type="button" style="margin-top:10px">Search</button>
     </div>
 </form>
 
@@ -9,14 +9,21 @@
 <div id="searchResults" class="centerLogin">
     <!-- Results will be displayed here -->
     <!-- If user found, display username and button to add as friend -->
-    {{#if user}}
-    <p class="centerLogin">User found: {{user.userName}}</p>
-    <form id="sendFriendRequestForm" action="/addFriend" method="post">
-        <div class="centerLogin">
-            <input type="hidden" id="receiverUsername" name="username" value="{{user.userName}}">
-            <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
-        </div>
-    </form>
+    {{#if users.length}}
+        <h2>Search Results:</h2>
+        {{#each users}}
+            <div>
+                <p class="centerLogin">User found: {{this.userName}}</p>
+                <form id="sendFriendRequestForm" action="/addFriend" method="post">
+                    <div class="centerLogin">
+                    <input type="hidden" id="receiverUsername" name="username" value="{{this.userName}}">
+                    <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
+                    </div>
+                </form>
+            </div>
+        {{/each}}
+    {{else}}
+    <p>No match for that search term</p>
     {{/if}}
 </div>
 <div class="container">
