@@ -178,6 +178,7 @@ export class UserAccount {
         }
 
         const senderFriendList=senderUser.friendList
+        console.log(senderFriendList);
      
        return senderFriendList;
 

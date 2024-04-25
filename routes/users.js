@@ -181,7 +181,7 @@ router
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      const foundUsers = await getUserByUsername(username);
+      const foundUser = await getUserByUsername(username);
 
       if (!foundUser) {
         return res.render("SearchUsers", { message: "User not found" });
