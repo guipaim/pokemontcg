@@ -2,8 +2,13 @@ import { userAccounts, allCards } from "../mongoConfig/mongoCollections.js";
 import validation from "./validation.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { fetchCardsDataByID, getImageUrlByCardId, getRandomCard, getHPInfoByID } from "./pokemonAPI.js";
-import allPokeCards from "../pokemonTCG.allCards.json" assert {type: 'json'};
+import {
+  fetchCardsDataByID,
+  getImageUrlByCardId,
+  getRandomCard,
+  getHPInfoByID,
+} from "./pokemonAPI.js";
+import allPokeCards from "../pokemonTCG.allCards.json" assert { type: "json" };
 
 /**
  *
@@ -106,7 +111,20 @@ export const getAllUsers = async () => {
 // START OF JAYS FUNCTIONS
 
 export const getUserCardDetails = async (username) => {
+  if (!username) {
+    throw "You must supply a username";
+  }
+
+  let userNameCheckResult = validation.checkString(username, username);
+
+  if (userNameCheckResult) {
+    username = username.toLowerCase().trim();
+  } else {
+    throw new Error("Invalid User Name.");
+  }
+
   let user;
+
   try {
     user = await getUserByUsername(username);
   } catch (error) {
@@ -134,7 +152,6 @@ export const getUserCardDetails = async (username) => {
 
         const price = cardmarket?.prices?.averageSellPrice;
         const image = images.small;
-        // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
         const link = cardmarket?.url;
 
         return {
@@ -160,6 +177,12 @@ export const getUserCardDetails = async (username) => {
 };
 
 export const getLimitedCardDetails = async (pokeID) => {
+  pokeID = pokeID.trim();
+
+  if (!pokeID || pokeID === "" || typeof pokeID !== "string") {
+    throw "You must enter a valid pokemon ID";
+  }
+
   try {
     const { name, cardmarket, images } = await fetchCardsDataByID(pokeID);
 
@@ -178,6 +201,25 @@ export const getLimitedCardDetails = async (pokeID) => {
 };
 
 export const executeTrade = async (sender, reciever, outgoing, incoming) => {
+  if (!sender || !reciever || !outgoing || !incoming) {
+    throw "All arguments must be supplied";
+  }
+
+  if (typeof sender !== "string" || typeof reciever !== "string") {
+    throw "senders and receivers must be string values";
+  }
+
+  sender = sender.trim();
+  reciever = reciever.trim();
+
+  if (sender === "" || reciever === "") {
+    throw "senders and receivers cannot be empty strings";
+  }
+
+  if (typeof outgoing !== "object" || typeof incoming !== "object") {
+    throw "out going and incoming trades must be objects";
+  }
+
   let tradeOut;
   let tradeIn;
 
@@ -213,6 +255,18 @@ export const executeTrade = async (sender, reciever, outgoing, incoming) => {
 };
 
 export const getTradeDetails = async (username) => {
+  if (!username) {
+    throw "You must supply a username";
+  }
+
+  let userNameCheckResult = validation.checkString(username, username);
+
+  if (userNameCheckResult) {
+    username = username.toLowerCase().trim();
+  } else {
+    throw new Error("Invalid User Name.");
+  }
+
   const userAccountsCollection = await userAccounts();
   const userTrades = await userAccountsCollection.findOne(
     { userName: username },
@@ -245,10 +299,22 @@ export const getTradeDetails = async (username) => {
 };
 
 export const finalizeTrade = async (id) => {
+  if (!id) {
+    throw "ID must be supplied";
+  }
+
+  id = id.trim();
+  if (id === "") {
+    throw "ID must be nonempty";
+  }
+
+  if (!ObjectId.isValid(id)) {
+    throw "ID is not a valid object ID";
+  }
+
   const userCollection = await userAccounts();
   id = new ObjectId(id);
 
-  let deleteTrade;
   let incomingTrade;
 
   try {
@@ -280,24 +346,12 @@ export const finalizeTrade = async (id) => {
   let tradeOut = singleTrade.outgoing;
 
   let userTradeRequestMaker = Object.keys(tradeIn)[0]; // Gets the first key of the object
-  let userTradeRequestMakerCollection = await getCardListByUsername(
-    userTradeRequestMaker
-  );
+
   let cardArrayOne = tradeIn[userTradeRequestMaker];
 
   let userTradeRequestAcceptor = Object.keys(tradeOut)[0];
-  let userTradeRequestAcceptorCollection = await getCardListByUsername(
-    userTradeRequestAcceptor
-  );
+
   let cardArrayTwo = tradeOut[userTradeRequestAcceptor];
-
-  //   console.log(
-  //     `Trade made by: ${userTradeRequestMaker}, the cards are ${cardArrayOne}`
-  //   );
-
-  //   console.log(
-  //     `Trade accepted by: ${userTradeRequestAcceptor}, the cards are ${cardArrayTwo}`
-  //   );
 
   for (const card of cardArrayOne) {
     try {
@@ -342,6 +396,53 @@ export const finalizeTrade = async (id) => {
       console.error("Error pulling card from cardList:", error);
     }
   } //insert cards into traderequestor  that tradeacceptor is giving up
+  try {
+    let deleteTrade = await userCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $eq: id } },
+          outgoingTrades: { id: { $eq: id } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
+  for (const card of cardArrayOne) {
+    try {
+      let deleteRest = await removeTradesByCardName(card);
+    } catch (error) {
+      console.error("Error deleting rest of the cards", error);
+    }
+  } //deletes other trades
+
+  for (const card of cardArrayTwo) {
+    try {
+      let deleteRest = await removeTradesByCardName(card);
+    } catch (error) {
+      console.error("Error deleting rest of the cards", error);
+    }
+  }
+};
+
+export const declineTrade = async (id) => {
+  if (!id) {
+    throw "ID must be supplied";
+  }
+
+  id = id.trim();
+  if (id === "") {
+    throw "ID must be nonempty";
+  }
+
+  if (!ObjectId.isValid(id)) {
+    throw "ID is not a valid object ID";
+  }
+
+  const userCollection = await userAccounts();
+  id = new ObjectId(id);
 
   try {
     deleteTrade = await userCollection.updateMany(
@@ -357,103 +458,245 @@ export const finalizeTrade = async (id) => {
     console.error(err);
   }
 };
+
+export const removeTradesByCardName = async (cardName) => {
+  if (!cardName) {
+    throw "No card ID supplied";
+  }
+
+  if (typeof cardName !== "string") {
+    throw "Card name must be string value";
+  }
+
+  cardName = cardName.trim();
+
+  if (cardName === "") {
+    throw "Card name cannot be empty";
+  }
+
+  const userAccountsCollection = await userAccounts();
+
+  const query = [
+    {
+      $project: {
+        outgoingTrades: {
+          $filter: {
+            input: "$outgoingTrades",
+            as: "trade",
+            cond: {
+              $or: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.outgoing" },
+                      as: "outItems",
+                      in: { $in: [cardName, "$$outItems.v"] },
+                    },
+                  },
+                },
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.incoming" },
+                      as: "inItems",
+                      in: { $in: [cardName, "$$inItems.v"] },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+        incomingTrades: {
+          $filter: {
+            input: "$incomingTrades",
+            as: "trade",
+            cond: {
+              $or: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.outgoing" },
+                      as: "outItems",
+                      in: { $in: [cardName, "$$outItems.v"] },
+                    },
+                  },
+                },
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.incoming" },
+                      as: "inItems",
+                      in: { $in: [cardName, "$$inItems.v"] },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $match: {
+        $or: [{ outgoingTrades: { $ne: [] } }, { incomingTrades: { $ne: [] } }],
+      },
+    },
+    {
+      $project: {
+        tradeIds: {
+          $setUnion: [
+            {
+              $map: { input: "$outgoingTrades", as: "trade", in: "$$trade.id" },
+            },
+            {
+              $map: { input: "$incomingTrades", as: "trade", in: "$$trade.id" },
+            },
+          ],
+        },
+        _id: 0,
+      },
+    },
+  ];
+  let results;
+
+  try {
+    results = await userAccountsCollection.aggregate(query).toArray();
+  } catch (error) {
+    console.error(err);
+  }
+
+  results = results
+    .map((item) => item.tradeIds.map((id) => id.toString()))
+    .flat();
+  results = [...new Set(results)];
+
+  results = results.map((item) => new ObjectId(item));
+
+  try {
+    const deleteTrade = await userAccountsCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $in: results } },
+          outgoingTrades: { id: { $in: results } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 //end of JAYS functions
 
-export async function loadAllCards(){
-  try{
+export async function loadAllCards() {
+  try {
     const allCardsCollection = await allCards();
     await allCardsCollection.drop();
-    await allCardsCollection.insertOne({cards: allPokeCards.cards});
-  }catch(e){
+    await allCardsCollection.insertOne({ cards: allPokeCards.cards });
+  } catch (e) {
     console.log("Unable to create collection of all cards");
   }
-  
 }
 
-export async function getAllCards(){
-  try{
+export async function getAllCards() {
+  try {
     const allCardsCollection = await allCards();
     const cards = await allCardsCollection.find({}).toArray();
-    return (cards[0].cards);
-  }catch(e){
+    return cards[0].cards;
+  } catch (e) {
     console.log("Unable to retrieve card list from DB", e);
   }
 }
 
-
-export async function growCollection(){
-  try{
+export async function growCollection() {
+  try {
     const userAccountsCollection = await userAccounts();
     const usersList = await userAccountsCollection.find({}).toArray();
     const allCardsList = await this.getAllCards();
     //const oneDay = 24 * 60 * 60 * 1000;
     const tenMin = 60000 * 10;
 
-    for (let user in usersList){
+    for (let user in usersList) {
       const date = Date.now();
-      const allowGrowth = (date - usersList[user].lastCollectionGrowth) > tenMin;
+      const allowGrowth = date - usersList[user].lastCollectionGrowth > tenMin;
 
-      if(allowGrowth){
+      if (allowGrowth) {
         let card = await getRandomCard(allCardsList);
         let id = usersList[user]._id;
         let cardList = usersList[user].cardList;
         cardList.push(card);
-        await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList, lastCollectionGrowth: Date.now()}});
+        await userAccountsCollection.updateOne(
+          { _id: id },
+          { $set: { cardList: cardList, lastCollectionGrowth: Date.now() } }
+        );
       }
     }
     await updateDeckPoints();
-  }catch(e){
+  } catch (e) {
     console.log("Failed to grow user collection: ", e);
   }
 }
 
 export const getAllUserDeckPoints = async () => {
-  try{
+  try {
     const users = await getAllUsers();
     let rankList = [];
-    
-    for (let i in users){
-      rankList.push({userName: users[i].userName, deckPoints: users[i].deckPoints});
+
+    for (let i in users) {
+      rankList.push({
+        userName: users[i].userName,
+        deckPoints: users[i].deckPoints,
+      });
     }
 
-    rankList.sort(function(a, b){return Number(b.deckPoints) - Number(a.deckPoints)});
+    rankList.sort(function (a, b) {
+      return Number(b.deckPoints) - Number(a.deckPoints);
+    });
 
-    for (let i in rankList){
-     rankList[i]['rank'] = Number(i) + 1;
+    for (let i in rankList) {
+      rankList[i]["rank"] = Number(i) + 1;
     }
 
-    return (rankList);
-  } catch(error){
+    return rankList;
+  } catch (error) {
     console.log("Failed to get rank list: ", error);
   }
 };
 
 export const updateDeckPoints = async () => {
-  try{
+  try {
     const users = await getAllUsers();
     let rankList = [];
 
-    for (let i in users){
+    for (let i in users) {
       let deckPoints = 0;
-      for(let j in users[i].cardList){ 
+      for (let j in users[i].cardList) {
         let cardHP = await getHPInfoByID(users[i].cardList[j]);
         deckPoints += Number(cardHP);
       }
 
-      rankList.push({userName: users[i].userName, deckPoints: deckPoints});
+      rankList.push({ userName: users[i].userName, deckPoints: deckPoints });
       const userAccountsCollection = await userAccounts();
-      await userAccountsCollection.updateOne({_id: users[i]._id}, {$set: {deckPoints: deckPoints}});
+      await userAccountsCollection.updateOne(
+        { _id: users[i]._id },
+        { $set: { deckPoints: deckPoints } }
+      );
     }
-  }catch(error){
+  } catch (error) {
     console.log("Failed to update user deck points: ", error);
   }
-  
 };
 
 export const rewardTop3Players = async () => {
-  try{
+  try {
     const rankList = await getAllUserDeckPoints();
-    for(let i=0; i<=(rankList.length >= 3 ? 2 : rankList.length - 1); i++){
+    for (
+      let i = 0;
+      i <= (rankList.length >= 3 ? 2 : rankList.length - 1);
+      i++
+    ) {
       let name = rankList[i].userName;
       let user = await getUserByUsername(name);
       const allCardsList = await getAllCards();
@@ -462,65 +705,62 @@ export const rewardTop3Players = async () => {
       let cardList = user.cardList;
       cardList.push(card);
       const userAccountsCollection = await userAccounts();
-      await userAccountsCollection.updateOne({_id: id}, {$set: {cardList: cardList}});
+      await userAccountsCollection.updateOne(
+        { _id: id },
+        { $set: { cardList: cardList } }
+      );
     }
     await updateDeckPoints();
-  }catch(error){
+  } catch (error) {
     console.log("Failed to reward top 3 players: ", error);
   }
-  
 };
 
 export async function displayCollection(user) {
-
   try {
     var cards = await getCardListByUsername(user);
     //console.log("cards", cards)
-    let imageArr = [] 
+    let imageArr = [];
     for (let x of cards) {
       let img = await getImageUrlByCardId(x);
-      imageArr.push(img)
+      imageArr.push(img);
     }
     //await displayImages(imageArr);
     return imageArr;
+  } catch (e) {
+    console.log("Error Displaying Collection: ", e);
   }
-  catch (e) {
-    console.log("Error Displaying Collection: ", e)
-  }
-  
 }
 export async function displayImages(imageUrls) {
-    var container = document.getElementById("image-container");
-    container.innerHTML = ""; 
-    imageUrls.forEach(function(url) {
-        var img = document.createElement("img");
-        img.src = url;
-        img.alt = "Card Image";
-        container.appendChild(img);
-    });
+  var container = document.getElementById("image-container");
+  container.innerHTML = "";
+  imageUrls.forEach(function (url) {
+    var img = document.createElement("img");
+    img.src = url;
+    img.alt = "Card Image";
+    container.appendChild(img);
+  });
 }
 
 export async function getFriendList(user) {
-    try {
-      const userCollection = await userAccounts();
-      const userInfo = await userCollection.findOne({ userName: user });
-      //console.log("userInfo", userInfo)
-      //console.log("friend list" , userInfo.friendList)
-      if (userInfo) {
-        if(userInfo.friendList.length === 0) {
-          let list = []
-          //list.push(user)
-          return list
-        }
-        else {
-          return userInfo.friendList;
-        }
+  try {
+    const userCollection = await userAccounts();
+    const userInfo = await userCollection.findOne({ userName: user });
+    //console.log("userInfo", userInfo)
+    //console.log("friend list" , userInfo.friendList)
+    if (userInfo) {
+      if (userInfo.friendList.length === 0) {
+        let list = [];
+        //list.push(user)
+        return list;
+      } else {
+        return userInfo.friendList;
+      }
     } else {
-        console.log(`User "${user}" not found.`);
-        return [];
+      console.log(`User "${user}" not found.`);
+      return [];
     }
-    }
-    catch (e){
-      console.log('Failed to get friend list: ', e);
-    }
+  } catch (e) {
+    console.log("Failed to get friend list: ", e);
+  }
 }

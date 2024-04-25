@@ -81,8 +81,9 @@ p {
 }
 
 .error {
-  color: red;
+  color: rgb(34, 0, 255);
   font-weight: bold;
+  text-align: center;
 }
 
 .lgout {
@@ -150,6 +151,7 @@ p {
   bottom: 0;
   background-color: #3498db;
   z-index: -1;
+  border-radius: 5px;
 }
 
 #trade-user-cards-form {
@@ -175,7 +177,7 @@ p {
   min-width: 0;
 }
 
-#search-user-cards-form>* {
+#search-user-cards-form > * {
   margin: 0 10px;
 }
 
@@ -255,6 +257,7 @@ p {
   bottom: 0;
   background-color: #3498db;
   z-index: -1;
+  border-radius: 5px;
 }
 
 #trade-complete-yours li,
@@ -331,6 +334,7 @@ p {
   bottom: 0;
   background-color: #3498db;
   z-index: -1;
+  border-radius: 5px;
 }
 
 #currentTradeData li {
@@ -339,8 +343,11 @@ p {
 
 #trade-accepted-message {
   text-align: center;
-  font-size: 150px;
   position: relative;
+}
+
+#message-itself {
+  font-size: 30px;
 }
 
 #trade-accepted-message::before {
@@ -352,6 +359,7 @@ p {
   bottom: 0;
   background-color: #3498db;
   z-index: -1;
+  border-radius: 5px;
 }
 
 table {
@@ -380,15 +388,15 @@ th {
 }
 
 .primary {
-  background-color: #000000
+  background-color: #000000;
 }
 
-tfoot>tr {
+tfoot > tr {
   background: black;
   color: white;
 }
 
-tbody>tr:hover {
+tbody > tr:hover {
   background-color: #2cff07;
 }
 
@@ -418,8 +426,34 @@ tbody>tr:hover {
   align-items: center;
 }
 
-.centerLogin{
-  display: grid; 
+.centerLogin {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+#error-message-trading {
+  text-align: center;
+}
+
+#error-message-traderequest {
+  text-align: center;
+}
+
+.button-style:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Dark grey text */
+  cursor: not-allowed; /* Cursor indicates the button is disabled */
+}
+
+#currentTime {
+  display: inline;
+  padding-left: 5px;
+}
+
+.centerLoginElse {
+  display: grid;
+  grid-auto-flow: column;
   justify-content: center;
   align-items: center;
 }
