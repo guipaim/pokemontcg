@@ -97,12 +97,16 @@ export class UserAccount {
 
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
+             console.log(receiverUsername);
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
+            console.log(senderUsername);
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
 
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+            console.log(receiverUser);
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+            console.log(senderUser);
 
             if (!receiverUser || !senderUser) {
                 throw new Error('Receiver or sender user not found');

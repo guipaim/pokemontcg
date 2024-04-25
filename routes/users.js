@@ -218,7 +218,7 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
     const senderUsername = req.body.username;
     const receiverUsername = req.session.user.userName;
 
-    await userAccount.acceptFriendRequest(senderUsername,receiverUsername);
+    await userAccount.acceptFriendRequest(receiverUsername,senderUsername);
 
     const updatedUser = await getUserByUsername(receiverUsername);
    
