@@ -11,7 +11,7 @@
       <button type="submit" class="acceptrequest">Accept</button>
     </form>
     <form class="rejectFriendRequestForm"action="/rejectFriendRequest" method="POST">
-      {{!-- <input type="hidden" name="username" value="{{this}}"> --}}
+      <input type="hidden" name="username" value="{{this}}">
       <button type="submit" class="rejectrequest">Reject</button>
     </form>
   {{/each}}
@@ -25,6 +25,7 @@
   <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
   <button class="homeButton" onclick="location.href='/trade';" type="submit">Trade Now!</button>
   <button class="homeButton" onclick="location.href='/searchUsers';" type="submit">Search Users</button>
+    <button class="homeButton" onclick="location.href='/friendsList';" type="submit">List of Friends</button>
   <button class="homeButton" onclick="location.href='/ranking';" type="submit">Ranking Chart</button>
   <button class="homeButton" onclick="location.href='/viewtrades';" type="submit">View Trades</button>
   <button class="homeButton" onclick="location.href='/viewCollections/{{userName}}';" type="submit">View Collections</button>
