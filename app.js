@@ -76,16 +76,6 @@ app.use("/register", (req, res, next) => {
   next();
 });
 
-app.use("/protected", (req, res, next) => {
-  if (req.method === "GET") {
-    const isAuthenticated = req.session && req.session.user;
-    if (!isAuthenticated) {
-      return res.redirect("/login");
-    }
-  }
-  next();
-});
-
 app.use("/trade", (req, res, next) => {
   if (req.method === "GET") {
     const isAuthenticated = req.session && req.session.user;
@@ -163,10 +153,11 @@ app.listen(3000, () => {
 configRoutes(app);
 await pokeMongo.loadAllCards();
 
-// runs every 5 minutes
+
+// runs check every 5 minutes, collection grows every 10 minutes from last update (depends on time user was last updated)
 setInterval(() => pokeMongo.growCollection(), 300000);
-// reward top 3 players every 10 minutes
-setInterval(() => pokeMongo.rewardTop3Players(), 600000);
+// reward top 3 players every 15 minutes
+setInterval(() => pokeMongo.rewardTop3Players(), 900000);
 
 //uncomment this to seed user accounts
 //createUserTest();
