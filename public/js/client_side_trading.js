@@ -43,16 +43,20 @@ document.addEventListener("DOMContentLoaded", function () {
   var executeTradeForm = document.getElementById("execute-trade-form");
   if (executeTradeForm) {
     const acceptTradeButton = document.getElementById("accept-trade");
+    const declineTradeButton = document.getElementById("decline-trade");
     const checkboxes = document.querySelectorAll("#trade-in-request");
 
-    function updateButtonState() {
-      acceptTradeButton.disabled = !Array.from(checkboxes).some(
+    function updateButtonsState() {
+      const hasChecked = Array.from(checkboxes).some(
         (checkbox) => checkbox.checked
       );
+      acceptTradeButton.disabled = !hasChecked;
+      declineTradeButton.disabled = !hasChecked;
     }
-    updateButtonState();
+
+    updateButtonsState(); // Initial update when the script loads
     checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener("change", updateButtonState);
+      checkbox.addEventListener("change", updateButtonsState);
     });
   }
 });

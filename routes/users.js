@@ -15,6 +15,7 @@ import {
   getAllUserDeckPoints,
   getFriendList,
   displayCollection,
+  declineTrade,
 } from "../data/pokemonMongo.js";
 
 router
@@ -441,17 +442,33 @@ router
       throw "TradeIDs are not found";
     }
 
-    for (const id of tradeIDs) {
-      try {
-        await finalizeTrade(id);
-      } catch (error) {
-        console.error("Error pulling card from cardList:", error);
+    if (req.body.action === "accept-trade") {
+      for (const id of tradeIDs) {
+        try {
+          await finalizeTrade(id);
+        } catch (error) {
+          console.error("Error pulling card from cardList:", error);
+        }
       }
+      res.render("tradeAccepted", {
+        message: `Congratulations, ${user}. Your trade has been accepted!`,
+        user: user,
+      });
     }
-    res.render("tradeAccepted", {
-      message: `Congratulations, ${user}. Your trade has been accepted!`,
-      user: user,
-    });
+
+    if (req.body.action === "decline-trade") {
+      for (const id of tradeIDs) {
+        try {
+          await declineTrade(id);
+        } catch (error) {
+          console.error("Error pulling card from cardList:", error);
+        }
+      }
+      res.render("tradeAccepted", {
+        message: `Hello, ${user}. Your trade has been declined!`,
+        user: user,
+      });
+    }
   });
 
 //These all need to be updated to our needs

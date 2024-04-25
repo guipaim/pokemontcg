@@ -445,10 +445,3 @@ tbody > tr:hover {
   color: #666; /* Dark grey text */
   cursor: not-allowed; /* Cursor indicates the button is disabled */
 }
-
-/* Disabled button styling */
-.button-style:disabled {
-  background-color: #ccc; /* Grey background */
-  color: #666; /* Dark grey text */
-  cursor: not-allowed; /* Cursor indicates the button is disabled */
-}

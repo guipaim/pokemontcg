@@ -421,6 +421,38 @@ export const finalizeTrade = async (id) => {
 };
 //end of JAYS functions
 
+export const declineTrade = async (id) => {
+  if (!id) {
+    throw "ID must be supplied";
+  }
+
+  id = id.trim();
+  if (id === "") {
+    throw "ID must be nonempty";
+  }
+
+  if (!ObjectId.isValid(id)) {
+    throw "ID is not a valid object ID";
+  }
+
+  const userCollection = await userAccounts();
+  id = new ObjectId(id);
+
+  try {
+    deleteTrade = await userCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $eq: id } },
+          outgoingTrades: { id: { $eq: id } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export async function loadAllCards() {
   try {
     const allCardsCollection = await allCards();
