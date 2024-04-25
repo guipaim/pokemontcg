@@ -129,7 +129,7 @@ export const getUserCardDetails = async (username) => {
   let user;
 
   try {
-    user = await getUserByUsername(username); //handles error checking for username already
+    user = await getUserByUsername(username);
   } catch (error) {
     throw `Error: ${error}`;
   }
@@ -155,7 +155,6 @@ export const getUserCardDetails = async (username) => {
 
         const price = cardmarket?.prices?.averageSellPrice;
         const image = images.small;
-        // const image = images.small.replace(/\.png$/, "/portrait_uncanny.jpg");
         const link = cardmarket?.url;
 
         return {
@@ -350,15 +349,11 @@ export const finalizeTrade = async (id) => {
   let tradeOut = singleTrade.outgoing;
 
   let userTradeRequestMaker = Object.keys(tradeIn)[0]; // Gets the first key of the object
-  let userTradeRequestMakerCollection = await getCardListByUsername(
-    userTradeRequestMaker
-  );
+
   let cardArrayOne = tradeIn[userTradeRequestMaker];
 
   let userTradeRequestAcceptor = Object.keys(tradeOut)[0];
-  let userTradeRequestAcceptorCollection = await getCardListByUsername(
-    userTradeRequestAcceptor
-  );
+
   let cardArrayTwo = tradeOut[userTradeRequestAcceptor];
 
   for (const card of cardArrayOne) {
@@ -404,9 +399,8 @@ export const finalizeTrade = async (id) => {
       console.error("Error pulling card from cardList:", error);
     }
   } //insert cards into traderequestor  that tradeacceptor is giving up
-
   try {
-    deleteTrade = await userCollection.updateMany(
+    let deleteTrade = await userCollection.updateMany(
       {},
       {
         $pull: {
@@ -418,8 +412,23 @@ export const finalizeTrade = async (id) => {
   } catch (err) {
     console.error(err);
   }
+
+  for (const card of cardArrayOne) {
+    try {
+      let deleteRest = await removeTradesByCardName(card);
+    } catch (error) {
+      console.error("Error deleting rest of the cards", error);
+    }
+  } //deletes other trades
+
+  for (const card of cardArrayTwo) {
+    try {
+      let deleteRest = await removeTradesByCardName(card);
+    } catch (error) {
+      console.error("Error deleting rest of the cards", error);
+    }
+  }
 };
-//end of JAYS functions
 
 export const declineTrade = async (id) => {
   if (!id) {
@@ -452,6 +461,137 @@ export const declineTrade = async (id) => {
     console.error(err);
   }
 };
+
+export const removeTradesByCardName = async (cardName) => {
+  if (!cardName) {
+    throw "No card ID supplied";
+  }
+
+  if (typeof cardName !== "string") {
+    throw "Card name must be string value";
+  }
+
+  cardName = cardName.trim();
+
+  if (cardName === "") {
+    throw "Card name cannot be empty";
+  }
+
+  const userAccountsCollection = await userAccounts();
+
+  const query = [
+    {
+      $project: {
+        outgoingTrades: {
+          $filter: {
+            input: "$outgoingTrades",
+            as: "trade",
+            cond: {
+              $or: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.outgoing" },
+                      as: "outItems",
+                      in: { $in: [cardName, "$$outItems.v"] },
+                    },
+                  },
+                },
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.incoming" },
+                      as: "inItems",
+                      in: { $in: [cardName, "$$inItems.v"] },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+        incomingTrades: {
+          $filter: {
+            input: "$incomingTrades",
+            as: "trade",
+            cond: {
+              $or: [
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.outgoing" },
+                      as: "outItems",
+                      in: { $in: [cardName, "$$outItems.v"] },
+                    },
+                  },
+                },
+                {
+                  $anyElementTrue: {
+                    $map: {
+                      input: { $objectToArray: "$$trade.incoming" },
+                      as: "inItems",
+                      in: { $in: [cardName, "$$inItems.v"] },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $match: {
+        $or: [{ outgoingTrades: { $ne: [] } }, { incomingTrades: { $ne: [] } }],
+      },
+    },
+    {
+      $project: {
+        tradeIds: {
+          $setUnion: [
+            {
+              $map: { input: "$outgoingTrades", as: "trade", in: "$$trade.id" },
+            },
+            {
+              $map: { input: "$incomingTrades", as: "trade", in: "$$trade.id" },
+            },
+          ],
+        },
+        _id: 0,
+      },
+    },
+  ];
+  let results;
+
+  try {
+    results = await userAccountsCollection.aggregate(query).toArray();
+  } catch (error) {
+    console.error(err);
+  }
+
+  results = results
+    .map((item) => item.tradeIds.map((id) => id.toString()))
+    .flat();
+  results = [...new Set(results)];
+
+  results = results.map((item) => new ObjectId(item));
+
+  try {
+    const deleteTrade = await userAccountsCollection.updateMany(
+      {},
+      {
+        $pull: {
+          incomingTrades: { id: { $in: results } },
+          outgoingTrades: { id: { $in: results } },
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+//end of JAYS functions
 
 export async function loadAllCards() {
   try {
