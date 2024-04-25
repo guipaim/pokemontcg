@@ -1,5 +1,6 @@
-<p class="centerLogin">Welcome {{userName}}, the time is now: {{currentTime}}.</p>
-
+<p class="centerLoginElse">Welcome
+  {{userName}}, the time is now:
+  <span id="currentTime"></span></p>
 {{#if friendRequests.length}}
   <h2>Friend Requests:</h2>
   <ul>
@@ -23,3 +24,4 @@
   <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
 </div>
 <script src="/public/js/client_side_addUser.js"></script>
+<script src="/public/js/timeScript.js"></script>
