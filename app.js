@@ -156,10 +156,10 @@ configRoutes(app);
 await pokeMongo.loadAllCards();
 
 
-// runs every 5 minutes
+// runs check every 5 minutes, collection grows every 10 minutes from last update (depends on time user was last updated)
 setInterval(() => pokeMongo.growCollection(), 300000);
-// reward top 3 players every 10 minutes
-setInterval(() => pokeMongo.rewardTop3Players(), 600000);
+// reward top 3 players every 15 minutes
+setInterval(() => pokeMongo.rewardTop3Players(), 900000);
 
 //uncomment this to seed user accounts
 //createUserTest();
