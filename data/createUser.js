@@ -138,10 +138,13 @@ export class UserAccount {
     async rejectFriendRequest(receiverUsername, senderUsername) {
         try {
             // Validate receiver and sender usernames
+            console.log("receiver",receiverUsername);
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
+            console.log("sender",senderUsername);
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+            console.log(receiverUser);
 
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
