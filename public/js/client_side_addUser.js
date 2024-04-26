@@ -4,9 +4,8 @@
 const searchUserForm = document.getElementById('searchUserForm');
 const searchInput = document.getElementById('searchInput');
 
-if (searchUserForm) {
-    searchUserForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+searchUserForm.addEventListener('submit', function (event) {
+    event.preventDefault();
 
         const username = searchInput.value.trim();
         if (!username) {
@@ -16,13 +15,12 @@ if (searchUserForm) {
 
         searchUserForm.submit();
     });
-};
 // Send friend request form validation
 const sendFriendRequestForm = document.getElementById('sendFriendRequestForm');
 const receiverUsernameInput = document.getElementById('receiverUsername');
-if (sendFriendRequestForm) {
-    sendFriendRequestForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+
+sendFriendRequestForm.addEventListener('submit', function (event) {
+    event.preventDefault();
 
         const receiverUsername = receiverUsernameInput.value.trim();
         if (!receiverUsername) {
@@ -30,10 +28,11 @@ if (sendFriendRequestForm) {
             return;
         }
 
-        sendFriendRequestForm.submit();
-    });
-};
+    sendFriendRequestForm.submit();
+});
 
+
+//accept friend request form validation
 const acceptFriendRequestForm = document.getElementById('acceptFriendRequestForm');
 const acceptUsernameInput = document.getElementById('acceptUsername');
 
@@ -59,3 +58,6 @@ rejectFriendRequestForm.addEventListener('submit', function (event) {
  rejectFriendRequestForm.submit()
 
 });
+
+
+

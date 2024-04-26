@@ -596,7 +596,7 @@ router.route('/error').get(async (req, res) => {
     loggedIn: req.session.user ? true : false,
   });
 });
-
+ //reject friend request
 router.route("/rejectFriendRequest").post(async (req, res) => {
   try {
     const senderUsername = req.body.username;
@@ -624,7 +624,7 @@ router.route("/rejectFriendRequest").post(async (req, res) => {
 
 
 });
-
+//accept friend request
 router.route("/acceptFriendRequest").post(async (req, res) => {
   try {
     const senderUsername = req.body.username;
@@ -652,6 +652,18 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
     });
   }
 
+
+});
+//friend's list
+router.route("/friendsList").get(async (req, res) => {
+  try {
+    const senderUsername = req.session.user.userName;
+    const friends = await userAccount.getAllFriends(senderUsername);
+    res.render('friendsList', { friends });
+  } catch (error) {
+    console.log('An error occurred while finding friends:', error);
+    res.render('error', { error: 'An error occurred while finding friends' });
+  }
 
 });
 
