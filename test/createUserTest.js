@@ -61,21 +61,21 @@ export async function createUserTest(){
         //send friend request 
 
          // Send friend request from "Troy" to "Lorre"
-         try {
-            await userAccount.sendFriendRequest("Matt12", "Larissa34");
-            console.log("Friend request sent successfully from 'Matt' to 'Larissa'.");
-        } catch (error) {
-            console.log('Error sending friend request: ' + error.message);
-        }
+        //  try {
+        //     await userAccount.sendFriendRequest("Matt12", "Larissa34");
+        //     console.log("Friend request sent successfully from 'Matt' to 'Larissa'.");
+        // } catch (error) {
+        //     console.log('Error sending friend request: ' + error.message);
+        // }
 
-        // Reject friend request from "Matt" to "Larissa"
-        try {
-            await userAccount.rejectFriendRequest("Larissa34","Matt12");
-            console.log("Friend request rejected successfully.");
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log('Error rejecting friend request: ' + error.message);
-            } 
-        }
+        // // Reject friend request from "Matt" to "Larissa"
+        // try {
+        //     await userAccount.rejectFriendRequest("Larissa34","Matt12");
+        //     console.log("Friend request rejected successfully.");
+        // } catch (error) {
+        //     if (error instanceof Error) {
+        //         console.log('Error rejecting friend request: ' + error.message);
+        //     } 
+        // }
     }; 
    

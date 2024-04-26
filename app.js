@@ -160,4 +160,4 @@ setInterval(() => pokeMongo.growCollection(), 300000);
 setInterval(() => pokeMongo.rewardTop3Players(), 900000);
 
 //uncomment this to seed user accounts
-createUserTest();
+// createUserTest();

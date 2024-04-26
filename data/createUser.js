@@ -149,6 +149,20 @@ export class UserAccount {
             if (senderIndexInReceiverOutgoing !== -1) {
             receiverUser.outGoingFriendRequests.splice(senderIndexInReceiverOutgoing, 1);
             }
+
+              // Check if the sender has already sent a friend request to the receiver
+            //   if (senderUser.outGoingFriendRequests.includes(receiverUsername)) {
+            //     throw new Error('Friend request already sent');
+            // }
+
+            if (senderUser.friendList.includes(receiverUsername)) {
+                throw new Error(`You are already friends with ${receiverUsername}`);
+            }
+
+            // Check if the receiver has already received a friend request from the sender
+            if (receiverUser.friendRequests.includes(senderUsername)) {
+                throw new Error('Friend request already received');
+            }
             //Push sender and user to each other's friend lists after friend request is accepted 
             receiverUser.friendList.push(senderUsername);
             senderUser.friendList.push(receiverUsername);
@@ -203,7 +217,7 @@ export class UserAccount {
                 if (senderIndex !== -1) {
                     senderUser.outGoingFriendRequests.splice(senderIndex, 1);
                 }
-    
+                          
                 // Update both user objects in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
