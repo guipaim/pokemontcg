@@ -96,7 +96,6 @@ export const loginUser = async (userName, password) => {
 
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (passwordMatch) {
-    console.log(`Passwords matched.  Username is ${user.userName}.  You have ${user.friendRequests.length} friend requests`);
     return {
       userName: user.userName,
       friendRequests: user.friendRequests

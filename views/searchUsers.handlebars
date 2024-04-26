@@ -1,9 +1,15 @@
+
+{{#if loggedIn}}
 <form id="searchUserForm" action="/searchUsers" method="post">
     <div class="centerLogin" style="margin-top:10px">
         <input type="text" id="searchInput" name="username" placeholder="Enter username">
         <button class="homeButton" type="submit" style="margin-top:10px">Search</button>
     </div>
 </form>
+
+{{#if requestSent}}
+    <p class="friend-request-sent">Friend request sent</p>
+{{/if}}
 
 <div id="searchResults" class="centerLogin">
     {{#if users.length}}
@@ -20,7 +26,13 @@
             </div>
         {{/each}}
     {{else}}
-    <p>No match for that search term</p>
+        {{#if noMatch}}
+            <p>No match for that search term</p>
+        {{/if}}
     {{/if}}
 </div>
+{{else}}
+    <p>You must be logged in to search users</p>
+    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+{{/if}}
 <script src="/public/js/client_side_addUser.js"></script>
