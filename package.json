@@ -21,7 +21,8 @@
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
-    "mongodb": "^6.5.0"
+    "mongodb": "^6.5.0",
+    "xss": "^1.0.15"
   },
   "bugs": {
     "url": "https://github.com/guipaim/pokemontcg/issues"

@@ -4,8 +4,9 @@
 const searchUserForm = document.getElementById('searchUserForm');
 const searchInput = document.getElementById('searchInput');
 
-searchUserForm.addEventListener('submit', function (event) {
-    event.preventDefault();
+if (searchUserForm) {
+    searchUserForm.addEventListener('submit', function(event) {
+        event.preventDefault();
 
         const username = searchInput.value.trim();
         if (!username) {
@@ -15,12 +16,13 @@ searchUserForm.addEventListener('submit', function (event) {
 
         searchUserForm.submit();
     });
+};
 // Send friend request form validation
 const sendFriendRequestForm = document.getElementById('sendFriendRequestForm');
 const receiverUsernameInput = document.getElementById('receiverUsername');
-
-sendFriendRequestForm.addEventListener('submit', function (event) {
-    event.preventDefault();
+if (sendFriendRequestForm) {
+    sendFriendRequestForm.addEventListener('submit', function(event) {
+        event.preventDefault();
 
         const receiverUsername = receiverUsernameInput.value.trim();
         if (!receiverUsername) {
@@ -28,14 +30,13 @@ sendFriendRequestForm.addEventListener('submit', function (event) {
             return;
         }
 
-    sendFriendRequestForm.submit();
-});
+        sendFriendRequestForm.submit();
+    });
+};
 
-
-//accept friend request form validation
 const acceptFriendRequestForm = document.getElementById('acceptFriendRequestForm');
 const acceptUsernameInput = document.getElementById('acceptUsername');
-
+if(acceptFriendRequestForm){
 acceptFriendRequestForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -47,17 +48,14 @@ acceptFriendRequestForm.addEventListener('submit', function (event) {
 
     acceptFriendRequestForm.submit();
 
-});
+})};
 
 
 const rejectFriendRequestForm = document.getElementById('rejectFriendButton');
-
+if(rejectFriendRequestForm){
 rejectFriendRequestForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
  rejectFriendRequestForm.submit()
 
-});
-
-
-
+})};
