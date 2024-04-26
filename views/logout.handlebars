@@ -5,10 +5,6 @@
 
 <div class="container">
     {{#unless loggedIn}}
-    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+    <button class="button-pokeball" onclick="location.href='/login';" type="submit">Login</button>
     {{/unless}}
-    {{#if loggedIn}}
-    <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
-    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
-    {{/if}}
 </div>

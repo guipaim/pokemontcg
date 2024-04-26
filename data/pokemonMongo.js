@@ -40,6 +40,32 @@ export const getUserByUsername = async (userName) => {
   }
 };
 
+export const findUsersByUsernameSubstring = async (substring) => {
+  if (!substring) {
+    throw new Error("Must supply search term");
+  }
+  let substringCheckResult = validation.checkString(substring, substring);
+
+  if (substringCheckResult) {
+    substring = substring.toLowerCase().trim();
+  } else {
+    throw new Error("Invalid search query.");
+  }
+
+  try {
+    const userAccountsCollection = await userAccounts();
+    const users = await userAccountsCollection.find({ userName: { $regex: substring, $options: 'i' } 
+  }).toArray();
+    if (!users) {
+      throw new Error(`No user found with the username: ${userName}`); //added check to see if user even exists, if not throw error. Need to check if anyone is resolving this error on their own by calling a null
+    }
+    return users;
+  } catch (error) {
+    console.error("Error getting user by username:", error);
+    throw error;
+  }
+}
+
 export const loginUser = async (userName, password) => {
   let username;
   let userNameCheckResult;
@@ -70,8 +96,10 @@ export const loginUser = async (userName, password) => {
 
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (passwordMatch) {
+    console.log(`Passwords matched.  Username is ${user.userName}.  You have ${user.friendRequests.length} friend requests`);
     return {
       userName: user.userName,
+      friendRequests: user.friendRequests
     };
   } else {
     throw new Error("User Name or Password is invalid");
