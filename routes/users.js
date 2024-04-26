@@ -6,6 +6,7 @@ import validation from "../data/validation.js";
 import {
   loginUser,
   getUserByUsername,
+  findUsersByUsernameSubstring,
   getCardListByUsername,
   getUserCardDetails,
   getLimitedCardDetails,
@@ -16,6 +17,7 @@ import {
   getFriendList,
   displayCollection,
   declineTrade,
+  getUserById,
 } from "../data/pokemonMongo.js";
 
 router
@@ -48,7 +50,7 @@ router
         newUser = await userAccount.createUser(userNameInput, passwordInput);
       } catch (err) {
         req.session.error = err.message;
-        return res.status(403).redirect(err);
+        return res.status(403).redirect('error');
       }
 
       if (newUser.insertedUser === true) {
@@ -56,13 +58,13 @@ router
       } else {
         res.status(500).render("register", {
           error: "Internal Server Error",
-          loggedIn: req.session.user ? true : false,
+          loggedIn: req.session.user ? true : false
         });
       }
     } catch (error) {
       res.status(400).render("register", {
         error: error.message,
-        loggedIn: req.session.user ? true : false,
+        loggedIn: req.session.user ? true : false
       });
     }
   });
@@ -70,7 +72,9 @@ router
 router
   .route("/login")
   .get(async (req, res) => {
-    res.render("login");
+    res.render("login", {
+      loggedIn: req.session.user ? true : false
+    });
   })
   .post(async (req, res) => {
     if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
@@ -117,7 +121,7 @@ router
           console.error(error);
           return res.status(500).render("login", {
             error: "Failed to save session.",
-            loggedIn: req.session.user ? true : false,
+            loggedIn: req.session.user ? true : false
           });
         }
         return res.redirect("/protected");
@@ -126,21 +130,36 @@ router
       console.error("Critical error:", error);
       res.status(400).render("login", {
         error: error.message,
-        loggedIn: req.session.user ? true : false,
+        loggedIn: req.session.user ? true : false
       });
     }
   });
 
 router.route("/protected").get(async (req, res) => {
+  if (!req.session.user) {
+    req.session.error = "403: You do not have permission to access this page.";
+    return res.status(403).redirect("error");
+  }
+
+  const user = await getUserByUsername(req.session.user.userName);
+  const friendRequests = user.friendRequests;
+  console.log(user.friendRequests);
+  console.log(user);
+
   res.render("protected", {
     userName: req.session.user.userName,
     currentTime: new Date().toLocaleTimeString(),
+    friendRequests: friendRequests,
+    loggedIn: req.session.user ? true : false
   });
 });
 
 router.route("/ranking").get(async (req, res) => {
   let data = await getAllUserDeckPoints();
-  res.render("ranking", { data: data });
+  res.render("ranking", { 
+    data: data,
+    loggedIn: req.session.user ? true : false
+  });
 });
 
 router.route("/logout").get(async (req, res) => {
@@ -157,7 +176,7 @@ router.route("/logout").get(async (req, res) => {
     }
     res.clearCookie("AuthState");
     return res.render("./logout", {
-      loggedIn: false,
+      buttonsTurnedOff: true
     });
   });
 });
@@ -166,27 +185,40 @@ router.route("/logout").get(async (req, res) => {
 router
   .route("/searchUsers")
   .get(async (req, res) => {
-    res.render("searchUsers");
+    res.render("searchUsers", {
+      loggedIn: req.session.user ? true : false
+    });
   })
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      const foundUser = await getUserByUsername(username);
+      //const foundUser = await getUserByUsername(username);
+      const foundUsers = await findUsersByUsernameSubstring(username);
 
-      if (!foundUser) {
-        return res.render("SearchUsers", { message: "User not found" });
+      if (!foundUsers) {
+        return res.render('SearchUsers', { 
+          message: "User not found",
+          loggedIn: req.session.user ? true : false
+         });
       }
 
-      res.render("SearchUsers", { user: foundUser });
+      res.render("SearchUsers", { 
+        users: foundUsers,
+        loggedIn: req.session.user ? true : false
+       });
     } catch (error) {
       console.error("Error searching for user:", error);
-      res.render("error", { error: error.message }); // Pass the error message to the error page
+      res.render('error', { 
+        error: error.message,
+        loggedIn: req.session.user ? true : false
+       }); // Pass the error message to the error page
     }
   });
 
 // Route for adding a friend
 router.post("/addFriend", async (req, res) => {
   try {
+
     const senderUsername = req.session.user.userName; // Retrieve sender's username from session user
     const receiverUsername = req.body.username; // Retrieve receiver's username from form
 
@@ -198,14 +230,19 @@ router.post("/addFriend", async (req, res) => {
     res.redirect("/searchUsers");
   } catch (error) {
     console.error("Error adding friend:", error);
-    res.render("error", { error: "An error occurred while adding friend" });
+    res.render("error", { 
+      error: error.message,
+      loggedIn: req.session.user ? true : false
+    });
   }
 });
 
 router
   .route("/trade")
   .get(async (req, res) => {
-    return res.render("tradeHome");
+    return res.render("tradeHome", {
+      loggedIn: req.session.user ? true : false
+    });
   })
 
   .post(async (req, res) => {
@@ -239,7 +276,7 @@ router
     } catch (error) {
       return res.status(404).render("error", {
         error: error,
-        loggedIn: req.session.user ? true : false,
+        loggedIn: req.session.user ? true : false
       });
     }
   });
@@ -272,6 +309,7 @@ router
         reciever: reciever,
         senderCardList: senderCardList,
         recieverCardList: recieverCardList,
+        loggedIn: req.session.user ? true : false
       });
     } catch (error) {
       return res.status(404).json(`Error: ${error}`);
@@ -350,6 +388,7 @@ router
         reciever: reciever,
         yourDetails: yourDetails,
         theirDetails: theirDetails,
+        loggedIn: req.session.user ? true : false
       });
     } catch (error) {
       return res.status(404).json(`Error: ${error}`);
@@ -417,6 +456,7 @@ router
     return res.render("tradeRequest", {
       tradeInOutList: tradeInOutList,
       tradeOutOutList: tradeOutOutList,
+      loggedIn: req.session.user ? true : false
     });
   })
   .post(async (req, res) => {
@@ -453,6 +493,7 @@ router
       res.render("tradeAccepted", {
         message: `Congratulations, ${user}. Your trade has been accepted!`,
         user: user,
+        loggedIn: req.session.user ? true : false
       });
     }
 
@@ -467,6 +508,7 @@ router
       res.render("tradeAccepted", {
         message: `Hello, ${user}. Your trade has been declined!`,
         user: user,
+        loggedIn: req.session.user ? true : false
       });
     }
   });
@@ -480,7 +522,7 @@ router
     } catch (e) {
       return res.status(404).render("error", {
         error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false,
+        loggedIn: req.session.user ? true : false
       });
     }
     try {
@@ -489,7 +531,7 @@ router
     } catch (e) {
       return res.status(404).render("error", {
         error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false,
+        loggedIn: req.session.user ? true : false
       });
     }
   })
@@ -536,11 +578,81 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
       user,
       friendList,
       imagesJSON,
+      loggedIn: req.session.user ? true : false
     });
   } catch (error) {
     console.error("Error fetching data:", error);
     return res.status(500).send("Internal Server Error");
   }
+});
+
+router.route('/error').get(async (req, res) => {
+
+  const error = req.session.error; 
+  req.session.error = null;
+
+  return res.render('error', {
+    error: error,
+    loggedIn: req.session.user ? true : false,
+  });
+});
+
+router.route("/rejectFriendRequest").post(async (req, res) => {
+  try {
+    const senderUsername = req.body.username;
+    const receiverUsername = req.session.user.userName;
+
+    await userAccount.rejectFriendRequest(receiverUsername, senderUsername);
+
+    const updatedUser = await getUserByUsername(receiverUsername);
+    console.log(updatedUser);
+    const friendRequests = updatedUser.friendRequests || [];
+
+    req.session.friendRequests = friendRequests;
+    console.log(friendRequests);
+
+    res.redirect('/protected');
+
+  }
+  catch (error) {
+    console.error('Error rejecting friend:', error);
+    res.render('error', { 
+      error: error.message,
+      loggedIn: req.session.user ? true : false 
+    });
+  }
+
+
+});
+
+router.route("/acceptFriendRequest").post(async (req, res) => {
+  try {
+    const senderUsername = req.body.username;
+    const receiverUsername = req.session.user.userName;
+
+    await userAccount.acceptFriendRequest(receiverUsername,senderUsername);
+
+    const updatedUser = await getUserByUsername(receiverUsername);
+   
+    const friendRequests = updatedUser.friendRequests || [];
+   
+    req.session.friendRequests = friendRequests;
+    console.log(req.session);
+    console.log(friendRequests);
+
+    res.redirect('/protected');
+
+  }
+
+  catch (error) {
+    console.error('Error accepting friend:', error);
+    res.render('error', { 
+      error: error.message,
+      loggedIn: req.session.user ? true : false
+    });
+  }
+
+
 });
 
 export default router;
