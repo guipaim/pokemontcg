@@ -8,11 +8,11 @@
     <p>Friend Request</p>
       <li>{{this}}</li>
         <form class="acceptFriendRequestForm" action="/acceptFriendRequest" method="POST">
-          <input type="hidden" name="username" value="{{this}}">
+          <input type="hidden" name="username" value="{{this}}" class="homeButton">
           <button type="submit" class="acceptrequest">Accept</button>
         </form>
         <form class="rejectFriendRequestForm"action="/rejectFriendRequest" method="POST">
-          <input type="hidden" name="username" value="{{this}}">
+          <input type="hidden" name="username" value="{{this}}" class="homeButton">
           <button type="submit" class="rejectrequest">Reject</button>
         </form>
     {{/each}}

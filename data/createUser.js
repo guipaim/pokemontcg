@@ -94,7 +94,7 @@ export class UserAccount {
                 throw new Error('Friend request already received');
             }
 
-            // Add the receiver's username to the sender's friendRequests
+            // Add the receiver's username to the sender's outgoing requests
             senderUser.outGoingFriendRequests.push(receiverUsername);
 
             // Add the sender's username to the receiver's friendRequests
@@ -107,20 +107,21 @@ export class UserAccount {
             throw new Error(e.message);
         }
     }
-
+ //Accept friend request makes sure that the receiver(logged in user) gets a friend requets, and sender has that added to outgoing requests 
     async acceptFriendRequest(receiverUsername, senderUsername) {
         try {
+            //Does validation for users and finds them in database
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
             const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
             
-
+            //throws error if sender or user are not found
             if (!receiverUser || !senderUser) {
                 throw new Error('Receiver or sender user not found');
             }
-
+            //the following  will keep checking if friend requets and outgoing friend requests exist or not 
             const senderIndex = receiverUser.friendRequests.indexOf(senderUsername);
             console.log(`senderIndex is ${senderIndex}`);
 
@@ -150,7 +151,7 @@ export class UserAccount {
             if (senderIndexInReceiverOutgoing !== -1) {
             receiverUser.outGoingFriendRequests.splice(senderIndexInReceiverOutgoing, 1);
             }
-
+            //Push sender and user to each other's friend lists after friend request is accepted 
             receiverUser.friendList.push(senderUsername);
             senderUser.friendList.push(receiverUsername);
 
@@ -184,25 +185,35 @@ export class UserAccount {
             // Validate receiver and sender usernames
             receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
             senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
-
+    
             const userAccountsCollection = await userAccounts();
             const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
-
+            const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+    
             if (!receiverUser) {
                 throw new Error('Receiver user not found');
             }
-
-            // Find the index of sender's username in receiver's friendRequests array
+    
+            //the following will keep checking if friend requets and outgoing friend requests exist or not 
             const index = receiverUser.friendRequests.indexOf(senderUsername);
-
+    
             if (index !== -1) {
-                // Remove sender's username from receiver's friendRequests array
+        
                 receiverUser.friendRequests.splice(index, 1);
-
-                // Update the receiver user object in the database
+            
+                const senderIndex = senderUser.outGoingFriendRequests.indexOf(receiverUsername);
+                if (senderIndex !== -1) {
+                    senderUser.outGoingFriendRequests.splice(senderIndex, 1);
+                }
+    
+                // Update both user objects in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
                     { $set: { friendRequests: receiverUser.friendRequests } }
+                );
+                await userAccountsCollection.updateOne(
+                    { userName: senderUsername },
+                    { $set: { outGoingFriendRequests: senderUser.outGoingFriendRequests } }
                 );
             } else {
                 console.log('Friend request not found');
@@ -211,8 +222,30 @@ export class UserAccount {
             throw new Error(e.message);
         }
     }
+    
+    async getAllFriends(senderUsername){
+        senderUsername = exportedMethods.checkString(senderUsername, 'Sender Username').toLowerCase().trim();
+        // receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
 
-}
+        const userAccountsCollection = await userAccounts();
+        const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+        // const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
+        if(!senderUser ){
+            throw new Error("user not found")
+        }
+
+        const senderFriendList=senderUser.friendList
+        console.log(senderFriendList);
+     
+       return senderFriendList;
+
+    }
+    catch (e) {
+        throw new Error(e.message);
+    }
+
+    }
+
 export default UserAccount;
 
 export const userAccount = new UserAccount(null);

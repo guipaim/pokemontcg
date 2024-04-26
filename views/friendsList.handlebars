@@ -1,0 +1,11 @@
+<!-- Show list of friends -->
+<h2>List of friends:</h2>
+{{#if friends}}
+<ul>
+{{#each friends}}
+<li>{{this}}</li>
+{{/each}}
+{{else}}
+<p>You currently have no friends</p>
+{{/if}}
+</ul>

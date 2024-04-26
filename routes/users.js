@@ -3,6 +3,7 @@ const router = Router();
 import { cardMongoData } from "../data/index.js";
 import { userAccount } from "../data/createUser.js";
 import validation from "../data/validation.js";
+import xss from 'xss';
 import {
   loginUser,
   getUserByUsername,
@@ -596,11 +597,11 @@ router.route('/error').get(async (req, res) => {
     loggedIn: req.session.user ? true : false,
   });
 });
-
+ //reject friend request
 router.route("/rejectFriendRequest").post(async (req, res) => {
   try {
-    const senderUsername = req.body.username;
-    const receiverUsername = req.session.user.userName;
+    const senderUsername = xss(req.body.username);
+    const receiverUsername = xss(req.session.user.userName);
 
     await userAccount.rejectFriendRequest(receiverUsername, senderUsername);
 
@@ -624,11 +625,11 @@ router.route("/rejectFriendRequest").post(async (req, res) => {
 
 
 });
-
+//accept friend request
 router.route("/acceptFriendRequest").post(async (req, res) => {
   try {
-    const senderUsername = req.body.username;
-    const receiverUsername = req.session.user.userName;
+    const senderUsername = xss(req.body.username);
+    const receiverUsername = xss(req.session.user.userName);
 
     await userAccount.acceptFriendRequest(receiverUsername,senderUsername);
 
@@ -652,6 +653,18 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
     });
   }
 
+
+});
+//friend's list
+router.route("/friendsList").get(async (req, res) => {
+  try {
+    const senderUsername = xss(req.session.user.userName);
+    const friends = await userAccount.getAllFriends(senderUsername);
+    res.render('friendsList', { friends });
+  } catch (error) {
+    console.log('An error occurred while finding friends:', error);
+    res.render('error', { error: 'An error occurred while finding friends' });
+  }
 
 });
 

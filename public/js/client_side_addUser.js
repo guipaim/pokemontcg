@@ -36,7 +36,7 @@ if (sendFriendRequestForm) {
 
 const acceptFriendRequestForm = document.getElementById('acceptFriendRequestForm');
 const acceptUsernameInput = document.getElementById('acceptUsername');
-
+if(acceptFriendRequestForm){
 acceptFriendRequestForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -48,14 +48,14 @@ acceptFriendRequestForm.addEventListener('submit', function (event) {
 
     acceptFriendRequestForm.submit();
 
-});
+})};
 
 
 const rejectFriendRequestForm = document.getElementById('rejectFriendButton');
-
+if(rejectFriendRequestForm){
 rejectFriendRequestForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
  rejectFriendRequestForm.submit()
 
-});
+})};
