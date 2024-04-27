@@ -14,13 +14,13 @@
               <span class="traderPokeID">({{id}})</span>
             </span>
 
-            <label for="trade-yours-card"></label>
+            <label for="trade-yours-card-{{id}}"></label>
             <input
               type="checkbox"
               class="card-checkbox"
               name="yourselectedId[]"
               value={{id}}
-              id="trade-yours-card"
+              id="trade-yours-card-{{id}}"
             />
 
             <ul class="trader-sublist">
@@ -54,13 +54,13 @@
               <span class="traderPokeID">({{id}})</span>
             </span>
 
-            <label for="trader-theirs-card"></label>
+            <label for="trader-theirs-card-{{id}}"></label>
             <input
               type="checkbox"
               class="card-checkbox"
               name="theirselectedId[]"
               value={{id}}
-              id="trade-theirs-card"
+              id="trade-theirs-card-{{id}}"
             />
 
             <ul class="trader-sublist">

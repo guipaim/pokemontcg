@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (tradeUserCardsForm) {
     tradeUserCardsForm.onsubmit = function (e) {
       const yourCheckboxes = document.querySelectorAll(
-        "#trade-yours-card:checked"
+        "#trade-user-cards-form input[type='checkbox'][name='yourselectedId[]']:checked"
       );
       const theirCheckboxes = document.querySelectorAll(
-        "#trade-theirs-card:checked"
+        "#trade-user-cards-form input[type='checkbox'][name='theirselectedId[]']:checked"
       );
 
       if (yourCheckboxes.length === 0 || theirCheckboxes.length === 0) {
