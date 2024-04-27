@@ -3,7 +3,7 @@ const router = Router();
 import { cardMongoData } from "../data/index.js";
 import { userAccount } from "../data/createUser.js";
 import validation from "../data/validation.js";
-import xss from 'xss';
+import xss from "xss";
 import {
   loginUser,
   getUserByUsername,
@@ -51,7 +51,7 @@ router
         newUser = await userAccount.createUser(userNameInput, passwordInput);
       } catch (err) {
         req.session.error = err.message;
-        return res.status(403).redirect('error');
+        return res.status(403).redirect("error");
       }
 
       if (newUser.insertedUser === true) {
@@ -59,13 +59,13 @@ router
       } else {
         res.status(500).render("register", {
           error: "Internal Server Error",
-          loggedIn: req.session.user ? true : false
+          loggedIn: req.session.user ? true : false,
         });
       }
     } catch (error) {
       res.status(400).render("register", {
         error: error.message,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
   });
@@ -74,7 +74,7 @@ router
   .route("/login")
   .get(async (req, res) => {
     res.render("login", {
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   })
   .post(async (req, res) => {
@@ -121,7 +121,7 @@ router
           console.error(error);
           return res.status(500).render("login", {
             error: "Failed to save session.",
-            loggedIn: req.session.user ? true : false
+            loggedIn: req.session.user ? true : false,
           });
         }
         return res.redirect("/protected");
@@ -130,7 +130,7 @@ router
       console.error("Critical error:", error);
       res.status(400).render("login", {
         error: error.message,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
   });
@@ -150,15 +150,15 @@ router.route("/protected").get(async (req, res) => {
     userName: sanitizedUsername,
     currentTime: new Date().toLocaleTimeString(),
     friendRequests: friendRequests,
-    loggedIn: req.session.user ? true : false
+    loggedIn: req.session.user ? true : false,
   });
 });
 
 router.route("/ranking").get(async (req, res) => {
   let data = await getAllUserDeckPoints();
-  res.render("ranking", { 
+  res.render("ranking", {
     data: data,
-    loggedIn: req.session.user ? true : false
+    loggedIn: req.session.user ? true : false,
   });
 });
 
@@ -176,7 +176,7 @@ router.route("/logout").get(async (req, res) => {
     }
     res.clearCookie("AuthState");
     return res.render("./logout", {
-      buttonsTurnedOff: true
+      buttonsTurnedOff: true,
     });
   });
 });
@@ -186,7 +186,7 @@ router
   .route("/searchUsers")
   .get(async (req, res) => {
     res.render("searchUsers", {
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   })
   .post(async (req, res) => {
@@ -196,47 +196,45 @@ router
       const foundUsers = await findUsersByUsernameSubstring(username);
 
       if (!foundUsers) {
-
-        return res.render('SearchUsers', { 
+        return res.render("SearchUsers", {
           message: "User not found",
           noMatch: true,
-          loggedIn: req.session.user ? true : false
-         });
+          loggedIn: req.session.user ? true : false,
+        });
       }
 
-      res.render("SearchUsers", { 
+      res.render("SearchUsers", {
         users: foundUsers,
         loggedIn: req.session.user ? true : false,
-        noMatch: true
-       });
+        noMatch: true,
+      });
     } catch (error) {
       console.error("Error searching for user:", error);
-      res.render('error', { 
+      res.render("error", {
         error: error.message,
-        loggedIn: req.session.user ? true : false
-       }); // Pass the error message to the error page
+        loggedIn: req.session.user ? true : false,
+      }); // Pass the error message to the error page
     }
   });
 
 // Route for adding a friend
 router.post("/addFriend", async (req, res) => {
   try {
-
     const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
     const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
     //res.redirect("/searchUsers");
-    res.render('searchUsers', {
+    res.render("searchUsers", {
       requestSent: true,
-      loggedIn: req.session.user ? true : false
-    })
+      loggedIn: req.session.user ? true : false,
+    });
   } catch (error) {
     console.error("Error adding friend:", error);
-    res.render("error", { 
+    res.render("error", {
       error: error.message,
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   }
 });
@@ -245,7 +243,7 @@ router
   .route("/trade")
   .get(async (req, res) => {
     return res.render("tradeHome", {
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   })
 
@@ -278,9 +276,9 @@ router
       }
       return res.redirect(`trade/${userName}`);
     } catch (error) {
-      return res.status(404).render("error", {
+      return res.render("error", {
         error: error,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
   });
@@ -313,10 +311,10 @@ router
         reciever: reciever,
         senderCardList: senderCardList,
         recieverCardList: recieverCardList,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
     // res.render("trader", { sender: sender, reciever: reciever });
   })
@@ -392,10 +390,10 @@ router
         reciever: reciever,
         yourDetails: yourDetails,
         theirDetails: theirDetails,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
   });
 
@@ -418,50 +416,54 @@ router
       throw "user cannot be empty";
     }
 
-    let out = await getTradeDetails(user);
+    try {
+      let out = await getTradeDetails(user);
 
-    let tradesIn = out.tradesIn;
-    let tradesOut = out.tradesOut;
-    let tradeInOutList = [];
-    let tradeOutOutList = [];
+      let tradesIn = out.tradesIn;
+      let tradesOut = out.tradesOut;
+      let tradeInOutList = [];
+      let tradeOutOutList = [];
 
-    if (!tradesIn || !tradesOut) {
-      throw "TradeIn or TradeOut not found";
+      if (!tradesIn || !tradesOut) {
+        throw "TradeIn or TradeOut not found";
+      }
+
+      tradesIn.forEach((trades) => {
+        let tradeInGet = trades[1];
+        let tradeInGetName = Object.keys(tradeInGet)[0];
+        let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
+        let tradeInSend = trades[2];
+        let tradeInSendName = Object.keys(tradeInSend)[0];
+        let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
+        let tradeID = trades[0];
+        tradeInOutList.push({
+          description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
+          tradeID: tradeID,
+        });
+      }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
+
+      tradesOut.forEach((trades) => {
+        let tradeOutSend = trades[1];
+        let tradeOutSendName = Object.keys(tradeOutSend)[0];
+        let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
+        let tradeOutGet = trades[2];
+        let tradeOutGetName = Object.keys(tradeOutGet)[0];
+        let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
+        let tradeID = trades[0];
+        tradeOutOutList.push({
+          description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
+          tradeID: tradeID,
+        });
+      }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
+
+      return res.render("tradeRequest", {
+        tradeInOutList: tradeInOutList,
+        tradeOutOutList: tradeOutOutList,
+        loggedIn: req.session.user ? true : false,
+      });
+    } catch (error) {
+      res.render("error", { error: error });
     }
-
-    tradesIn.forEach((trades) => {
-      let tradeInGet = trades[1];
-      let tradeInGetName = Object.keys(tradeInGet)[0];
-      let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
-      let tradeInSend = trades[2];
-      let tradeInSendName = Object.keys(tradeInSend)[0];
-      let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
-      let tradeID = trades[0];
-      tradeInOutList.push({
-        description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
-        tradeID: tradeID,
-      });
-    }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
-
-    tradesOut.forEach((trades) => {
-      let tradeOutSend = trades[1];
-      let tradeOutSendName = Object.keys(tradeOutSend)[0];
-      let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
-      let tradeOutGet = trades[2];
-      let tradeOutGetName = Object.keys(tradeOutGet)[0];
-      let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
-      let tradeID = trades[0];
-      tradeOutOutList.push({
-        description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
-        tradeID: tradeID,
-      });
-    }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
-
-    return res.render("tradeRequest", {
-      tradeInOutList: tradeInOutList,
-      tradeOutOutList: tradeOutOutList,
-      loggedIn: req.session.user ? true : false
-    });
   })
   .post(async (req, res) => {
     let user = xss(req.session.user.userName).trim();
@@ -491,13 +493,13 @@ router
         try {
           await finalizeTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
         message: `Congratulations, ${user}. Your trade has been accepted!`,
         user: user,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
 
@@ -506,13 +508,13 @@ router
         try {
           await declineTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
         message: `Hello, ${user}. Your trade has been declined!`,
         user: user,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
   });
@@ -528,7 +530,7 @@ router
     } catch (e) {
       return res.status(404).render("error", {
         error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
     try {
@@ -537,7 +539,7 @@ router
     } catch (e) {
       return res.status(404).render("error", {
         error: "404: Page Not Found",
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     }
   })
@@ -579,7 +581,6 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
 
     friendList.push(user);
     const images = {};
- 
 
     for (const usr of friendList) {
       const imageData = await displayCollection(usr);
@@ -592,7 +593,7 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
       user,
       friendList,
       imagesJSON,
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -600,19 +601,18 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
   }
 });
 
-router.route('/error').get(async (req, res) => {
-
-  const error = req.session.error; 
+router.route("/error").get(async (req, res) => {
+  const error = req.session.error;
   req.session.error = null;
 
   const sanitizedError = xss(error);
 
-  return res.render('error', {
+  return res.render("error", {
     error: sanitizedError,
     loggedIn: req.session.user ? true : false,
   });
 });
- //reject friend request
+//reject friend request
 router.route("/rejectFriendRequest").post(async (req, res) => {
   try {
     const senderUsername = xss(req.body.username);
@@ -625,18 +625,14 @@ router.route("/rejectFriendRequest").post(async (req, res) => {
 
     req.session.friendRequests = friendRequests;
 
-    res.redirect('/protected');
-
-  }
-  catch (error) {
-    console.error('Error rejecting friend:', error);
-    res.render('error', { 
+    res.redirect("/protected");
+  } catch (error) {
+    console.error("Error rejecting friend:", error);
+    res.render("error", {
       error: error.message,
-      loggedIn: req.session.user ? true : false 
+      loggedIn: req.session.user ? true : false,
     });
   }
-
-
 });
 //accept friend request
 router.route("/acceptFriendRequest").post(async (req, res) => {
@@ -644,27 +640,22 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
     const senderUsername = xss(req.body.username);
     const receiverUsername = xss(req.session.user.userName);
 
-    await userAccount.acceptFriendRequest(receiverUsername,senderUsername);
+    await userAccount.acceptFriendRequest(receiverUsername, senderUsername);
 
     const updatedUser = await getUserByUsername(receiverUsername);
-   
+
     const friendRequests = updatedUser.friendRequests || [];
-   
+
     req.session.friendRequests = friendRequests;
 
-    res.redirect('/protected');
-
-  }
-
-  catch (error) {
-    console.error('Error accepting friend:', error);
-    res.render('error', { 
+    res.redirect("/protected");
+  } catch (error) {
+    console.error("Error accepting friend:", error);
+    res.render("error", {
       error: error.message,
-      loggedIn: req.session.user ? true : false
+      loggedIn: req.session.user ? true : false,
     });
   }
-
-
 });
 //friend's list
 router.route("/friendsList").get(async (req, res) => {
@@ -672,20 +663,19 @@ router.route("/friendsList").get(async (req, res) => {
     try {
       const senderUsername = xss(req.session.user.userName);
       const friends = await userAccount.getAllFriends(senderUsername);
-      res.render('friendsList', { 
+      res.render("friendsList", {
         friends,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
       });
     } catch (error) {
-      console.log('An error occurred while finding friends:', error);
-      res.render('error', { error: error.message });
+      console.log("An error occurred while finding friends:", error);
+      res.render("error", { error: error.message });
     }
-  }
-  else {
-    res.render('error', {
+  } else {
+    res.render("error", {
       error: "You are not logged in",
-      loggedIn: req.session.user ? true : false
-    })
+      loggedIn: req.session.user ? true : false,
+    });
   }
 });
 
