@@ -225,13 +225,13 @@ router.post("/addFriend", async (req, res) => {
     const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
     const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
-    await userAccount.sendFriendRequest(receiverUsername, senderUsername);
+    await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
     //res.redirect("/searchUsers");
     res.render('searchUsers', {
       requestSent: true,
-      loggedIn: req.session.user ? true : false
-    })
+      loggedIn: req.session.user ? true : false,
+    });
   } catch (error) {
     console.error("Error adding friend:", error);
     res.render("error", { 
@@ -316,7 +316,7 @@ router
         loggedIn: req.session.user ? true : false
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
     // res.render("trader", { sender: sender, reciever: reciever });
   })
@@ -395,7 +395,7 @@ router
         loggedIn: req.session.user ? true : false
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
   });
 
@@ -418,50 +418,54 @@ router
       throw "user cannot be empty";
     }
 
-    let out = await getTradeDetails(user);
+    try {
+      let out = await getTradeDetails(user);
 
-    let tradesIn = out.tradesIn;
-    let tradesOut = out.tradesOut;
-    let tradeInOutList = [];
-    let tradeOutOutList = [];
+      let tradesIn = out.tradesIn;
+      let tradesOut = out.tradesOut;
+      let tradeInOutList = [];
+      let tradeOutOutList = [];
 
-    if (!tradesIn || !tradesOut) {
-      throw "TradeIn or TradeOut not found";
+      if (!tradesIn || !tradesOut) {
+        throw "TradeIn or TradeOut not found";
+      }
+
+      tradesIn.forEach((trades) => {
+        let tradeInGet = trades[1];
+        let tradeInGetName = Object.keys(tradeInGet)[0];
+        let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
+        let tradeInSend = trades[2];
+        let tradeInSendName = Object.keys(tradeInSend)[0];
+        let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
+        let tradeID = trades[0];
+        tradeInOutList.push({
+          description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
+          tradeID: tradeID,
+        });
+      }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
+
+      tradesOut.forEach((trades) => {
+        let tradeOutSend = trades[1];
+        let tradeOutSendName = Object.keys(tradeOutSend)[0];
+        let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
+        let tradeOutGet = trades[2];
+        let tradeOutGetName = Object.keys(tradeOutGet)[0];
+        let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
+        let tradeID = trades[0];
+        tradeOutOutList.push({
+          description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
+          tradeID: tradeID,
+        });
+      }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
+
+      return res.render("tradeRequest", {
+        tradeInOutList: tradeInOutList,
+        tradeOutOutList: tradeOutOutList,
+        loggedIn: req.session.user ? true : false,
+      });
+    } catch (error) {
+      res.render("error", { error: error });
     }
-
-    tradesIn.forEach((trades) => {
-      let tradeInGet = trades[1];
-      let tradeInGetName = Object.keys(tradeInGet)[0];
-      let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
-      let tradeInSend = trades[2];
-      let tradeInSendName = Object.keys(tradeInSend)[0];
-      let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
-      let tradeID = trades[0];
-      tradeInOutList.push({
-        description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
-        tradeID: tradeID,
-      });
-    }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
-
-    tradesOut.forEach((trades) => {
-      let tradeOutSend = trades[1];
-      let tradeOutSendName = Object.keys(tradeOutSend)[0];
-      let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
-      let tradeOutGet = trades[2];
-      let tradeOutGetName = Object.keys(tradeOutGet)[0];
-      let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
-      let tradeID = trades[0];
-      tradeOutOutList.push({
-        description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
-        tradeID: tradeID,
-      });
-    }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
-
-    return res.render("tradeRequest", {
-      tradeInOutList: tradeInOutList,
-      tradeOutOutList: tradeOutOutList,
-      loggedIn: req.session.user ? true : false
-    });
   })
   .post(async (req, res) => {
     let user = xss(req.session.user.userName).trim();
@@ -491,7 +495,7 @@ router
         try {
           await finalizeTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
@@ -506,7 +510,7 @@ router
         try {
           await declineTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
