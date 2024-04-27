@@ -1,0 +1,66 @@
+<div id="tradeRequest-main" class="centerLogin">
+  <form action="/viewtrades" method="POST" id="execute-trade-form">
+
+    <div id="trade-request-data" class="centerLogin">
+
+      <div id="trade-in-div" class="centerLogin">
+        <h3> You have the following incoming trades: </h3>
+        <ol>
+          {{#each tradeInOutList}}
+            <li>{{this.description}}<span>
+                <label for="trade-in-request"></label>
+                <input
+                  type="checkbox"
+                  class="card-checkbox"
+                  name="tradeInSelectedId[]"
+                  value={{this.tradeID}}
+                  id="trade-in-request"
+                /></span></li>
+          {{/each}}
+        </ol>
+      </div>
+
+      <p
+        id="error-message-traderequest"
+        style="color: rgb(34, 0, 255); display: none; font-weight: bold;"
+      ></p>
+      <button
+        class="homeButton button-style"
+        type="submit"
+        id="accept-trade"
+        name="action"
+        value="accept-trade"
+      >Accept Trade</button>
+      <button
+        class="homeButton button-style"
+        type="submit"
+        id="decline-trade"
+        name="action"
+        value="decline-trade"
+      >Decline Trade</button>
+
+      <div id="trade-out-div" class="centerLogin">
+        <h3> You have the following outgoing trades: </h3>
+        <ol>
+          {{#each tradeOutOutList}}
+            <li>{{this.description}}</li>
+
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="container">
+  <button
+    class="homeButton"
+    onclick="location.href='/protected';"
+    type="submit"
+  >Home Page</button>
+  <button
+    class="homeButton"
+    onclick="location.href='/trade';"
+    type="submit"
+  >Make New Trades</button>
+</div>
+<script src="/public/js/client_side_trading.js"></script>

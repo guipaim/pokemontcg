@@ -1,0 +1,54 @@
+<div id="tradeComplete-main">
+  <div>
+    <h1>Congratulations
+      {{sender}}, your trade request has been sent to
+      {{reciever}}.</h1>
+    <h2>Details of your trade: </h2>
+  </div>
+
+  <div id="trade-complete-yours">
+    <h3 class="trader-complete-titles"> Your Cards: </h3>
+    <ul id="trade-complete-list">
+      {{#each yourDetails}}
+
+        <li>ID: {{id}}</li>
+        <li>Name: {{name}}</li>
+
+        <a href={{link}} target="_blank"><img
+            src="{{image}}"
+            class="your-trade-imgs"
+          /></a>
+
+      {{/each}}
+    </ul>
+  </div>
+
+  <div id="trade-complete-theirs">
+    <h3 class="trader-complete-titles"> {{reciever}}'s Cards: </h3>
+    <ul id="trade-complete-list">
+      {{#each theirDetails}}
+
+        <li>ID: {{id}}</li>
+        <li>Name: {{name}}</li>
+
+        <a href={{link}} target="_blank"><img
+            src="{{image}}"
+            class="their-trade-imgs"
+          /></a>
+
+      {{/each}}
+    </ul>
+  </div>
+  <div class="container">
+    <button
+      class="homeButton"
+      onclick="location.href='/protected';"
+      type="submit"
+    >Home Page</button>
+    <button
+      class="homeButton"
+      onclick="location.href='/viewtrades';"
+      type="submit"
+    >Check Trades</button>
+  </div>
+</div>

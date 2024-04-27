@@ -1,0 +1,94 @@
+<main id="trader-main">
+  <h1 id="trader-main-heading">Hello,
+    {{sender}}. You are now trading with
+    {{reciever}}.</h1>
+
+  <form action="/trade/{{reciever}}" method="POST" id="trade-user-cards-form">
+
+    <div id="trader-yours">
+
+      <h2 class="traders-titles"> Your Cards: </h2>
+      <ul>
+        {{#each senderCardList}}
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}
+              <span class="traderPokeID">({{id}})</span>
+            </span>
+
+            <label for="trade-yours-card-{{id}}"></label>
+            <input
+              type="checkbox"
+              class="card-checkbox"
+              name="yourselectedId[]"
+              value={{id}}
+              id="trade-yours-card-{{id}}"
+            />
+
+            <ul class="trader-sublist">
+              <li>Supertype: {{Supertype}}</li>
+              <li>Subtype: {{Subtypes}}</li>
+              <li>HP: {{HP}}</li>
+              <li>Types: {{Types}}</li>
+              <li>Evolves from: {{"Evolves From"}}</li>
+              <li>Evolves To: {{"Evolves To"}}</li>
+              <li>Average Sell Price: {{"Average Sell Price"}}</li>
+            </ul>
+
+            <a href={{link}} target="_blank"><img
+                src="{{image}}"
+                class="trade-set-1"
+              /></a>
+          </li>
+        {{/each}}
+      </ul>
+
+    </div>
+
+    <button type="submit" id="trade-button">Trade</button>
+
+    <div id="trader-theirs">
+      <h2 class="traders-titles"> {{reciever}}'s Cards: </h2>
+      <ul>
+        {{#each recieverCardList}}
+
+          <li class="tradeCards"><span class="traderPokeName">{{Name}}
+              <span class="traderPokeID">({{id}})</span>
+            </span>
+
+            <label for="trader-theirs-card-{{id}}"></label>
+            <input
+              type="checkbox"
+              class="card-checkbox"
+              name="theirselectedId[]"
+              value={{id}}
+              id="trade-theirs-card-{{id}}"
+            />
+
+            <ul class="trader-sublist">
+              <li>Supertype: {{Supertype}}</li>
+              <li>Subtype: {{Subtypes}}</li>
+              <li>HP: {{HP}}</li>
+              <li>Types: {{Types}}</li>
+              <li>Evolves from: {{"Evolves From"}}</li>
+              <li>Evolves To: {{"Evolves To"}}</li>
+              <li>Average Sell Price: {{"Average Sell Price"}}</li>
+            </ul>
+
+            <a href={{link}} target="_blank"><img
+                src="{{image}}"
+                class="trade-set-2"
+              /></a>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+
+  </form>
+  <div class="container">
+    <button
+      class="homeButton"
+      onclick="location.href='/protected';"
+      type="submit"
+    >Cancel Trade and Return to Home Page</button>
+  </div>
+  <script src="/public/js/client_side_trading.js"></script>
+</main>

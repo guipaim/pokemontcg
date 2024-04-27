@@ -1,0 +1,45 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Pokemon TCG</title>
+  <link rel="stylesheet" href="../../public/css/styles.css" />
+  <link rel="icon" type="image/png" href="../../public/images/Pokéball.png" />
+
+</head>
+
+<body>
+
+
+  {{#unless buttonsTurnedOff}}
+  {{#if loggedIn}}
+  <header>
+    <div class="container">
+      <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+      <button class="homeButton" onclick="goBack()">Go Back</button>
+    </div>
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+    </script>
+  </header>
+  {{/if}}
+  {{/unless}}
+
+
+
+
+
+  <main>
+    {{{body}}}
+
+  </main>
+
+  <footer>
+    <p class="centerLogin">Group 3</p>
+  </footer>
+
+</body>
+
+</html>

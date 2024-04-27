@@ -1,0 +1,42 @@
+{{#if loggedIn}}
+<p class="centerLoginElse">Welcome
+  {{userName}}, the time is now:
+  <span id="currentTime"></span>
+</p>
+<div class="centerLogin">
+  {{#if friendRequests.length}}
+  <h2>Friend Requests:</h2>
+  <ul>
+    {{#each friendRequests}}
+    <p>Friend Request</p>
+    <li>{{this}}</li>
+    <form class="acceptFriendRequestForm" action="/acceptFriendRequest" method="POST">
+      <input type="hidden" name="username" value="{{this}}" class="homeButton">
+      <button type="submit" class="acceptrequest">Accept</button>
+    </form>
+    <form class="rejectFriendRequestForm" action="/rejectFriendRequest" method="POST">
+      <input type="hidden" name="username" value="{{this}}" class="homeButton">
+      <button type="submit" class="rejectrequest">Reject</button>
+    </form>
+    {{/each}}
+  </ul>
+  {{else}}
+  <p>No pending friend requests.</p>
+  {{/if}}
+</div>
+<div class="pContainer">
+  <button class="homeButton" onclick="location.href='/trade';" type="submit">Trade Now</button>
+  <button class="homeButton" onclick="location.href='/viewtrades';" type="submit">View Trades</button>
+  <button class="homeButton" onclick="location.href='/searchUsers';" type="submit">Search Users</button>
+  <button class="homeButton" onclick="location.href='/friendsList';" type="submit">List of Friends</button>
+  <button class="homeButton" onclick="location.href='/ranking';" type="submit">Ranking Chart</button>
+  <button class="homeButton" onclick="location.href='/viewCollections/{{userName}}';" type="submit">View
+    Collections</button>
+  <button class="homeButton" onclick="location.href='/logout';" type="submit">Logout</button>
+</div>
+{{else}}
+<p>You are not logged in</p>
+<button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+{{/if}}
+<script src="/public/js/client_side_addUser.js"></script>
+<script src="/public/js/timeScript.js"></script>

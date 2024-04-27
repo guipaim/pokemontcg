@@ -1,0 +1,21 @@
+<div id="tradeHome-main">
+  <form action="/trade" method="POST" id="search-user-form">
+    <label for="tradeSearchUser" id="tradeSearchLabel">Trade with:</label>
+    <input type="text" id="tradeSearchUser" name="tradeSearchUser" />
+    <button type="submit" id="tradeSearchSubmit">Search for user</button>
+  </form>
+</div>
+<p
+  id="error-message-trading"
+  style="color: rgb(34, 0, 255); display: none; font-weight: bold;"
+></p>
+<div class="container">
+  <button
+    class="homeButton"
+    onclick="location.href='/protected';"
+    type="submit"
+  >Home Page</button>
+
+</div>
+
+<script src="/public/js/client_side_trading.js"></script>

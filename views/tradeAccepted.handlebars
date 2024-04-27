@@ -1,0 +1,22 @@
+<div id="trade-accepted-message">
+  <div id="message-itself">{{message}}</div>
+</div>
+<div class="container">
+  <button
+    class="homeButton"
+    onclick="location.href='/protected';"
+    type="submit"
+  >Home Page</button>
+  <button
+    class="homeButton"
+    onclick="location.href='/viewtrades';"
+    type="submit"
+  >View Your Trades</button>
+  <button
+    class="homeButton"
+    onclick="location.href='/viewCollections/{{user}}';"
+    type="submit"
+  >View Your Collection </button>
+</div>
+
+<script src="/public/js/client_side_trading.js"></script>

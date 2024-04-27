@@ -1,0 +1,468 @@
+/* You will create a CSS stylesheet in /public/css/lab10.css; this file should have at least 5 rulesets.  You will need to utilize all 5 rulesets on each of the pages (not every page has to use all 5 rulesets each but all 5 rulesets must be utilized by the various pages in your application).  So you can have some rulesets for one page, some for another page but there needs to be at least 5 total rulesets that are used between all the pages.  */
+body {
+  background: #bd9805;
+  font-family: "Flexo-Regular", arial, sans-serif;
+  font-size: 16px;
+}
+
+select#dropdown-menu {
+  width: 200px; /* Adjust width as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  outline: none; /* Remove default outline */
+  cursor: pointer;
+}
+
+select#dropdown-menu option {
+  background-color: #fff;
+  color: #333;
+}
+
+select#dropdown-menu option:hover {
+  background-color: #f0f0f0;
+}
+
+main {
+  max-width: 75%;
+  margin: auto;
+}
+
+header {
+  border-bottom: 1px solid #afafaf;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.15rem;
+}
+
+h6 {
+  font-size: 1.05rem;
+}
+
+p {
+  color: #000000;
+  font-size: 1rem;
+  line-height: 2;
+}
+
+.friend-request-sent {
+  text-align: center;
+  position: relative;
+}
+
+.post {
+  width: 75%;
+  border-bottom: 1px dashed #333;
+}
+
+.error {
+  color: rgb(34, 0, 255);
+  font-weight: bold;
+  text-align: center;
+}
+
+.lgout {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.button-pokeball {
+  background-image: url("/public/images/Pokéball.png");
+  display: block;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  color: white;
+  padding: 20px;
+  /* Adjust padding to make it more circular if needed */
+  border: 2px solid #fff;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  /* Optional: to make the text uppercase */
+  cursor: pointer;
+  /* Change the cursor to signify it's clickable */
+  width: 100px;
+  /* Set a fixed width */
+  height: 100px;
+  /* Set a fixed height to make it circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 6px -6px black;
+  /* Optional: to give some depth */
+  margin: auto;
+}
+
+.button-pokeball::before,
+.button-pokeball::after {
+  content: "";
+  position: absolute;
+  /* other styles remain unchanged */
+}
+
+.button-pokeball span {
+  /* New style for text */
+  color: #ffcb05;
+  position: relative;
+  z-index: 2;
+  /* Make sure text appears above the ::before and ::after elements */
+}
+
+#trader-main {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+}
+
+#trader-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+  border-radius: 5px;
+}
+
+#trade-user-cards-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding-top: 50px;
+}
+
+#trade-button {
+  padding: 10px 20px;
+  background-color: #ffcb05;
+  border: 2px solid #000;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#trader-yours,
+#trader-theirs {
+  flex: 1;
+  padding: 10px;
+  min-width: 0;
+}
+
+#search-user-cards-form > * {
+  margin: 0 10px;
+}
+
+.traderPokeName {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.trader-sublist {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  list-style-type: none;
+  margin: 0;
+}
+
+.trade-set-1 {
+  padding: 20px;
+}
+
+.trade-set-2 {
+  padding: 20px;
+}
+
+#trader-yours li,
+#trader-theirs li {
+  list-style-type: none;
+}
+
+.traders-titles {
+  font-size: 35px;
+  text-align: center;
+  width: 100%;
+  margin-left: 15px;
+}
+
+.tradeCards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.traderPokeName {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+.trader-sublist {
+  list-style-type: none;
+  padding: 0;
+  font-size: large;
+}
+
+.trade-set-1,
+.trade-set-2 {
+  padding: 10px;
+  max-width: 100%;
+  height: auto;
+  padding-left: 5px;
+}
+
+#tradeComplete-main {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+}
+
+#tradeComplete-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+  border-radius: 5px;
+}
+
+#trade-complete-yours li,
+#trade-complete-theirs li {
+  list-style-type: none;
+}
+
+#trade-complete-list {
+  margin-right: 35px;
+}
+
+#trade-complete-yours img,
+#trade-complete-theirs img {
+  padding-top: 15px;
+}
+
+#tradeHome-main {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+  font-size: 30px;
+}
+
+#tradeSearchLabel {
+  margin-top: 500px;
+}
+
+#tradeSearchUser {
+  height: 45px;
+  width: 400px;
+  border-radius: 5px;
+  font-size: 25px;
+  /* Sets the size of the text inside the input field */
+  border: 1px solid #ccc;
+  /* Optional: adds a border to the input field */
+  border-radius: 4px;
+  /* Optional: rounds the corners of the input field */
+}
+
+#tradeSearchSubmit {
+  background-color: #007bff;
+  /* Blue background */
+  color: white;
+  /* White text color */
+  border: none;
+  /* No border */
+  padding: 12px 24px;
+  /* Top and bottom padding, left and right padding */
+  font-size: 16px;
+  /* Text size */
+  cursor: pointer;
+  /* Cursor indicates clickable item */
+  border-radius: 5px;
+  /* Rounded corners */
+  transition: background-color 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effects */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+}
+
+#teadeSearchSubmit:hover {
+  background-color: #0056b3;
+  /* Darker blue when hovered */
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+  /* Increased shadow on hover for a "lifting" effect */
+}
+
+#tradeHome-main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+  border-radius: 5px;
+}
+
+#currentTradeData li {
+  list-style-type: none;
+}
+
+#trade-accepted-message {
+  text-align: center;
+  position: relative;
+}
+
+#message-itself {
+  font-size: 30px;
+}
+
+#trade-accepted-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3498db;
+  z-index: -1;
+  border-radius: 5px;
+}
+
+table {
+  text-align: left;
+  position: center;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f6f6f6;
+}
+
+/* Spacing */
+td,
+th {
+  border: 1px solid #999;
+  padding: 20px;
+}
+
+th {
+  background: brown;
+  color: white;
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  padding: 10px;
+}
+
+.primary {
+  background-color: #000000;
+}
+
+tfoot > tr {
+  background: black;
+  color: white;
+}
+
+tbody > tr:hover {
+  background-color: #2cff07;
+}
+
+.homeButton {
+  min-height: 1.9em;
+  background-color: rgb(255, 255, 255);
+  color: black;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid rgb(68, 116, 118);
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Set a height if needed */
+  height: 50px;
+}
+
+.pContainer {
+  width: 55%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.centerLogin {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+#error-message-trading {
+  text-align: center;
+}
+
+#error-message-traderequest {
+  text-align: center;
+}
+
+.button-style:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Dark grey text */
+  cursor: not-allowed; /* Cursor indicates the button is disabled */
+}
+
+#currentTime {
+  display: inline;
+  padding-left: 5px;
+}
+
+.centerLoginElse {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+div:empty {
+  display: none;
+}

@@ -1,0 +1,25 @@
+<p class="centerLogin">The Pokémon TCG players web application is intended to digitize the old schoolhouse playground.  Users can collect, view, and trade with their friends.</p>
+<p class="centerLogin">Please log into your Pokemon account.</p>
+<form id="login-form" method="POST" action="/login">
+
+  <div class="centerLogin">
+    <label for="userNameInput">User Name:</label>
+    <input type="text" id="userNameInput" name="userNameInput" />
+  </div>
+
+  <div class="centerLogin" style="margin-top: 10px">
+    <label for="passwordInput">Password:</label>
+    <input type="password" id="passwordInput" name="passwordInput" required />
+  </div>
+
+  <button type="submit" class="button-pokeball" id="checkButton" style="margin-top: 10px"><span>Login</span></button>
+  
+  <p id="error" class="error"></p>
+  
+</form>
+
+<div class="container">
+  <button class="homeButton" onclick="location.href='/register';" type="submit">Don't have an account? Register
+    here.</button>
+</div>
+<script src="/public/js/client_side_validation.js"></script>

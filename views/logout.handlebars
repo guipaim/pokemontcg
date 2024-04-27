@@ -1,0 +1,10 @@
+<p class="centerLogin">You have successfully logged out.</p>
+<p class="centerLogin">It is always a good idea to close your browser to protect your privacy.</p>
+<p id="error" class="error"></p>
+
+
+<div class="container">
+    {{#unless loggedIn}}
+    <button class="button-pokeball" onclick="location.href='/login';" type="submit">Login</button>
+    {{/unless}}
+</div>

@@ -1,0 +1,32 @@
+<p class="centerLogin">Create a new user account.</p>
+<form id="registration-form" method="POST" action="/register">
+  <div class="centerLogin">
+    <label for="userNameInput">User Name:</label>
+    <input type="text" id="userNameInput" name="userNameInput">
+  </div>
+  
+  <div class="centerLogin" style="margin-top: 10px">
+    <label for="passwordInput">Password:</label>
+    <input type="password" id="passwordInput" name="passwordInput">
+  </div>
+
+  <div class="centerLogin" style="margin-top: 10px">
+    <label for="confirmPasswordInput">Confirm Password:</label>
+    <input type="password" id="confirmPasswordInput" name="confirmPasswordInput">
+  </div>
+
+  <div style="margin-top: 10px">
+    <button type="submit" class="button-pokeball" id="checkButton">
+      <span>Register</span>
+    </button>
+  </div>
+  
+  <p id="error" class="error"></p>
+
+</form>
+
+<div class="container">
+  <button class="homeButton" onclick="location.href='/login';" type="submit">Already have an account? Click here to log-in</button>
+</div>
+
+<script src="/public/js/client_side_validation.js"></script>

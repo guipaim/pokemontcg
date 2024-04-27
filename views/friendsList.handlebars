@@ -1,0 +1,17 @@
+<div class="centerLogin">
+    {{#if loggedIn}}
+    <h2>List of friends:</h2>
+    {{#if friends}}
+    <ul>
+        {{#each friends}}
+        <li>{{this}}</li>
+        {{/each}}
+        {{else}}
+        <p>You currently have no friends</p>
+        {{/if}}
+    </ul>
+    {{else}}
+    <p>You must be logged in to view friends</p>
+    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+    {{/if}}
+</div>
