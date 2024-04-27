@@ -22,6 +22,10 @@ function validateUsername(username) {
     return "User Name must be between 2 and 25 characters long.\n";
   }
 
+  if (!isNaN(parseFloat(username)) && isFinite(username)) {
+    return "User Name must contain at least one letter";
+  }
+
   return "";
 }
   
@@ -63,7 +67,10 @@ function validateRegistrationForm(event) {
   let pwd = document.getElementById('passwordInput').value;
   let cnfmPwd = document.getElementById('confirmPasswordInput').value;
 
-  if (userName.trim() === '') {
+  const userNameError = validateUsername(userName);
+  userName = userName.toLowerCase().trim();
+  
+  /*if (userName.trim() === '') {
     errorMessages.push("User Name cannot be empty.\n");
   }
 
@@ -77,6 +84,10 @@ function validateRegistrationForm(event) {
     errorMessages.push("User Name must be between 2 and 25 characters long.\n");
   }
 
+  if (!isNaN(parseFloat(userName)) && isFinite(userName)) {
+    return "User Name must contain at least one letter";
+  }*/
+
   const passwordError = validatePassword(pwd);
 
   if (pwd !== cnfmPwd) {
@@ -85,6 +96,9 @@ function validateRegistrationForm(event) {
   if (passwordError) {
     errorMessages.push(passwordError);
 
+  }
+  if (userNameError) {
+    errorMessages.push(userNameError);
   }
 
   if (errorMessages.length > 0) {
