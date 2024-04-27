@@ -195,16 +195,16 @@ router
 
       const foundUsers = await findUsersByUsernameSubstring(username);
 
-      if (!foundUsers) {
+      if (foundUsers.length===0) {
 
-        return res.render('SearchUsers', { 
+        return res.render('searchUsers', { 
           message: "User not found",
           noMatch: true,
           loggedIn: req.session.user ? true : false
          });
       }
 
-      res.render("SearchUsers", { 
+      res.render("searchUsers", { 
         users: foundUsers,
         loggedIn: req.session.user ? true : false,
         noMatch: true
