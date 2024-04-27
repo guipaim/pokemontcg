@@ -75,6 +75,11 @@ p {
   line-height: 2;
 }
 
+.friend-request-sent {
+  text-align: center;
+  position: relative;
+}
+
 .post {
   width: 75%;
   border-bottom: 1px dashed #333;
@@ -456,4 +461,8 @@ tbody > tr:hover {
   grid-auto-flow: column;
   justify-content: center;
   align-items: center;
+}
+
+div:empty {
+  display: none;
 }

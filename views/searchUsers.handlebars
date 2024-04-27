@@ -1,9 +1,15 @@
+
+{{#if loggedIn}}
 <form id="searchUserForm" action="/searchUsers" method="post">
     <div class="centerLogin" style="margin-top:10px">
         <input type="text" id="searchInput" name="username" placeholder="Enter username">
         <button class="homeButton" type="submit" style="margin-top:10px">Search</button>
     </div>
 </form>
+
+{{#if requestSent}}
+    <p class="friend-request-sent">Friend request sent</p>
+{{/if}}
 
 <div id="searchResults" class="centerLogin">
     {{#if users.length}}
@@ -13,14 +19,24 @@
                 <p class="centerLogin">User found: {{this.userName}}</p>
                 <form id="sendFriendRequestForm" action="/addFriend" method="post">
                     <div class="centerLogin">
-                    <input type="hidden" id="receiverUsername" name="username" value="{{this.userName}}">
-                    <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
+                        <input type="hidden" id="receiverUsername" name="username" value="{{this.userName}}">
+                        <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
                     </div>
+                   
                 </form>
+                 <div class="centerLogin">
+                        <button class="homeButton" onclick="location.href='/viewSearchCollections/{{this.userName}}';" type="submit" id="viewSearchCollectionBtn">View Collection</button>
+                </div>
             </div>
         {{/each}}
     {{else}}
-    <p>No match for that search term</p>
+        {{#if noMatch}}
+            <p>No match for that search term</p>
+        {{/if}}
     {{/if}}
 </div>
+{{else}}
+    <p>You must be logged in to search users</p>
+    <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
+{{/if}}
 <script src="/public/js/client_side_addUser.js"></script>

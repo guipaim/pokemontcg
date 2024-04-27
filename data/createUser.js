@@ -89,6 +89,10 @@ export class UserAccount {
                 throw new Error('Friend request already sent');
             }
 
+            if (senderUser.friendList.includes(receiverUsername)) {
+                throw new Error(`You are already friends with ${receiverUsername}`);
+            }
+
             // Check if the receiver has already received a friend request from the sender
             if (receiverUser.friendRequests.includes(senderUsername)) {
                 throw new Error('Friend request already received');
@@ -123,33 +127,41 @@ export class UserAccount {
             }
             //the following  will keep checking if friend requets and outgoing friend requests exist or not 
             const senderIndex = receiverUser.friendRequests.indexOf(senderUsername);
-            console.log(`senderIndex is ${senderIndex}`);
-
-            
 
             if (senderIndex !== -1) {
                 receiverUser.friendRequests.splice(senderIndex, 1);
             }
 
             const receiverIndexInSender = senderUser.friendRequests.indexOf(receiverUsername);
-            console.log(`receiverIndexInSender is ${receiverIndexInSender}`);
 
             if (receiverIndexInSender !== -1) {
             senderUser.friendRequests.splice(receiverIndexInSender, 1);
             }
 
             const receiverIndexInSenderOutgoing = senderUser.outGoingFriendRequests.indexOf(receiverUsername);
-            console.log(`receiverIndexInSenderOutgoing is ${receiverIndexInSenderOutgoing}`);
 
             if (receiverIndexInSenderOutgoing !== -1) {
                 senderUser.outGoingFriendRequests.splice(receiverIndexInSenderOutgoing, 1);
             }
 
             const senderIndexInReceiverOutgoing = receiverUser.outGoingFriendRequests.indexOf(senderUsername);
-            console.log(`senderIndexInReceiverOutgoing is ${senderIndexInReceiverOutgoing}`);
 
             if (senderIndexInReceiverOutgoing !== -1) {
             receiverUser.outGoingFriendRequests.splice(senderIndexInReceiverOutgoing, 1);
+            }
+
+              // Check if the sender has already sent a friend request to the receiver
+            //   if (senderUser.outGoingFriendRequests.includes(receiverUsername)) {
+            //     throw new Error('Friend request already sent');
+            // }
+
+            if (senderUser.friendList.includes(receiverUsername)) {
+                throw new Error(`You are already friends with ${receiverUsername}`);
+            }
+
+            // Check if the receiver has already received a friend request from the sender
+            if (receiverUser.friendRequests.includes(senderUsername)) {
+                throw new Error('Friend request already received');
             }
             //Push sender and user to each other's friend lists after friend request is accepted 
             receiverUser.friendList.push(senderUsername);
@@ -205,7 +217,7 @@ export class UserAccount {
                 if (senderIndex !== -1) {
                     senderUser.outGoingFriendRequests.splice(senderIndex, 1);
                 }
-    
+                          
                 // Update both user objects in the database
                 await userAccountsCollection.updateOne(
                     { userName: receiverUsername },
@@ -228,14 +240,20 @@ export class UserAccount {
         // receiverUsername = exportedMethods.checkString(receiverUsername, 'Receiver Username').toLowerCase().trim();
 
         const userAccountsCollection = await userAccounts();
-        const senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+
+        let senderUser;
+
+        try {
+            senderUser = await userAccountsCollection.findOne({ userName: senderUsername });
+        } catch (e) {
+            return new Error("You are not logged in");
+        }
         // const receiverUser = await userAccountsCollection.findOne({ userName: receiverUsername });
         if(!senderUser ){
-            throw new Error("user not found")
+            throw new Error("You are not logged in");
         }
 
         const senderFriendList=senderUser.friendList
-        console.log(senderFriendList);
      
        return senderFriendList;
 

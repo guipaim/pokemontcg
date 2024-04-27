@@ -104,7 +104,6 @@ router
       try {
         newLogin = await loginUser(userNameInput, passwordInput);
       } catch (err) {
-        console.log(passwordInput);
         console.error("Login error:", err.message);
         req.session.error = err.message;
         return res.status(403).redirect("error");
@@ -141,14 +140,14 @@ router.route("/protected").get(async (req, res) => {
     req.session.error = "403: You do not have permission to access this page.";
     return res.status(403).redirect("error");
   }
-
-  const user = await getUserByUsername(req.session.user.userName);
+  const sanitizedUsername = xss(req.session.user.userName);
+  //const user = await getUserByUsername(req.session.user.userName);
+  const user = await getUserByUsername(sanitizedUsername);
   const friendRequests = user.friendRequests;
-  console.log(user.friendRequests);
-  console.log(user);
 
   res.render("protected", {
-    userName: req.session.user.userName,
+    //userName: req.session.user.userName,
+    userName: sanitizedUsername,
     currentTime: new Date().toLocaleTimeString(),
     friendRequests: friendRequests,
     loggedIn: req.session.user ? true : false
@@ -193,19 +192,22 @@ router
   .post(async (req, res) => {
     try {
       const { username } = req.body;
-      //const foundUser = await getUserByUsername(username);
+
       const foundUsers = await findUsersByUsernameSubstring(username);
 
       if (!foundUsers) {
+
         return res.render('SearchUsers', { 
           message: "User not found",
+          noMatch: true,
           loggedIn: req.session.user ? true : false
          });
       }
 
       res.render("SearchUsers", { 
         users: foundUsers,
-        loggedIn: req.session.user ? true : false
+        loggedIn: req.session.user ? true : false,
+        noMatch: true
        });
     } catch (error) {
       console.error("Error searching for user:", error);
@@ -220,15 +222,16 @@ router
 router.post("/addFriend", async (req, res) => {
   try {
 
-    const senderUsername = req.session.user.userName; // Retrieve sender's username from session user
-    const receiverUsername = req.body.username; // Retrieve receiver's username from form
-
-    console.log("Sender Username:", senderUsername);
-    console.log("Receiver Username:", receiverUsername);
+    const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
+    const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
 
-    res.redirect("/searchUsers");
+    //res.redirect("/searchUsers");
+    res.render('searchUsers', {
+      requestSent: true,
+      loggedIn: req.session.user ? true : false,
+    });
   } catch (error) {
     console.error("Error adding friend:", error);
     res.render("error", { 
@@ -248,7 +251,7 @@ router
 
   .post(async (req, res) => {
     let { tradeSearchUser } = req.body;
-    let tradeSender = req.session.user.userName;
+    let tradeSender = xss(req.session.user.userName);
 
     if (!tradeSearchUser || !tradeSender) {
       throw "There is no trader or tradee";
@@ -313,7 +316,7 @@ router
         loggedIn: req.session.user ? true : false
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
     // res.render("trader", { sender: sender, reciever: reciever });
   })
@@ -392,14 +395,14 @@ router
         loggedIn: req.session.user ? true : false
       });
     } catch (error) {
-      return res.status(404).json(`Error: ${error}`);
+      return res.render("error", { error: error });
     }
   });
 
 router
   .route("/viewtrades")
   .get(async (req, res) => {
-    let user = req.session.user.userName;
+    let user = xss(req.session.user.userName).trim();
 
     if (!user) {
       throw "No user was found";
@@ -415,53 +418,57 @@ router
       throw "user cannot be empty";
     }
 
-    let out = await getTradeDetails(user);
+    try {
+      let out = await getTradeDetails(user);
 
-    let tradesIn = out.tradesIn;
-    let tradesOut = out.tradesOut;
-    let tradeInOutList = [];
-    let tradeOutOutList = [];
+      let tradesIn = out.tradesIn;
+      let tradesOut = out.tradesOut;
+      let tradeInOutList = [];
+      let tradeOutOutList = [];
 
-    if (!tradesIn || !tradesOut) {
-      throw "TradeIn or TradeOut not found";
+      if (!tradesIn || !tradesOut) {
+        throw "TradeIn or TradeOut not found";
+      }
+
+      tradesIn.forEach((trades) => {
+        let tradeInGet = trades[1];
+        let tradeInGetName = Object.keys(tradeInGet)[0];
+        let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
+        let tradeInSend = trades[2];
+        let tradeInSendName = Object.keys(tradeInSend)[0];
+        let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
+        let tradeID = trades[0];
+        tradeInOutList.push({
+          description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
+          tradeID: tradeID,
+        });
+      }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
+
+      tradesOut.forEach((trades) => {
+        let tradeOutSend = trades[1];
+        let tradeOutSendName = Object.keys(tradeOutSend)[0];
+        let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
+        let tradeOutGet = trades[2];
+        let tradeOutGetName = Object.keys(tradeOutGet)[0];
+        let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
+        let tradeID = trades[0];
+        tradeOutOutList.push({
+          description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
+          tradeID: tradeID,
+        });
+      }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
+
+      return res.render("tradeRequest", {
+        tradeInOutList: tradeInOutList,
+        tradeOutOutList: tradeOutOutList,
+        loggedIn: req.session.user ? true : false,
+      });
+    } catch (error) {
+      res.render("error", { error: error });
     }
-
-    tradesIn.forEach((trades) => {
-      let tradeInGet = trades[1];
-      let tradeInGetName = Object.keys(tradeInGet)[0];
-      let tradeInGetListString = tradeInGet[tradeInGetName].join(", ");
-      let tradeInSend = trades[2];
-      let tradeInSendName = Object.keys(tradeInSend)[0];
-      let tradeInSendListString = tradeInSend[tradeInSendName].join(", ");
-      let tradeID = trades[0];
-      tradeInOutList.push({
-        description: `Incoming Trade: You get ${tradeInGetListString} for ${tradeInSendListString} from ${tradeInGetName}`,
-        tradeID: tradeID,
-      });
-    }); //each tradein, in pairs of [{tradeFrom: [cards], tradeTo: [cards]}]
-
-    tradesOut.forEach((trades) => {
-      let tradeOutSend = trades[1];
-      let tradeOutSendName = Object.keys(tradeOutSend)[0];
-      let tradeOutSendListString = tradeOutSend[tradeOutSendName].join(", ");
-      let tradeOutGet = trades[2];
-      let tradeOutGetName = Object.keys(tradeOutGet)[0];
-      let tradeOutGetListString = tradeOutGet[tradeOutGetName].join(", ");
-      let tradeID = trades[0];
-      tradeOutOutList.push({
-        description: `Outgoing Trade ${tradeID}: You get ${tradeOutSendListString} for ${tradeOutGetListString} from ${tradeOutSendName} `,
-        tradeID: tradeID,
-      });
-    }); //each tradeout, in pairs of [{tradeTo: [cards], tradeFrom: [cards]}]
-
-    return res.render("tradeRequest", {
-      tradeInOutList: tradeInOutList,
-      tradeOutOutList: tradeOutOutList,
-      loggedIn: req.session.user ? true : false
-    });
   })
   .post(async (req, res) => {
-    let user = req.session.user.userName;
+    let user = xss(req.session.user.userName).trim();
 
     if (!user) {
       throw "No user was found";
@@ -488,7 +495,7 @@ router
         try {
           await finalizeTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
@@ -503,7 +510,7 @@ router
         try {
           await declineTrade(id);
         } catch (error) {
-          console.error("Error pulling card from cardList:", error);
+          res.render("error", { error: error });
         }
       }
       res.render("tradeAccepted", {
@@ -518,8 +525,10 @@ router
 router
   .route("protected/:id")
   .get(async (req, res) => {
+    let validatedId;
     try {
-      req.params.id = validation.checkId(req.params.id);
+      //req.params.id = validation.checkId(req.params.id);
+      validatedId = validation.checkId(xss(req.params.id));
     } catch (e) {
       return res.status(404).render("error", {
         error: "404: Page Not Found",
@@ -527,7 +536,7 @@ router
       });
     }
     try {
-      const user = await cardMongoData.getUserById(req.params.id);
+      const user = await cardMongoData.getUserById(validatedId);
       return res.json(user);
     } catch (e) {
       return res.status(404).render("error", {
@@ -542,15 +551,23 @@ router
       return res.redirect("/login");
     }
     return res.send(
-      `POST request to http://localhost:3000/users/${req.params.id}`
+      //`POST request to http://localhost:3000/users/${req.params.id}`
+      `POST request to http://localhost:3000/users/${validatedId}`
     );
   })
   .delete(async (req, res) => {
     if (!req.session.user) {
       return res.redirect("/login");
     }
+    let validatedId;
+    try {
+      validatedId = validation.checkId(xss(req.params.id));
+    } catch (error) {
+      return res.status(400).send("Invalid ID provided.");
+    }
     return res.send(
-      `DELETE request to http://localhost:3000/users/${req.params.id}`
+      //`DELETE request to http://localhost:3000/users/${req.params.id}`
+      `DELETE request to http://localhost:3000/users/${validatedId}`
     );
   });
 
@@ -560,25 +577,49 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
     return res.status(403).redirect("error");
   }
   try {
-    const user = req.session.user.userName;
-    //console.log("user", user)
+    const user = xss(req.session.user.userName);
+
     const friendList = await getFriendList(user);
-    //console.log("route friend list: ", friendList);
+
     friendList.push(user);
     const images = {};
-    //console.log("route iamges: ", images);
+ 
 
     for (const usr of friendList) {
       const imageData = await displayCollection(usr);
       images[usr] = imageData;
     }
-    //console.log(images)
+
     const imagesJSON = JSON.stringify(images);
-    //console.log(imagesJSON)
+
     return res.render("collectionView", {
       user,
       friendList,
       imagesJSON,
+      loggedIn: req.session.user ? true : false
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+router.route("/viewSearchCollections/:searchUserName").get(async (req, res) => {
+  if (!req.session.user) {
+    req.session.error = "403: You do not have permission to access this page";
+    return res.status(403).redirect("error");
+  }
+  try {
+    const user = xss(req.params.searchUserName);
+
+    const images = {};
+   
+    const imageData = await displayCollection(user);
+    images[user] = imageData;
+
+    return res.render("searchCollectionView", {
+      user,
+      imageData,
       loggedIn: req.session.user ? true : false
     });
   } catch (error) {
@@ -592,8 +633,10 @@ router.route('/error').get(async (req, res) => {
   const error = req.session.error; 
   req.session.error = null;
 
+  const sanitizedError = xss(error);
+
   return res.render('error', {
-    error: error,
+    error: sanitizedError,
     loggedIn: req.session.user ? true : false,
   });
 });
@@ -606,11 +649,9 @@ router.route("/rejectFriendRequest").post(async (req, res) => {
     await userAccount.rejectFriendRequest(receiverUsername, senderUsername);
 
     const updatedUser = await getUserByUsername(receiverUsername);
-    console.log(updatedUser);
     const friendRequests = updatedUser.friendRequests || [];
 
     req.session.friendRequests = friendRequests;
-    console.log(friendRequests);
 
     res.redirect('/protected');
 
@@ -638,8 +679,6 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
     const friendRequests = updatedUser.friendRequests || [];
    
     req.session.friendRequests = friendRequests;
-    console.log(req.session);
-    console.log(friendRequests);
 
     res.redirect('/protected');
 
@@ -657,15 +696,25 @@ router.route("/acceptFriendRequest").post(async (req, res) => {
 });
 //friend's list
 router.route("/friendsList").get(async (req, res) => {
-  try {
-    const senderUsername = xss(req.session.user.userName);
-    const friends = await userAccount.getAllFriends(senderUsername);
-    res.render('friendsList', { friends });
-  } catch (error) {
-    console.log('An error occurred while finding friends:', error);
-    res.render('error', { error: 'An error occurred while finding friends' });
+  if (req.session.user && req.session.user.userName) {
+    try {
+      const senderUsername = xss(req.session.user.userName);
+      const friends = await userAccount.getAllFriends(senderUsername);
+      res.render('friendsList', { 
+        friends,
+        loggedIn: req.session.user ? true : false
+      });
+    } catch (error) {
+      console.log('An error occurred while finding friends:', error);
+      res.render('error', { error: error.message });
+    }
   }
-
+  else {
+    res.render('error', {
+      error: "You are not logged in",
+      loggedIn: req.session.user ? true : false
+    })
+  }
 });
 
 export default router;
