@@ -11,11 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
         errorMessage.innerHTML = "Please enter a username";
         errorMessage.style.display = "block";
         e.preventDefault();
-      } else if (!isNaN(parseFloat(input)) && isFinite(input)) {
-        errorMessage.innerHTML =
-          "Username must be valid and cannot be a number";
-        errorMessage.style.display = "block";
-        e.preventDefault();
       }
     });
   }
