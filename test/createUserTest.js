@@ -16,18 +16,18 @@ export async function createUserTest(){
 
         try {
             await userAccount.createUser("lorre15", "@Pass1234");
-            console.log("User 'lorre14' created successfully.");
+            console.log("User 'lorre15' created successfully.");
             await findUsersByUsernameSubstring("lorre14");
-            console.log("User 'lorre14' retrieved successfully.");
+            console.log("User 'lorre15' retrieved successfully.");
         } catch (error) {
             console.log('Error creating or searching user Lorre: ' + error.message);
         }
 
         try {
             await userAccount.createUser("lorre16", "@Pass1234");
-            console.log("User 'lorre14' created successfully.");
+            console.log("User 'lorre16' created successfully.");
             await findUsersByUsernameSubstring("lorre14");
-            console.log("User 'lorre14' retrieved successfully.");
+            console.log("User 'lorre16' retrieved successfully.");
         } catch (error) {
             console.log('Error creating or searching user Lorre: ' + error.message);
         }
