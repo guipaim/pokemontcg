@@ -223,7 +223,6 @@ router.post("/addFriend", async (req, res) => {
   try {
 
     const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
-    const receiverId=req.body.id;
     const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
