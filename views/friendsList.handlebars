@@ -1,15 +1,17 @@
-{{#if loggedIn}}
+<div class="centerLogin">
+    {{#if loggedIn}}
     <h2>List of friends:</h2>
     {{#if friends}}
-        <ul>
+    <ul>
         {{#each friends}}
-            <li>{{this}}</li>
+        <li>{{this}}</li>
         {{/each}}
-    {{else}}
+        {{else}}
         <p>You currently have no friends</p>
-    {{/if}}
+        {{/if}}
     </ul>
-{{else}}
+    {{else}}
     <p>You must be logged in to view friends</p>
     <button class="homeButton" onclick="location.href='/login';" type="submit">Login</button>
-{{/if}}
+    {{/if}}
+</div>

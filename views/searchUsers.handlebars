@@ -19,10 +19,14 @@
                 <p class="centerLogin">User found: {{this.userName}}</p>
                 <form id="sendFriendRequestForm" action="/addFriend" method="post">
                     <div class="centerLogin">
-                    <input type="hidden" id="receiverUsername" name="username" value="{{this.userName}}">
-                    <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
+                        <input type="hidden" id="receiverUsername" name="username" value="{{this.userName}}">
+                        <button class="homeButton" type="submit" id="addFriendButton">Add as Friend</button>
                     </div>
+                   
                 </form>
+                 <div class="centerLogin">
+                        <button class="homeButton" onclick="location.href='/viewSearchCollections/{{this.userName}}';" type="submit" id="viewSearchCollectionBtn">View Collection</button>
+                </div>
             </div>
         {{/each}}
     {{else}}

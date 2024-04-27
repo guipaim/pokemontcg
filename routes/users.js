@@ -225,7 +225,7 @@ router.post("/addFriend", async (req, res) => {
     const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
     const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
-    await userAccount.sendFriendRequest(senderUsername, receiverUsername);
+    await userAccount.sendFriendRequest(receiverUsername, senderUsername);
 
     //res.redirect("/searchUsers");
     res.render('searchUsers', {
@@ -592,6 +592,30 @@ router.route("/viewCollections/:userName").get(async (req, res) => {
       user,
       friendList,
       imagesJSON,
+      loggedIn: req.session.user ? true : false
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+router.route("/viewSearchCollections/:searchUserName").get(async (req, res) => {
+  if (!req.session.user) {
+    req.session.error = "403: You do not have permission to access this page";
+    return res.status(403).redirect("error");
+  }
+  try {
+    const user = xss(req.params.searchUserName);
+
+    const images = {};
+   
+    const imageData = await displayCollection(user);
+    images[user] = imageData;
+
+    return res.render("searchCollectionView", {
+      user,
+      imageData,
       loggedIn: req.session.user ? true : false
     });
   } catch (error) {

@@ -462,3 +462,7 @@ tbody > tr:hover {
   justify-content: center;
   align-items: center;
 }
+
+div:empty {
+  display: none;
+}

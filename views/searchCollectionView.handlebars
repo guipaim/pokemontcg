@@ -1,0 +1,14 @@
+<p class="centerLogin">View Collections: {{user}}</p>
+
+<div>
+        {{#each imageData}}
+            <img src="{{this}}"></img> 
+        {{/each}}
+</div>
+
+<div class="container">
+    <button class="homeButton" onclick="location.href='/protected';" type="submit">Home Page</button>
+    <button class="homeButton" onclick="goBack()">Go Back</button>
+</div>
+
+<script src="/public/js/client_side_validation.js"></script>

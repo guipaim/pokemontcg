@@ -14,6 +14,24 @@ export async function createUserTest(){
             console.log('Error creating or searching user Lorre: ' + error.message);
         }
 
+        try {
+            await userAccount.createUser("lorre15", "@Pass1234");
+            console.log("User 'lorre14' created successfully.");
+            await findUsersByUsernameSubstring("lorre14");
+            console.log("User 'lorre14' retrieved successfully.");
+        } catch (error) {
+            console.log('Error creating or searching user Lorre: ' + error.message);
+        }
+
+        try {
+            await userAccount.createUser("lorre16", "@Pass1234");
+            console.log("User 'lorre14' created successfully.");
+            await findUsersByUsernameSubstring("lorre14");
+            console.log("User 'lorre14' retrieved successfully.");
+        } catch (error) {
+            console.log('Error creating or searching user Lorre: ' + error.message);
+        }
+
     //     // Add another user "Troy" and search user "Troy"
         try {
             await userAccount.createUser("troy14", "@Pass1234");

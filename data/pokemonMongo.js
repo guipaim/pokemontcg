@@ -455,6 +455,8 @@ export const finalizeTrade = async (id) => {
       console.error("Error deleting rest of the cards", error);
     }
   }
+
+  await updateDeckPoints();
 };
 
 export const declineTrade = async (id) => {
