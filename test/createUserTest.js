@@ -58,7 +58,7 @@ export async function createUserTest(){
         }
         //create another user Larissa
         try {
-            await userAccount.createUser("Larissa34", "Grad345@");
+            await userAccount.createUser("Larissa34", "@Pass1234");
             console.log("User 'Larissa' created successfully.");
             await findUsersByUsernameSubstring("Larissa");
             console.log("User 'Larissa' retrieved successfully.");
@@ -69,7 +69,7 @@ export async function createUserTest(){
         //create another user Matt
 
         try {
-            await userAccount.createUser("Matt12", "Testuser345@");
+            await userAccount.createUser("Matt12", "@Pass1234");
             console.log("User 'Matt' created successfully.");
             await findUsersByUsernameSubstring("Matt12");
             console.log("User 'Matt' retrieved successfully.");
@@ -95,7 +95,7 @@ export async function createUserTest(){
         }
         //create Ryan
         try {
-            await userAccount.createUser("Ryan1", "FriendlyUser@");
+            await userAccount.createUser("Ryan1", "FriendlyHuman1@");
             console.log("User 'Ryan1' created successfully.");
             await findUsersByUsernameSubstring("Ryan1");
             console.log("User 'Ryan1' retrieved successfully.");
@@ -106,8 +106,8 @@ export async function createUserTest(){
         //create Guilherme
 
         try {
-            await userAccount.createUser("Guilherme2", "FriendlyUser@");
-            console.log("User 'Guilherme22' created successfully.");
+            await userAccount.createUser("Guilherme2", "FriendlyHuman1@");
+            console.log("User 'Guilherme2' created successfully.");
             await findUsersByUsernameSubstring("Guilherme2");
             console.log("User 'Guilherme2' retrieved successfully.");
         } catch (error) {
@@ -131,7 +131,7 @@ export async function createUserTest(){
          //Scenario 2 : Reject friend Request 
           //create Marie
         // try {
-        //     await userAccount.createUser("Marie56", "FriendlyHuman@");
+        //     await userAccount.createUser("Marie56", "FriendlyHuman1@");
         //     console.log("User 'Marie56' created successfully.");
         //     await findUsersByUsernameSubstring("Ryan1");
         //     console.log("User 'Marie56' retrieved successfully.");
@@ -142,7 +142,7 @@ export async function createUserTest(){
         // //create Jay
 
         // try {
-        //     await userAccount.createUser("JayPatel2", "FriendlyClassmate@");
+        //     await userAccount.createUser("JayPatel2", "FriendlyClassmate1@");
         //     console.log("User 'JayPatel2' created successfully.");
         //     await findUsersByUsernameSubstring("Guilherme2");
         //     console.log("User 'JayPatel2' retrieved successfully.");
