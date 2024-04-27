@@ -1,7 +1,6 @@
 import axios from "axios";
 import { getAllCards } from "./pokemonMongo.js";
 
-
 /* This file handles all the data pulls from the API */
 
 /**
@@ -10,14 +9,13 @@ import { getAllCards } from "./pokemonMongo.js";
  */
 const getOptions = () => {
   const options = {
-      headers: {}
+    headers: {},
   };
 
- 
-  options.headers['X-Api-Key'] = '0d904154-08de-4e28-9cd7-5f5d9e91e1b7';
+  options.headers["X-Api-Key"] = "ad2246e9-7ec7-4bc3-9bad-ada0589e4a38";
 
   return options;
-}
+};
 
 /**
  * This is just a helper method that randomizes the cards each new user gets
@@ -36,7 +34,10 @@ const getRandomNumber = async (minimum, maximum) => {
  */
 export const fetchCardsData = async () => {
   try {
-    const response = await axios.get("https://api.pokemontcg.io/v2/cards", getOptions());
+    const response = await axios.get(
+      "https://api.pokemontcg.io/v2/cards",
+      getOptions()
+    );
     return response.data; // Extracting the data property from the response
   } catch (error) {
     console.error("Error fetching cards data:", error);
@@ -53,7 +54,10 @@ export const fetchCardsDataByID = async (id) => {
   if (!id) throw "Must supply id";
 
   try {
-    let response = await axios.get(`https://api.pokemontcg.io/v2/cards/${id}`, getOptions());
+    let response = await axios.get(
+      `https://api.pokemontcg.io/v2/cards/${id}`,
+      getOptions()
+    );
     if (!response.data) {
       throw "Could not get the card by ID";
     }
@@ -110,24 +114,26 @@ export const getHPInfoByID = async (id) => {
   if (!id) throw "Must supply id";
 
   try {
-    let response = await axios.get(`https://api.pokemontcg.io/v2/cards/${id}?select=hp`, getOptions());
+    let response = await axios.get(
+      `https://api.pokemontcg.io/v2/cards/${id}?select=hp`,
+      getOptions()
+    );
     if (!response.data) {
       throw "Could not get the card by ID";
     }
     const { data } = response.data;
-    if (data !== undefined){
+    if (data !== undefined) {
       return data.hp;
     } else {
-      return (30);
+      return 30;
     }
-    
+
     // Extracting the data property from the response
   } catch (error) {
     console.error("Error fetching cards data by ID", error);
     throw error; // Rethrow the error for the caller to handle
   }
 };
-
 
 /**
  *
@@ -150,14 +156,13 @@ export const getImageUrlByCardId = async (cardId) => {
   }
 };
 
-export async function getRandomCard(cardList){
-  if(cardList.length === 0){
+export async function getRandomCard(cardList) {
+  if (cardList.length === 0) {
     throw new Error("Card List is empty");
   }
   let rn = await getRandomNumber(0, cardList.length);
   let card = cardList[rn];
-  return (card);
+  return card;
 }
-
 
 //export default exportedMethods;
