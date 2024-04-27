@@ -195,16 +195,16 @@ router
 
       const foundUsers = await findUsersByUsernameSubstring(username);
 
-      if (!foundUsers) {
+      if (foundUsers.length===0) {
 
-        return res.render('SearchUsers', { 
+        return res.render('searchUsers', { 
           message: "User not found",
           noMatch: true,
           loggedIn: req.session.user ? true : false
          });
       }
 
-      res.render("SearchUsers", { 
+      res.render("searchUsers", { 
         users: foundUsers,
         loggedIn: req.session.user ? true : false,
         noMatch: true
@@ -223,6 +223,7 @@ router.post("/addFriend", async (req, res) => {
   try {
 
     const senderUsername = xss(req.session.user.userName); // Retrieve sender's username from session user
+    const receiverId=req.body.id;
     const receiverUsername = xss(req.body.username); // Retrieve receiver's username from form
 
     await userAccount.sendFriendRequest(senderUsername, receiverUsername);
