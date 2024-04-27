@@ -1,6 +1,6 @@
 
 {{#if loggedIn}}
-<form id="searchUserForm-{{id}}" action="/searchUsers" method="post">
+<form id="searchUserForm-{{this.userName}}" action="/searchUsers" method="post">
     <div class="centerLogin" style="margin-top:10px">
         <input type="text" id="searchInput-{{id}}" name="username" placeholder="Enter username">
         <button class="homeButton" type="submit" style="margin-top:10px">Search</button>
@@ -17,15 +17,15 @@
         {{#each users}}
             <div>
                 <p class="centerLogin">User found: {{this.userName}}</p>
-                <form id="sendFriendRequestForm-{{id}}" action="/addFriend" method="post">
+                <form id="sendFriendRequestForm-{{this.userName}}" action="/addFriend" method="post">
                     <div class="centerLogin">
-                        <input type="hidden" id="receiverUsername-{{id}}" name="username" value="{{this.userName}}">
-                        <button class="homeButton" type="submit" id="addFriendButton-{{id}}">Add as Friend</button>
+                        <input type="hidden" id="receiverUsername-{{this.userName}}" name="username" value="{{this.userName}}">
+                        <button class="homeButton" type="submit" id="addFriendButton-{{this.userName}}">Add as Friend</button>
                     </div>
                    
                 </form>
                  <div class="centerLogin">
-                        <button class="homeButton" onclick="location.href='/viewSearchCollections/{{this.userName}}';" type="submit" id="viewSearchCollectionBtn-{{id}}">View Collection</button>
+                        <button class="homeButton" onclick="location.href='/viewSearchCollections/{{this.userName}}';" type="submit" id="viewSearchCollectionBtn-{{this.userName}}">View Collection</button>
                 </div>
             </div>
         {{/each}}
