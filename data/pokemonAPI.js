@@ -12,7 +12,7 @@ const getOptions = () => {
     headers: {},
   };
 
-  options.headers["X-Api-Key"] = "ad2246e9-7ec7-4bc3-9bad-ada0589e4a38";
+  options.headers["X-Api-Key"] = "9317594b-9eca-42c4-b240-fcbd37931adf";
 
   return options;
 };
